@@ -1,0 +1,61 @@
+{
+  "name": "marketing-analytics-mcp/wordpress-plugin",
+  "description": "WordPress plugin that exposes marketing analytics data (Microsoft Clarity, Google Analytics 4, Google Search Console) via Model Context Protocol for AI assistants",
+  "type": "wordpress-plugin",
+  "license": "GPL-2.0-or-later",
+  "authors": [
+    {
+      "name": "Marketing Analytics MCP",
+      "email": "hello@example.com"
+    }
+  ],
+  "require": {
+    "php": ">=8.1",
+    "wordpress/abilities-api": "^0.4",
+    "wordpress/mcp-adapter": "^0.1",
+    "automattic/jetpack-autoloader": "^5.0",
+    "google/apiclient": "^2.15",
+    "guzzlehttp/guzzle": "^7.8"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^9.0",
+    "phpstan/phpstan": "^1.10",
+    "wp-coding-standards/wpcs": "^3.0"
+  },
+  "autoload": {
+    "classmap": [
+      "includes/"
+    ],
+    "files": []
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Marketing_Analytics_MCP\\Tests\\": "tests/"
+    }
+  },
+  "scripts": {
+    "test": "phpunit",
+    "phpcs": "phpcs --standard=WordPress includes/",
+    "phpcbf": "phpcbf --standard=WordPress includes/",
+    "phpstan": "phpstan analyse includes/ --level=8"
+  },
+  "config": {
+    "allow-plugins": {
+      "automattic/jetpack-autoloader": true,
+      "dealerdirect/phpcodesniffer-composer-installer": true
+    },
+    "platform": {
+      "php": "8.2"
+    },
+    "optimize-autoloader": true,
+    "classmap-authoritative": true,
+    "apcu-autoloader": true
+  },
+  "extra": {
+    "google/apiclient-services": [
+      "AnalyticsData",
+      "Analytics",
+      "SearchConsole"
+    ]
+  }
+}
