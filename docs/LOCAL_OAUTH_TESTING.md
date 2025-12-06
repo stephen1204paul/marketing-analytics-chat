@@ -6,7 +6,7 @@ Google OAuth doesn't allow redirect URIs with `.test`, `.local`, or other non-pu
 
 When trying to add a redirect URI like:
 ```
-https://marketing-mcp-wp.test/wp-admin/admin.php?page=marketing-analytics-mcp-connections&oauth_callback=1
+https://marketing-analytics-chat-wp.test/wp-admin/admin.php?page=marketing-analytics-chat-connections&oauth_callback=1
 ```
 
 You get this error:
@@ -43,10 +43,10 @@ brew install ngrok
 ngrok http 80
 
 # If using Valet with custom port
-ngrok http https://marketing-mcp-wp.test:443
+ngrok http https://marketing-analytics-chat-wp.test:443
 
 # Or specify the exact Valet site
-ngrok http marketing-mcp-wp.test:80
+ngrok http marketing-analytics-chat-wp.test:80
 ```
 
 #### Step 4: Use ngrok URL in Google Cloud Console
@@ -58,7 +58,7 @@ Forwarding  https://abc123.ngrok.io -> http://localhost:80
 
 **Use this ngrok URL** as your redirect URI in Google Cloud Console:
 ```
-https://abc123.ngrok.io/wp-admin/admin.php?page=marketing-analytics-mcp-connections&oauth_callback=1
+https://abc123.ngrok.io/wp-admin/admin.php?page=marketing-analytics-chat-connections&oauth_callback=1
 ```
 
 #### Step 5: Update WordPress Site URL (Temporarily)
@@ -74,7 +74,7 @@ open https://abc123.ngrok.io/wp-admin
 
 #### Step 6: Test OAuth Flow
 
-1. Go to: `https://abc123.ngrok.io/wp-admin/admin.php?page=marketing-analytics-mcp-connections&tab=ga4`
+1. Go to: `https://abc123.ngrok.io/wp-admin/admin.php?page=marketing-analytics-chat-connections&tab=ga4`
 2. Add your Google OAuth credentials
 3. Click "Connect to Google Analytics"
 4. Complete OAuth flow
@@ -84,8 +84,8 @@ open https://abc123.ngrok.io/wp-admin
 
 ```bash
 # Restore your local URLs
-wp option update home 'https://marketing-mcp-wp.test'
-wp option update siteurl 'https://marketing-mcp-wp.test'
+wp option update home 'https://marketing-analytics-chat-wp.test'
+wp option update siteurl 'https://marketing-analytics-chat-wp.test'
 ```
 
 **⚠️ Note:** ngrok URLs are temporary and change each time you restart ngrok (unless you have a paid plan with reserved domains).
@@ -112,7 +112,7 @@ valet links
 
 Use in Google Cloud Console:
 ```
-http://localhost/wp-admin/admin.php?page=marketing-analytics-mcp-connections&oauth_callback=1
+http://localhost/wp-admin/admin.php?page=marketing-analytics-chat-connections&oauth_callback=1
 ```
 
 **⚠️ Important:**
@@ -131,8 +131,8 @@ Access your site at: `http://localhost/wp-admin`
 #### Restore After Testing
 
 ```bash
-wp option update home 'https://marketing-mcp-wp.test'
-wp option update siteurl 'https://marketing-mcp-wp.test'
+wp option update home 'https://marketing-analytics-chat-wp.test'
+wp option update siteurl 'https://marketing-analytics-chat-wp.test'
 ```
 
 ---
@@ -148,7 +148,7 @@ The most reliable approach is to test OAuth on a real domain:
 #### Example with Staging Site
 
 ```
-https://staging.yoursite.com/wp-admin/admin.php?page=marketing-analytics-mcp-connections&oauth_callback=1
+https://staging.yoursite.com/wp-admin/admin.php?page=marketing-analytics-chat-connections&oauth_callback=1
 ```
 
 **Benefits:**

@@ -96,5 +96,5 @@ Initial release - coming soon!
 - WordPress admin interface
 - Complete documentation
 
-[Unreleased]: https://github.com/yourusername/marketing-analytics-mcp/compare/v1.0.0...HEAD
-[1.0.0]: https://github.com/yourusername/marketing-analytics-mcp/releases/tag/v1.0.0
+[Unreleased]: https://github.com/yourusername/marketing-analytics-chat/compare/v1.0.0...HEAD
+[1.0.0]: https://github.com/yourusername/marketing-analytics-chat/releases/tag/v1.0.0

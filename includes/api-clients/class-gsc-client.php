@@ -11,6 +11,7 @@ namespace Marketing_Analytics_MCP\API_Clients;
 
 use Marketing_Analytics_MCP\Credentials\OAuth_Handler;
 use Marketing_Analytics_MCP\Cache\Cache_Manager;
+use Marketing_Analytics_MCP\Utils\Logger;
 
 /**
  * Google Search Console API Client class
@@ -67,7 +68,7 @@ class GSC_Client {
 
 			return new \Google\Service\SearchConsole( $client );
 		} catch ( \Exception $e ) {
-			error_log( 'Marketing Analytics MCP: Failed to initialize GSC client: ' . $e->getMessage() );
+			Logger::debug( 'Failed to initialize GSC client: ' . $e->getMessage() );
 			return null;
 		}
 	}
@@ -87,12 +88,16 @@ class GSC_Client {
 		}
 
 		// Check cache first
-		$cache_key = $this->cache_manager->generate_key( 'gsc', 'search_analytics', array(
-			'date_range' => $date_range,
-			'dimensions' => $dimensions,
-			'filters'    => $filters,
-			'options'    => $options,
-		) );
+		$cache_key = $this->cache_manager->generate_key(
+			'gsc',
+			'search_analytics',
+			array(
+				'date_range' => $date_range,
+				'dimensions' => $dimensions,
+				'filters'    => $filters,
+				'options'    => $options,
+			)
+		);
 
 		$cached = $this->cache_manager->get( $cache_key );
 		if ( false !== $cached ) {
@@ -171,9 +176,12 @@ class GSC_Client {
 
 		// Filter by minimum impressions
 		if ( $min_impressions > 0 ) {
-			$data['rows'] = array_filter( $data['rows'], function( $row ) use ( $min_impressions ) {
-				return isset( $row['impressions'] ) && $row['impressions'] >= $min_impressions;
-			} );
+			$data['rows'] = array_filter(
+				$data['rows'],
+				function ( $row ) use ( $min_impressions ) {
+					return isset( $row['impressions'] ) && $row['impressions'] >= $min_impressions;
+				}
+			);
 
 			// Re-index array
 			$data['rows'] = array_values( $data['rows'] );
@@ -207,11 +215,11 @@ class GSC_Client {
 			$response = $search_console->urlInspection_index->inspect( $request );
 
 			return array(
-				'coverage_state'    => $response->getInspectionResult()->getIndexStatusResult()->getCoverageState(),
-				'crawled_as'        => $response->getInspectionResult()->getIndexStatusResult()->getCrawledAs(),
-				'indexing_state'    => $response->getInspectionResult()->getIndexStatusResult()->getIndexingState(),
-				'last_crawl_time'   => $response->getInspectionResult()->getIndexStatusResult()->getLastCrawlTime(),
-				'page_fetch_state'  => $response->getInspectionResult()->getIndexStatusResult()->getPageFetchState(),
+				'coverage_state'   => $response->getInspectionResult()->getIndexStatusResult()->getCoverageState(),
+				'crawled_as'       => $response->getInspectionResult()->getIndexStatusResult()->getCrawledAs(),
+				'indexing_state'   => $response->getInspectionResult()->getIndexStatusResult()->getIndexingState(),
+				'last_crawl_time'  => $response->getInspectionResult()->getIndexStatusResult()->getLastCrawlTime(),
+				'page_fetch_state' => $response->getInspectionResult()->getIndexStatusResult()->getPageFetchState(),
 			);
 		} catch ( \Exception $e ) {
 			throw new \Exception( 'GSC URL Inspection error: ' . $e->getMessage() );
@@ -242,12 +250,12 @@ class GSC_Client {
 			if ( $sitemaps->getSitemap() ) {
 				foreach ( $sitemaps->getSitemap() as $sitemap ) {
 					$sitemap_data[] = array(
-						'path'          => $sitemap->getPath(),
-						'last_submitted' => $sitemap->getLastSubmitted(),
-						'is_pending'    => $sitemap->getIsPending(),
+						'path'              => $sitemap->getPath(),
+						'last_submitted'    => $sitemap->getLastSubmitted(),
+						'is_pending'        => $sitemap->getIsPending(),
 						'is_sitemaps_index' => $sitemap->getIsSitemapsIndex(),
-						'warnings'      => $sitemap->getWarnings(),
-						'errors'        => $sitemap->getErrors(),
+						'warnings'          => $sitemap->getWarnings(),
+						'errors'            => $sitemap->getErrors(),
 					);
 				}
 			}
@@ -283,15 +291,15 @@ class GSC_Client {
 			if ( $sites_list->getSiteEntry() ) {
 				foreach ( $sites_list->getSiteEntry() as $site ) {
 					$sites[] = array(
-						'site_url'           => $site->getSiteUrl(),
-						'permission_level'   => $site->getPermissionLevel(),
+						'site_url'         => $site->getSiteUrl(),
+						'permission_level' => $site->getPermissionLevel(),
 					);
 				}
 			}
 
 			return $sites;
 		} catch ( \Exception $e ) {
-			error_log( 'Marketing Analytics MCP: Failed to list GSC sites: ' . $e->getMessage() );
+			Logger::debug( 'Failed to list GSC sites: ' . $e->getMessage() );
 			return null;
 		}
 	}
@@ -304,7 +312,23 @@ class GSC_Client {
 	 */
 	public function set_site_url( $site_url ) {
 		$this->site_url = $site_url;
-		return update_option( 'marketing_analytics_mcp_gsc_site_url', $site_url, false );
+
+		// Check if the value is already the same
+		$current_value = get_option( 'marketing_analytics_mcp_gsc_site_url' );
+		if ( $current_value === $site_url ) {
+			// Value unchanged, consider this a success
+			Logger::debug( sprintf( 'GSC site URL already set to: %s', $site_url ) );
+			return true;
+		}
+
+		$result = update_option( 'marketing_analytics_mcp_gsc_site_url', $site_url, false );
+		if ( $result ) {
+			Logger::debug( sprintf( 'GSC site URL updated to: %s', $site_url ) );
+		} else {
+			Logger::error( sprintf( 'Failed to update GSC site URL to: %s', $site_url ) );
+		}
+
+		return $result;
 	}
 
 	/**
@@ -334,7 +358,7 @@ class GSC_Client {
 
 		// Parse start date
 		if ( preg_match( '/^(\d+)daysAgo$/', $date_range, $matches ) ) {
-			$days = absint( $matches[1] );
+			$days       = absint( $matches[1] );
 			$start_date = gmdate( 'Y-m-d', strtotime( '-' . ( $days + 3 ) . ' days' ) );
 		} elseif ( 'yesterday' === $date_range ) {
 			$start_date = gmdate( 'Y-m-d', strtotime( '-4 days' ) );
@@ -388,7 +412,7 @@ class GSC_Client {
 
 				// Add dimensions
 				if ( $row->getKeys() ) {
-					$keys = $row->getKeys();
+					$keys       = $row->getKeys();
 					$dimensions = array();
 
 					// Map keys to dimension names

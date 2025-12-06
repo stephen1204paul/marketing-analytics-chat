@@ -38,11 +38,11 @@ class Clarity_Abilities {
 		wp_register_ability(
 			'marketing-analytics/get-clarity-insights',
 			array(
-				'label'       => __( 'Get Microsoft Clarity Insights', 'marketing-analytics-mcp' ),
-				'description' => __( 'Retrieve analytics dashboard data from Microsoft Clarity for a specified time period with optional dimension filters.', 'marketing-analytics-mcp' ),
-				'category'    => 'marketing-analytics',
+				'label'               => __( 'Get Microsoft Clarity Insights', 'marketing-analytics-chat' ),
+				'description'         => __( 'Retrieve analytics dashboard data from Microsoft Clarity for a specified time period with optional dimension filters.', 'marketing-analytics-chat' ),
+				'category'            => 'marketing-analytics',
 
-				'input_schema' => array(
+				'input_schema'        => array(
 					'type'       => 'object',
 					'properties' => array(
 						'num_of_days' => array(
@@ -69,10 +69,10 @@ class Clarity_Abilities {
 					'required'   => array( 'num_of_days' ),
 				),
 
-				'output_schema' => array(
+				'output_schema'       => array(
 					'type'       => 'object',
 					'properties' => array(
-						'metrics' => array(
+						'metrics'  => array(
 							'type'        => 'object',
 							'description' => 'Clarity dashboard metrics',
 						),
@@ -100,11 +100,11 @@ class Clarity_Abilities {
 		wp_register_ability(
 			'marketing-analytics/get-clarity-recordings',
 			array(
-				'label'       => __( 'Get Clarity Session Recordings', 'marketing-analytics-mcp' ),
-				'description' => __( 'Fetch session recording URLs from Microsoft Clarity based on filters.', 'marketing-analytics-mcp' ),
-				'category'    => 'marketing-analytics',
+				'label'               => __( 'Get Clarity Session Recordings', 'marketing-analytics-chat' ),
+				'description'         => __( 'Fetch session recording URLs from Microsoft Clarity based on filters.', 'marketing-analytics-chat' ),
+				'category'            => 'marketing-analytics',
 
-				'input_schema' => array(
+				'input_schema'        => array(
 					'type'       => 'object',
 					'properties' => array(
 						'filters' => array(
@@ -127,7 +127,7 @@ class Clarity_Abilities {
 					),
 				),
 
-				'output_schema' => array(
+				'output_schema'       => array(
 					'type'       => 'object',
 					'properties' => array(
 						'recordings'  => array(
@@ -162,11 +162,11 @@ class Clarity_Abilities {
 		wp_register_ability(
 			'marketing-analytics/analyze-clarity-heatmaps',
 			array(
-				'label'       => __( 'Analyze Clarity Heatmaps', 'marketing-analytics-mcp' ),
-				'description' => __( 'Get heatmap data and AI-friendly insights from Microsoft Clarity.', 'marketing-analytics-mcp' ),
-				'category'    => 'marketing-analytics',
+				'label'               => __( 'Analyze Clarity Heatmaps', 'marketing-analytics-chat' ),
+				'description'         => __( 'Get heatmap data and AI-friendly insights from Microsoft Clarity.', 'marketing-analytics-chat' ),
+				'category'            => 'marketing-analytics',
 
-				'input_schema' => array(
+				'input_schema'        => array(
 					'type'       => 'object',
 					'properties' => array(
 						'page_url'     => array(
@@ -183,7 +183,7 @@ class Clarity_Abilities {
 					'required'   => array( 'page_url' ),
 				),
 
-				'output_schema' => array(
+				'output_schema'       => array(
 					'type'       => 'object',
 					'properties' => array(
 						'heatmap_data' => array(
@@ -210,11 +210,11 @@ class Clarity_Abilities {
 		wp_register_ability(
 			'marketing-analytics/clarity-dashboard',
 			array(
-				'label'       => __( 'Clarity Dashboard Summary', 'marketing-analytics-mcp' ),
-				'description' => __( 'Get current Microsoft Clarity project summary with session counts and user metrics.', 'marketing-analytics-mcp' ),
-				'category'    => 'marketing-analytics',
+				'label'               => __( 'Clarity Dashboard Summary', 'marketing-analytics-chat' ),
+				'description'         => __( 'Get current Microsoft Clarity project summary with session counts and user metrics.', 'marketing-analytics-chat' ),
+				'category'            => 'marketing-analytics',
 
-				'output_schema' => array(
+				'output_schema'       => array(
 					'type'       => 'object',
 					'properties' => array(
 						'project_id'   => array( 'type' => 'string' ),
@@ -382,9 +382,9 @@ class Clarity_Abilities {
 			$data = $client->get_insights( 1 );
 
 			$summary = array(
-				'project_id'   => get_option( 'marketing_analytics_mcp_clarity_project_id', 'Not configured' ),
-				'period'       => 'Last 24 hours',
-				'data'         => $data,
+				'project_id' => get_option( 'marketing_analytics_mcp_clarity_project_id', 'Not configured' ),
+				'period'     => 'Last 24 hours',
+				'data'       => $data,
 			);
 
 			return array(

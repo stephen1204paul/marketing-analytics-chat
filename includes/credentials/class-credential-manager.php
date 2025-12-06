@@ -9,6 +9,8 @@
 
 namespace Marketing_Analytics_MCP\Credentials;
 
+use Marketing_Analytics_MCP\Utils\Logger;
+
 /**
  * Manages encrypted credentials for analytics platforms
  */
@@ -47,7 +49,7 @@ class Credential_Manager {
 		try {
 			$encrypted = Encryption::encrypt( $credentials, $platform );
 		} catch ( \Exception $e ) {
-			error_log( 'Marketing Analytics MCP: Failed to encrypt credentials for ' . $platform . ': ' . $e->getMessage() );
+			Logger::debug( 'Failed to encrypt credentials for ' . $platform . ': ' . $e->getMessage() );
 			return false;
 		}
 
@@ -79,13 +81,13 @@ class Credential_Manager {
 			$credentials = Encryption::decrypt( $encrypted, $platform );
 
 			if ( $credentials === false || ! is_array( $credentials ) ) {
-				error_log( 'Marketing Analytics MCP: Failed to decrypt credentials for ' . $platform );
+				Logger::debug( 'Failed to decrypt credentials for ' . $platform );
 				return null;
 			}
 
 			return $credentials;
 		} catch ( \Exception $e ) {
-			error_log( 'Marketing Analytics MCP: Failed to decrypt credentials for ' . $platform . ': ' . $e->getMessage() );
+			Logger::debug( 'Failed to decrypt credentials for ' . $platform . ': ' . $e->getMessage() );
 			return null;
 		}
 	}

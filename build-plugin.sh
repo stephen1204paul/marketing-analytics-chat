@@ -5,8 +5,8 @@
 
 set -e
 
-PLUGIN_SLUG="marketing-analytics-mcp"
-VERSION=$(grep "Version:" marketing-analytics-mcp.php | awk '{print $3}')
+PLUGIN_SLUG="marketing-analytics-chat"
+VERSION=$(grep "Version:" marketing-analytics-chat.php | awk '{print $3}')
 BUILD_DIR="build"
 DIST_DIR="dist"
 

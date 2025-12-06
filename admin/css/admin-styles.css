@@ -5,7 +5,7 @@
  */
 
 /* Dashboard Layout */
-.marketing-analytics-mcp-dashboard {
+.marketing-analytics-chat-dashboard {
 	max-width: 1200px;
 }
 
@@ -91,7 +91,7 @@
 }
 
 /* MCP Configuration */
-.marketing-analytics-mcp-info {
+.marketing-analytics-chat-info {
 	background: #fff;
 	border: 1px solid #c3c4c7;
 	padding: 20px;
@@ -138,7 +138,7 @@
 }
 
 /* Connections Page */
-.marketing-analytics-mcp-connections .nav-tab-wrapper {
+.marketing-analytics-chat-connections .nav-tab-wrapper {
 	margin: 20px 0;
 }
 
@@ -158,13 +158,13 @@
 }
 
 /* Settings Page */
-.marketing-analytics-mcp-settings h2 {
+.marketing-analytics-chat-settings h2 {
 	margin-top: 30px;
 	padding-top: 20px;
 	border-top: 1px solid #c3c4c7;
 }
 
-.marketing-analytics-mcp-settings h2:first-of-type {
+.marketing-analytics-chat-settings h2:first-of-type {
 	border-top: none;
 	padding-top: 0;
 }

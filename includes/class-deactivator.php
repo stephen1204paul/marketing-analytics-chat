@@ -36,7 +36,8 @@ class Deactivator {
 	private static function clear_all_caches() {
 		global $wpdb;
 
-		// Delete all transients with our prefix
+		// Delete all transients with our prefix.
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Cleanup operation during deactivation, caching not applicable.
 		$wpdb->query(
 			$wpdb->prepare(
 				"DELETE FROM {$wpdb->options} WHERE option_name LIKE %s OR option_name LIKE %s",

@@ -25,10 +25,10 @@ $messages               = $active_conversation_id ? $chat_manager->get_messages(
 
 ?>
 
-<div class="wrap marketing-analytics-mcp-chat">
-	<h1 class="wp-heading-inline"><?php esc_html_e( 'AI Assistant', 'marketing-analytics-mcp' ); ?></h1>
+<div class="wrap marketing-analytics-chat">
+	<h1 class="wp-heading-inline"><?php esc_html_e( 'AI Assistant', 'marketing-analytics-chat' ); ?></h1>
 	<p class="description">
-		<?php esc_html_e( 'Chat with an AI assistant about your marketing analytics data. The assistant can access Clarity, Google Analytics, and Search Console data.', 'marketing-analytics-mcp' ); ?>
+		<?php esc_html_e( 'Chat with an AI assistant about your marketing analytics data. The assistant can access Clarity, Google Analytics, and Search Console data.', 'marketing-analytics-chat' ); ?>
 	</p>
 
 	<div class="chat-container">
@@ -37,14 +37,14 @@ $messages               = $active_conversation_id ? $chat_manager->get_messages(
 			<div class="sidebar-header">
 				<button type="button" id="new-conversation" class="button button-primary button-block">
 					<span class="dashicons dashicons-plus-alt2"></span>
-					<?php esc_html_e( 'New Conversation', 'marketing-analytics-mcp' ); ?>
+					<?php esc_html_e( 'New Conversation', 'marketing-analytics-chat' ); ?>
 				</button>
 			</div>
 
 			<div class="conversation-list">
 				<?php if ( empty( $conversations ) ) : ?>
 					<div class="no-conversations">
-						<p><?php esc_html_e( 'No conversations yet. Start a new conversation!', 'marketing-analytics-mcp' ); ?></p>
+						<p><?php esc_html_e( 'No conversations yet. Start a new conversation!', 'marketing-analytics-chat' ); ?></p>
 					</div>
 				<?php else : ?>
 					<?php foreach ( $conversations as $conversation ) : ?>
@@ -52,7 +52,7 @@ $messages               = $active_conversation_id ? $chat_manager->get_messages(
 						$is_active = $active_conversation_id === (int) $conversation->id;
 						$class     = $is_active ? 'conversation-item active' : 'conversation-item';
 						?>
-						<a href="?page=marketing-analytics-mcp-chat&conversation_id=<?php echo esc_attr( $conversation->id ); ?>" class="<?php echo esc_attr( $class ); ?>">
+						<a href="?page=marketing-analytics-chat&conversation_id=<?php echo esc_attr( $conversation->id ); ?>" class="<?php echo esc_attr( $class ); ?>">
 							<div class="conversation-title"><?php echo esc_html( $conversation->title ); ?></div>
 							<div class="conversation-date"><?php echo esc_html( human_time_diff( strtotime( $conversation->updated_at ), current_time( 'timestamp' ) ) . ' ago' ); ?></div>
 						</a>
@@ -68,13 +68,13 @@ $messages               = $active_conversation_id ? $chat_manager->get_messages(
 				<div class="chat-messages" id="chat-messages">
 					<?php if ( empty( $messages ) ) : ?>
 						<div class="welcome-message">
-							<h2><?php esc_html_e( 'Welcome to your AI Analytics Assistant!', 'marketing-analytics-mcp' ); ?></h2>
-							<p><?php esc_html_e( 'Ask me anything about your marketing analytics data. I can help with:', 'marketing-analytics-mcp' ); ?></p>
+							<h2><?php esc_html_e( 'Welcome to your AI Analytics Assistant!', 'marketing-analytics-chat' ); ?></h2>
+							<p><?php esc_html_e( 'Ask me anything about your marketing analytics data. I can help with:', 'marketing-analytics-chat' ); ?></p>
 							<ul>
-								<li><?php esc_html_e( 'Traffic trends and performance metrics', 'marketing-analytics-mcp' ); ?></li>
-								<li><?php esc_html_e( 'Search Console rankings and queries', 'marketing-analytics-mcp' ); ?></li>
-								<li><?php esc_html_e( 'User behavior insights from Clarity', 'marketing-analytics-mcp' ); ?></li>
-								<li><?php esc_html_e( 'Period comparisons and analysis', 'marketing-analytics-mcp' ); ?></li>
+								<li><?php esc_html_e( 'Traffic trends and performance metrics', 'marketing-analytics-chat' ); ?></li>
+								<li><?php esc_html_e( 'Search Console rankings and queries', 'marketing-analytics-chat' ); ?></li>
+								<li><?php esc_html_e( 'User behavior insights from Clarity', 'marketing-analytics-chat' ); ?></li>
+								<li><?php esc_html_e( 'Period comparisons and analysis', 'marketing-analytics-chat' ); ?></li>
 							</ul>
 						</div>
 					<?php else : ?>
@@ -93,11 +93,11 @@ $messages               = $active_conversation_id ? $chat_manager->get_messages(
 									<div class="message-role">
 										<?php
 										if ( $message->role === 'user' ) {
-											esc_html_e( 'You', 'marketing-analytics-mcp' );
+											esc_html_e( 'You', 'marketing-analytics-chat' );
 										} elseif ( $message->role === 'assistant' ) {
-											esc_html_e( 'AI Assistant', 'marketing-analytics-mcp' );
+											esc_html_e( 'AI Assistant', 'marketing-analytics-chat' );
 										} elseif ( $message->role === 'tool' ) {
-											echo esc_html( sprintf( __( 'Tool: %s', 'marketing-analytics-mcp' ), $message->tool_name ) );
+											echo esc_html( sprintf( __( 'Tool: %s', 'marketing-analytics-chat' ), $message->tool_name ) );
 										}
 										?>
 									</div>
@@ -112,7 +112,7 @@ $messages               = $active_conversation_id ? $chat_manager->get_messages(
 									</div>
 									<?php if ( ! empty( $message->tool_calls ) ) : ?>
 										<div class="tool-calls">
-											<strong><?php esc_html_e( 'Using tools:', 'marketing-analytics-mcp' ); ?></strong>
+											<strong><?php esc_html_e( 'Using tools:', 'marketing-analytics-chat' ); ?></strong>
 											<ul>
 												<?php foreach ( $message->tool_calls as $tool_call ) : ?>
 													<li>
@@ -135,18 +135,18 @@ $messages               = $active_conversation_id ? $chat_manager->get_messages(
 				<!-- Message Input -->
 				<div class="chat-input-container">
 					<form id="chat-form" method="post">
-						<?php wp_nonce_field( 'marketing-analytics-mcp-admin', 'chat_nonce' ); ?>
+						<?php wp_nonce_field( 'marketing-analytics-chat-admin', 'chat_nonce' ); ?>
 						<input type="hidden" name="conversation_id" value="<?php echo esc_attr( $active_conversation_id ); ?>">
 
 						<div class="suggested-prompts" id="suggested-prompts">
-							<button type="button" class="suggested-prompt" data-prompt="<?php esc_attr_e( 'Show me traffic trends for the last 30 days', 'marketing-analytics-mcp' ); ?>">
-								<?php esc_html_e( 'Show me traffic trends for the last 30 days', 'marketing-analytics-mcp' ); ?>
+							<button type="button" class="suggested-prompt" data-prompt="<?php esc_attr_e( 'Show me traffic trends for the last 30 days', 'marketing-analytics-chat' ); ?>">
+								<?php esc_html_e( 'Show me traffic trends for the last 30 days', 'marketing-analytics-chat' ); ?>
 							</button>
-							<button type="button" class="suggested-prompt" data-prompt="<?php esc_attr_e( 'What are my top performing pages?', 'marketing-analytics-mcp' ); ?>">
-								<?php esc_html_e( 'What are my top performing pages?', 'marketing-analytics-mcp' ); ?>
+							<button type="button" class="suggested-prompt" data-prompt="<?php esc_attr_e( 'What are my top performing pages?', 'marketing-analytics-chat' ); ?>">
+								<?php esc_html_e( 'What are my top performing pages?', 'marketing-analytics-chat' ); ?>
 							</button>
-							<button type="button" class="suggested-prompt" data-prompt="<?php esc_attr_e( 'Compare this week vs last week', 'marketing-analytics-mcp' ); ?>">
-								<?php esc_html_e( 'Compare this week vs last week', 'marketing-analytics-mcp' ); ?>
+							<button type="button" class="suggested-prompt" data-prompt="<?php esc_attr_e( 'Compare this week vs last week', 'marketing-analytics-chat' ); ?>">
+								<?php esc_html_e( 'Compare this week vs last week', 'marketing-analytics-chat' ); ?>
 							</button>
 						</div>
 
@@ -154,13 +154,13 @@ $messages               = $active_conversation_id ? $chat_manager->get_messages(
 							<textarea
 								id="message-input"
 								name="message"
-								placeholder="<?php esc_attr_e( 'Ask about your analytics data...', 'marketing-analytics-mcp' ); ?>"
+								placeholder="<?php esc_attr_e( 'Ask about your analytics data...', 'marketing-analytics-chat' ); ?>"
 								rows="3"
 								required
 							></textarea>
 							<button type="submit" id="send-button" class="button button-primary">
 								<span class="dashicons dashicons-arrow-up-alt2"></span>
-								<?php esc_html_e( 'Send', 'marketing-analytics-mcp' ); ?>
+								<?php esc_html_e( 'Send', 'marketing-analytics-chat' ); ?>
 							</button>
 						</div>
 					</form>
@@ -170,11 +170,11 @@ $messages               = $active_conversation_id ? $chat_manager->get_messages(
 				<div class="no-conversation-selected">
 					<div class="empty-state">
 						<span class="dashicons dashicons-format-chat"></span>
-						<h2><?php esc_html_e( 'No Conversation Selected', 'marketing-analytics-mcp' ); ?></h2>
-						<p><?php esc_html_e( 'Select a conversation from the sidebar or start a new one.', 'marketing-analytics-mcp' ); ?></p>
+						<h2><?php esc_html_e( 'No Conversation Selected', 'marketing-analytics-chat' ); ?></h2>
+						<p><?php esc_html_e( 'Select a conversation from the sidebar or start a new one.', 'marketing-analytics-chat' ); ?></p>
 						<button type="button" id="new-conversation-main" class="button button-primary button-large">
 							<span class="dashicons dashicons-plus-alt2"></span>
-							<?php esc_html_e( 'Start New Conversation', 'marketing-analytics-mcp' ); ?>
+							<?php esc_html_e( 'Start New Conversation', 'marketing-analytics-chat' ); ?>
 						</button>
 					</div>
 				</div>
@@ -186,7 +186,7 @@ $messages               = $active_conversation_id ? $chat_manager->get_messages(
 <script type="text/javascript">
 	var marketingAnalyticsMCPChat = {
 		ajaxUrl: '<?php echo esc_js( admin_url( 'admin-ajax.php' ) ); ?>',
-		nonce: '<?php echo esc_js( wp_create_nonce( 'marketing-analytics-mcp-admin' ) ); ?>',
+		nonce: '<?php echo esc_js( wp_create_nonce( 'marketing-analytics-chat-admin' ) ); ?>',
 		conversationId: <?php echo $active_conversation_id ? absint( $active_conversation_id ) : 'null'; ?>,
 		userId: <?php echo absint( $user_id ); ?>
 	};

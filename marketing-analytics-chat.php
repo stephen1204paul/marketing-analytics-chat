@@ -1,16 +1,17 @@
 <?php
 /**
- * Plugin Name: Marketing Analytics MCP
- * Plugin URI: https://github.com/yourusername/marketing-analytics-mcp
- * Description: Exposes marketing analytics data (Microsoft Clarity, Google Analytics 4, Google Search Console) via Model Context Protocol for AI assistants.
- * Version: 1.0.0
- * Requires at least: 6.0
- * Requires PHP: 7.4
- * Author: Marketing Analytics MCP
- * Author URI: https://yourwebsite.com
+ * Plugin Name: Marketing Analytics Chat
+ * Plugin URI: https://github.com/stephen1204paul/marketing-analytics-chat
+ * Description: Chat with your marketing analytics data using AI. Connects Google Analytics 4, Search Console, Microsoft Clarity, and more.
+ * Version: 0.1.0
+ * Requires at least: 6.9
+ * Requires PHP: 8.1
+ * Requires Plugins: mcp-adapter
+ * Author: Stephen Paul Samynathan
+ * Author URI: https://www.specflux.com/author/stephen/
  * License: GPL v2 or later
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
- * Text Domain: marketing-analytics-mcp
+ * Text Domain: marketing-analytics-chat
  * Domain Path: /languages
  */
 
@@ -22,7 +23,7 @@ if ( ! defined( 'WPINC' ) ) {
 }
 
 // Plugin version
-define( 'MARKETING_ANALYTICS_MCP_VERSION', '1.0.0' );
+define( 'MARKETING_ANALYTICS_MCP_VERSION', '0.1.0' );
 define( 'MARKETING_ANALYTICS_MCP_PATH', plugin_dir_path( __FILE__ ) );
 define( 'MARKETING_ANALYTICS_MCP_URL', plugin_dir_url( __FILE__ ) );
 define( 'MARKETING_ANALYTICS_MCP_BASENAME', plugin_basename( __FILE__ ) );
@@ -32,17 +33,51 @@ if ( file_exists( MARKETING_ANALYTICS_MCP_PATH . 'vendor/autoload.php' ) ) {
 	require_once MARKETING_ANALYTICS_MCP_PATH . 'vendor/autoload.php';
 } else {
 	// Display admin notice if dependencies are missing
-	add_action( 'admin_notices', function() {
-		?>
+	add_action(
+		'admin_notices',
+		function () {
+			?>
 		<div class="notice notice-error">
 			<p>
 				<strong>Marketing Analytics MCP:</strong>
-				<?php esc_html_e( 'Dependencies are missing. Please run "composer install" in the plugin directory.', 'marketing-analytics-mcp' ); ?>
+				<?php esc_html_e( 'Dependencies are missing. Please run "composer install" in the plugin directory.', 'marketing-analytics-chat' ); ?>
 			</p>
 		</div>
-		<?php
-	} );
+			<?php
+		}
+	);
 	return;
+}
+
+/**
+ * Check for required MCP Adapter plugin
+ */
+function check_plugin_dependencies() {
+	if ( ! function_exists( 'is_plugin_active' ) ) {
+		require_once ABSPATH . 'wp-admin/includes/plugin.php';
+	}
+
+	// Check if MCP Adapter plugin is active
+	if ( ! is_plugin_active( 'mcp-adapter/mcp-adapter.php' ) ) {
+		add_action(
+			'admin_notices',
+			function () {
+				?>
+			<div class="notice notice-error">
+				<p>
+					<strong><?php esc_html_e( 'Marketing Analytics MCP:', 'marketing-analytics-chat' ); ?></strong>
+					<?php esc_html_e( 'This plugin requires the MCP Adapter plugin to be installed and activated.', 'marketing-analytics-chat' ); ?>
+				</p>
+				<p>
+					<a href="https://wordpress.org/plugins/mcp-adapter/" target="_blank"><?php esc_html_e( 'Get MCP Adapter from WordPress.org', 'marketing-analytics-chat' ); ?></a>
+				</p>
+			</div>
+				<?php
+			}
+		);
+		return false;
+	}
+	return true;
 }
 
 /**
@@ -67,6 +102,11 @@ register_deactivation_hook( __FILE__, __NAMESPACE__ . '\deactivate_marketing_ana
  * Initialize plugin
  */
 function run_marketing_analytics_mcp() {
+	// Check for required plugin dependencies
+	if ( ! check_plugin_dependencies() ) {
+		return;
+	}
+
 	// Check if the Plugin class exists
 	if ( ! class_exists( __NAMESPACE__ . '\Plugin' ) ) {
 		return;

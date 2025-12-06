@@ -1,0 +1,22 @@
+parameters:
+    level: 6
+    paths:
+        - includes
+        - marketing-analytics-chat.php
+    excludePaths:
+        - vendor
+        - tests
+    bootstrapFiles:
+        - vendor/autoload.php
+    scanDirectories:
+        - vendor/automattic
+    ignoreErrors:
+        # WordPress global functions
+        - '#Function [a-z_]+ not found\.#'
+        # WordPress classes
+        - '#Class WP_[A-Za-z_]+ not found\.#'
+        # Allow undefined constants that are defined by WordPress
+        - '#Constant ABSPATH not found\.#'
+        - '#Constant WPINC not found\.#'
+        - '#Constant WP_DEBUG not found\.#'
+    treatPhpDocTypesAsCertain: false

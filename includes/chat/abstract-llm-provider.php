@@ -10,6 +10,7 @@
 namespace Marketing_Analytics_MCP\Chat;
 
 use WP_Error;
+use Marketing_Analytics_MCP\Utils\Logger;
 
 /**
  * Abstract base class for LLM providers
@@ -78,9 +79,15 @@ abstract class Abstract_LLM_Provider implements LLM_Provider_Interface {
 
 		$headers = array_merge( $default_headers, $headers );
 
+		$json_body = wp_json_encode( $body );
+
+		// Log the request being sent
+		Logger::debug( 'LLM Provider: API Request to: ' . $endpoint );
+		Logger::debug( 'LLM Provider: Request body (first 2000 chars): ' . substr( $json_body, 0, 2000 ) );
+
 		$args = array(
 			'headers' => $headers,
-			'body'    => wp_json_encode( $body ),
+			'body'    => $json_body,
 			'timeout' => 60,
 		);
 
@@ -91,7 +98,7 @@ abstract class Abstract_LLM_Provider implements LLM_Provider_Interface {
 				'api_request_failed',
 				sprintf(
 					/* translators: %s: Error message */
-					__( 'API request failed: %s', 'marketing-analytics-mcp' ),
+					__( 'API request failed: %s', 'marketing-analytics-chat' ),
 					$response->get_error_message()
 				)
 			);
@@ -101,24 +108,33 @@ abstract class Abstract_LLM_Provider implements LLM_Provider_Interface {
 		$body_data   = wp_remote_retrieve_body( $response );
 		$decoded     = json_decode( $body_data, true );
 
+		// Log the response
+		Logger::debug( 'LLM Provider: API Response status: ' . $status_code );
 		if ( $status_code !== 200 ) {
-			$error_message = $decoded['error']['message'] ?? $decoded['message'] ?? __( 'Unknown error', 'marketing-analytics-mcp' );
+			Logger::debug( 'LLM Provider: API Error response: ' . $body_data );
+		}
+
+		if ( $status_code !== 200 ) {
+			$error_message = $decoded['error']['message'] ?? $decoded['message'] ?? __( 'Unknown error', 'marketing-analytics-chat' );
 			return new WP_Error(
 				'api_error',
 				sprintf(
 					/* translators: 1: HTTP status code, 2: Error message */
-					__( 'API returned status %1$d: %2$s', 'marketing-analytics-mcp' ),
+					__( 'API returned status %1$d: %2$s', 'marketing-analytics-chat' ),
 					$status_code,
 					$error_message
 				),
-				array( 'status' => $status_code, 'response' => $decoded )
+				array(
+					'status'   => $status_code,
+					'response' => $decoded,
+				)
 			);
 		}
 
 		if ( json_last_error() !== JSON_ERROR_NONE ) {
 			return new WP_Error(
 				'invalid_json',
-				__( 'Invalid JSON response from API', 'marketing-analytics-mcp' )
+				__( 'Invalid JSON response from API', 'marketing-analytics-chat' )
 			);
 		}
 
@@ -145,7 +161,7 @@ abstract class Abstract_LLM_Provider implements LLM_Provider_Interface {
 		if ( empty( $this->api_key ) ) {
 			$errors[] = sprintf(
 				/* translators: %s: Provider name */
-				__( '%s API key is not configured', 'marketing-analytics-mcp' ),
+				__( '%s API key is not configured', 'marketing-analytics-chat' ),
 				$this->get_display_name()
 			);
 		}

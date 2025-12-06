@@ -29,6 +29,7 @@ class Chat_Manager {
 
 		$conversations = $wpdb->get_results(
 			$wpdb->prepare(
+				// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Table name is safe, defined by plugin.
 				"SELECT * FROM {$table}
 				WHERE user_id = %d
 				ORDER BY updated_at DESC
@@ -55,6 +56,7 @@ class Chat_Manager {
 
 		$conversation = $wpdb->get_row(
 			$wpdb->prepare(
+				// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Table name is safe, defined by plugin.
 				"SELECT * FROM {$table} WHERE id = %d",
 				$conversation_id
 			)
@@ -177,6 +179,7 @@ class Chat_Manager {
 
 		$messages = $wpdb->get_results(
 			$wpdb->prepare(
+				// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Table name is safe, defined by plugin.
 				"SELECT * FROM {$table}
 				WHERE conversation_id = %d
 				ORDER BY created_at ASC
@@ -324,6 +327,7 @@ class Chat_Manager {
 
 		$count = $wpdb->get_var(
 			$wpdb->prepare(
+				// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Table name is safe, defined by plugin.
 				"SELECT COUNT(*) FROM {$table} WHERE conversation_id = %d",
 				$conversation_id
 			)
@@ -359,6 +363,7 @@ class Chat_Manager {
 
 		$conversations = $wpdb->get_results(
 			$wpdb->prepare(
+				// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Table name is safe, defined by plugin.
 				"SELECT * FROM {$table}
 				WHERE user_id = %d
 				AND title LIKE %s

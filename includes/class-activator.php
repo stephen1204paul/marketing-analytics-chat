@@ -24,8 +24,8 @@ class Activator {
 		// Check minimum WordPress version
 		if ( version_compare( get_bloginfo( 'version' ), '6.0', '<' ) ) {
 			wp_die(
-				esc_html__( 'Marketing Analytics MCP requires WordPress 6.0 or higher.', 'marketing-analytics-mcp' ),
-				esc_html__( 'Plugin Activation Error', 'marketing-analytics-mcp' ),
+				esc_html__( 'Marketing Analytics MCP requires WordPress 6.0 or higher.', 'marketing-analytics-chat' ),
+				esc_html__( 'Plugin Activation Error', 'marketing-analytics-chat' ),
 				array( 'back_link' => true )
 			);
 		}
@@ -33,8 +33,8 @@ class Activator {
 		// Check minimum PHP version
 		if ( version_compare( PHP_VERSION, '7.4', '<' ) ) {
 			wp_die(
-				esc_html__( 'Marketing Analytics MCP requires PHP 7.4 or higher.', 'marketing-analytics-mcp' ),
-				esc_html__( 'Plugin Activation Error', 'marketing-analytics-mcp' ),
+				esc_html__( 'Marketing Analytics MCP requires PHP 7.4 or higher.', 'marketing-analytics-chat' ),
+				esc_html__( 'Plugin Activation Error', 'marketing-analytics-chat' ),
 				array( 'back_link' => true )
 			);
 		}
@@ -53,16 +53,17 @@ class Activator {
 			wp_die(
 				sprintf(
 					/* translators: %s: comma-separated list of PHP extensions */
-					esc_html__( 'Marketing Analytics MCP requires the following PHP extensions: %s', 'marketing-analytics-mcp' ),
+					esc_html__( 'Marketing Analytics MCP requires the following PHP extensions: %s', 'marketing-analytics-chat' ),
 					esc_html( implode( ', ', $missing_extensions ) )
 				),
-				esc_html__( 'Plugin Activation Error', 'marketing-analytics-mcp' ),
+				esc_html__( 'Plugin Activation Error', 'marketing-analytics-chat' ),
 				array( 'back_link' => true )
 			);
 		}
 
 		// Create database tables
 		self::create_chat_tables();
+		self::create_quickwins_tables();
 
 		// Set default options
 		self::set_default_options();
@@ -79,12 +80,12 @@ class Activator {
 	 */
 	private static function set_default_options() {
 		$defaults = array(
-			'version'          => MARKETING_ANALYTICS_MCP_VERSION,
+			'version'           => MARKETING_ANALYTICS_MCP_VERSION,
 			'cache_ttl_clarity' => HOUR_IN_SECONDS,
-			'cache_ttl_ga4'    => 30 * MINUTE_IN_SECONDS,
-			'cache_ttl_gsc'    => DAY_IN_SECONDS,
-			'debug_mode'       => false,
-			'platforms'        => array(
+			'cache_ttl_ga4'     => 30 * MINUTE_IN_SECONDS,
+			'cache_ttl_gsc'     => DAY_IN_SECONDS,
+			'debug_mode'        => false,
+			'platforms'         => array(
 				'clarity' => array(
 					'enabled'   => false,
 					'connected' => false,
@@ -136,7 +137,7 @@ class Activator {
 			INDEX user_created (user_id, created_at)
 		) {$charset_collate};";
 
-		// Messages table
+		// Messages table (without FOREIGN KEY as dbDelta doesn't handle them well)
 		$messages_table = $wpdb->prefix . 'marketing_analytics_mcp_messages';
 		$messages_sql   = "CREATE TABLE IF NOT EXISTS {$messages_table} (
 			id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
@@ -148,10 +149,7 @@ class Activator {
 			tool_name VARCHAR(100) NULL,
 			metadata LONGTEXT NULL COMMENT 'JSON metadata (model, tokens, etc)',
 			created_at DATETIME NOT NULL,
-			INDEX conversation_created (conversation_id, created_at),
-			FOREIGN KEY (conversation_id)
-				REFERENCES {$conversations_table}(id)
-				ON DELETE CASCADE
+			INDEX conversation_created (conversation_id, created_at)
 		) {$charset_collate};";
 
 		// Execute table creation
@@ -159,7 +157,82 @@ class Activator {
 		dbDelta( $conversations_sql );
 		dbDelta( $messages_sql );
 
+		// Add foreign key constraint separately (dbDelta doesn't handle these)
+		// Check if foreign key already exists before adding
+		$fk_check = $wpdb->get_var(
+			$wpdb->prepare(
+				"SELECT COUNT(*) FROM information_schema.TABLE_CONSTRAINTS
+				WHERE CONSTRAINT_SCHEMA = %s
+				AND TABLE_NAME = %s
+				AND CONSTRAINT_NAME LIKE %s
+				AND CONSTRAINT_TYPE = 'FOREIGN KEY'",
+				DB_NAME,
+				$messages_table,
+				'%conversation_id%'
+			)
+		);
+
+		if ( $fk_check == 0 ) {
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Table names are safe, defined by plugin. ALTER TABLE cannot use prepare().
+			$wpdb->query(
+				"ALTER TABLE {$messages_table}
+				ADD CONSTRAINT fk_conversation_id
+				FOREIGN KEY (conversation_id)
+				REFERENCES {$conversations_table}(id)
+				ON DELETE CASCADE"
+			);
+		}
+
 		// Store database version
 		update_option( 'marketing_analytics_mcp_db_version', '1.0' );
+	}
+
+	/**
+	 * Create Quick Wins feature database tables
+	 */
+	private static function create_quickwins_tables() {
+		global $wpdb;
+
+		$charset_collate = $wpdb->get_charset_collate();
+
+		// Anomalies table
+		$anomalies_table = $wpdb->prefix . 'marketing_analytics_anomalies';
+		$anomalies_sql   = "CREATE TABLE IF NOT EXISTS {$anomalies_table} (
+			id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+			platform VARCHAR(50) NOT NULL,
+			metric VARCHAR(100) NOT NULL,
+			value FLOAT NOT NULL,
+			expected FLOAT NOT NULL,
+			deviation FLOAT NOT NULL,
+			type ENUM('spike', 'drop') NOT NULL,
+			severity ENUM('low', 'medium', 'high', 'critical') NOT NULL,
+			detected_at DATETIME NOT NULL,
+			notified TINYINT(1) DEFAULT 0,
+			INDEX platform_detected (platform, detected_at),
+			INDEX severity_notified (severity, notified)
+		) {$charset_collate};";
+
+		// Network sites table
+		$network_sites_table = $wpdb->prefix . 'marketing_analytics_network_sites';
+		$network_sites_sql   = "CREATE TABLE IF NOT EXISTS {$network_sites_table} (
+			id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+			site_url VARCHAR(255) NOT NULL,
+			site_name VARCHAR(255) NOT NULL,
+			auth_method VARCHAR(50) NOT NULL,
+			auth_credentials TEXT NOT NULL,
+			api_key VARCHAR(64) DEFAULT NULL,
+			capabilities TEXT DEFAULT NULL,
+			is_active TINYINT(1) DEFAULT 1,
+			created_at DATETIME NOT NULL,
+			last_sync DATETIME DEFAULT NULL,
+			UNIQUE KEY site_url (site_url),
+			INDEX is_active (is_active),
+			INDEX api_key (api_key)
+		) {$charset_collate};";
+
+		// Execute table creation
+		require_once ABSPATH . 'wp-admin/includes/upgrade.php';
+		dbDelta( $anomalies_sql );
+		dbDelta( $network_sites_sql );
 	}
 }

@@ -39,11 +39,11 @@ class GA4_Abilities {
 		wp_register_ability(
 			'marketing-analytics/get-ga4-metrics',
 			array(
-				'label'       => __( 'Get GA4 Metrics', 'marketing-analytics-mcp' ),
-				'description' => __( 'Retrieve Google Analytics 4 metrics for a specified date range with optional dimensions.', 'marketing-analytics-mcp' ),
-				'category'    => 'marketing-analytics',
+				'label'               => __( 'Get GA4 Metrics', 'marketing-analytics-chat' ),
+				'description'         => __( 'Retrieve Google Analytics 4 metrics for a specified date range with optional dimensions.', 'marketing-analytics-chat' ),
+				'category'            => 'marketing-analytics',
 
-				'input_schema' => array(
+				'input_schema'        => array(
 					'type'       => 'object',
 					'properties' => array(
 						'metrics'    => array(
@@ -72,7 +72,7 @@ class GA4_Abilities {
 					'required'   => array( 'metrics' ),
 				),
 
-				'output_schema' => array(
+				'output_schema'       => array(
 					'type'       => 'object',
 					'properties' => array(
 						'rows'      => array(
@@ -103,11 +103,11 @@ class GA4_Abilities {
 		wp_register_ability(
 			'marketing-analytics/get-ga4-events',
 			array(
-				'label'       => __( 'Get GA4 Events', 'marketing-analytics-mcp' ),
-				'description' => __( 'Query custom event data from Google Analytics 4.', 'marketing-analytics-mcp' ),
-				'category'    => 'marketing-analytics',
+				'label'               => __( 'Get GA4 Events', 'marketing-analytics-chat' ),
+				'description'         => __( 'Query custom event data from Google Analytics 4.', 'marketing-analytics-chat' ),
+				'category'            => 'marketing-analytics',
 
-				'input_schema' => array(
+				'input_schema'        => array(
 					'type'       => 'object',
 					'properties' => array(
 						'event_name' => array(
@@ -129,7 +129,7 @@ class GA4_Abilities {
 					),
 				),
 
-				'output_schema' => array(
+				'output_schema'       => array(
 					'type'       => 'object',
 					'properties' => array(
 						'rows'        => array( 'type' => 'array' ),
@@ -150,11 +150,11 @@ class GA4_Abilities {
 		wp_register_ability(
 			'marketing-analytics/get-ga4-realtime',
 			array(
-				'label'       => __( 'Get GA4 Real-time Data', 'marketing-analytics-mcp' ),
-				'description' => __( 'Get real-time user activity from Google Analytics 4.', 'marketing-analytics-mcp' ),
-				'category'    => 'marketing-analytics',
+				'label'               => __( 'Get GA4 Real-time Data', 'marketing-analytics-chat' ),
+				'description'         => __( 'Get real-time user activity from Google Analytics 4.', 'marketing-analytics-chat' ),
+				'category'            => 'marketing-analytics',
 
-				'input_schema' => array(
+				'input_schema'        => array(
 					'type'       => 'object',
 					'properties' => array(
 						'metrics' => array(
@@ -166,7 +166,7 @@ class GA4_Abilities {
 					),
 				),
 
-				'output_schema' => array(
+				'output_schema'       => array(
 					'type'       => 'object',
 					'properties' => array(
 						'active_users' => array( 'type' => 'integer' ),
@@ -187,11 +187,11 @@ class GA4_Abilities {
 		wp_register_ability(
 			'marketing-analytics/get-traffic-sources',
 			array(
-				'label'       => __( 'Get Traffic Sources', 'marketing-analytics-mcp' ),
-				'description' => __( 'Analyze traffic sources and acquisition channels from GA4.', 'marketing-analytics-mcp' ),
-				'category'    => 'marketing-analytics',
+				'label'               => __( 'Get Traffic Sources', 'marketing-analytics-chat' ),
+				'description'         => __( 'Analyze traffic sources and acquisition channels from GA4.', 'marketing-analytics-chat' ),
+				'category'            => 'marketing-analytics',
 
-				'input_schema' => array(
+				'input_schema'        => array(
 					'type'       => 'object',
 					'properties' => array(
 						'date_range' => array(
@@ -209,7 +209,7 @@ class GA4_Abilities {
 					),
 				),
 
-				'output_schema' => array(
+				'output_schema'       => array(
 					'type'       => 'object',
 					'properties' => array(
 						'sources'  => array( 'type' => 'array' ),
@@ -230,16 +230,16 @@ class GA4_Abilities {
 		wp_register_ability(
 			'marketing-analytics/ga4-overview',
 			array(
-				'label'       => __( 'GA4 Overview', 'marketing-analytics-mcp' ),
-				'description' => __( 'Get Google Analytics 4 property summary with key metrics snapshot.', 'marketing-analytics-mcp' ),
-				'category'    => 'marketing-analytics',
+				'label'               => __( 'GA4 Overview', 'marketing-analytics-chat' ),
+				'description'         => __( 'Get Google Analytics 4 property summary with key metrics snapshot.', 'marketing-analytics-chat' ),
+				'category'            => 'marketing-analytics',
 
-				'output_schema' => array(
+				'output_schema'       => array(
 					'type'       => 'object',
 					'properties' => array(
-						'property_id'  => array( 'type' => 'string' ),
-						'key_metrics'  => array( 'type' => 'object' ),
-						'period'       => array( 'type' => 'string' ),
+						'property_id' => array( 'type' => 'string' ),
+						'key_metrics' => array( 'type' => 'object' ),
+						'period'      => array( 'type' => 'string' ),
 					),
 				),
 

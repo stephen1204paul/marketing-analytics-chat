@@ -6,19 +6,19 @@ Use these commands to diagnose why your MCP endpoint is still failing.
 
 ```bash
 # Check if all three plugins are active
-wp plugin list | grep -E 'abilities-api|mcp-adapter|marketing-mcp'
+wp plugin list | grep -E 'abilities-api|mcp-adapter|marketing-analytics-chat'
 ```
 
 **Expected output:**
 ```
 abilities-api           active
 mcp-adapter             active
-marketing-mcp           active
+marketing-analytics-chat           active
 ```
 
 If any show as "inactive", activate them:
 ```bash
-wp plugin activate abilities-api mcp-adapter marketing-mcp
+wp plugin activate abilities-api mcp-adapter marketing-analytics-chat
 ```
 
 ## Step 2: Check REST API Base
@@ -238,7 +238,7 @@ cd /path/to/wp-content/plugins/abilities-api
 composer require automattic/jetpack-autoloader
 composer dump-autoload --optimize
 
-cd /path/to/wp-content/plugins/marketing-mcp
+cd /path/to/wp-content/plugins/marketing-analytics-chat
 composer require automattic/jetpack-autoloader
 composer dump-autoload --optimize
 ```
@@ -254,7 +254,7 @@ echo "=== MCP Endpoint Diagnostics ==="
 echo ""
 
 echo "1. Checking plugin activation..."
-wp plugin list | grep -E 'abilities-api|mcp-adapter|marketing-mcp'
+wp plugin list | grep -E 'abilities-api|mcp-adapter|marketing-analytics-chat'
 echo ""
 
 echo "2. Testing REST API base..."
@@ -297,7 +297,7 @@ After running the diagnostics, share the output of:
 
 1. Plugin status:
    ```bash
-   wp plugin list | grep -E 'abilities-api|mcp-adapter|marketing-mcp'
+   wp plugin list | grep -E 'abilities-api|mcp-adapter|marketing-analytics-chat'
    ```
 
 2. MCP namespace response:

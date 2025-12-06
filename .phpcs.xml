@@ -1,0 +1,125 @@
+<?xml version="1.0"?>
+<ruleset name="Marketing Analytics MCP">
+	<description>PHP CodeSniffer ruleset for Marketing Analytics MCP plugin.</description>
+
+	<!-- What to scan -->
+	<file>.</file>
+
+	<!-- Exclude paths -->
+	<exclude-pattern>/vendor/*</exclude-pattern>
+	<exclude-pattern>/node_modules/*</exclude-pattern>
+	<exclude-pattern>/tests/*</exclude-pattern>
+	<exclude-pattern>*.min.js</exclude-pattern>
+	<exclude-pattern>*.min.css</exclude-pattern>
+
+	<!-- How to scan -->
+	<arg value="sp"/>
+	<arg name="basepath" value="."/>
+	<arg name="colors"/>
+	<arg name="extensions" value="php"/>
+	<arg name="parallel" value="8"/>
+
+	<!-- Rules: Check PHP version compatibility -->
+	<config name="testVersion" value="8.1-"/>
+
+	<!-- Rules: WordPress Coding Standards -->
+	<rule ref="WordPress">
+		<!-- Allow short array syntax -->
+		<exclude name="Generic.Arrays.DisallowShortArraySyntax"/>
+		<!-- Allow PSR-4 naming for namespaced classes -->
+		<exclude name="WordPress.Files.FileName.InvalidClassFileName"/>
+		<exclude name="WordPress.Files.FileName.NotHyphenatedLowercase"/>
+		<!-- Relax inline comment punctuation (too strict) -->
+		<exclude name="Squiz.Commenting.InlineComment.InvalidEndChar"/>
+		<!-- Allow lonely if in else (common pattern) -->
+		<exclude name="Universal.ControlStructures.DisallowLonelyIf.Found"/>
+		<!-- Relax file comment requirements -->
+		<exclude name="Squiz.Commenting.FileComment.MissingPackageTag"/>
+		<!-- Relax alignment warnings -->
+		<exclude name="Generic.Formatting.MultipleStatementAlignment"/>
+		<exclude name="WordPress.Arrays.MultipleStatementAlignment"/>
+		<!-- Allow non-Yoda conditions (more readable) -->
+		<exclude name="WordPress.PHP.YodaConditions.NotYoda"/>
+		<!-- Allow short ternary -->
+		<exclude name="Universal.Operators.DisallowShortTernary.Found"/>
+		<!-- Relax unused parameter warnings -->
+		<exclude name="Generic.CodeAnalysis.UnusedFunctionParameter"/>
+		<!-- Allow base64 for encryption -->
+		<exclude name="WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_encode"/>
+		<!-- Allow serialize for cache -->
+		<exclude name="WordPress.PHP.DiscouragedPHPFunctions.serialize_serialize"/>
+		<!-- Relax throw tag requirement -->
+		<exclude name="Squiz.Commenting.FunctionCommentThrowTag.Missing"/>
+		<!-- Relax commented code check -->
+		<exclude name="Squiz.PHP.CommentedOutCode.Found"/>
+	</rule>
+
+	<!-- Exclude problematic sniff that crashes -->
+	<rule ref="Generic.CodeAnalysis.ForLoopShouldBeWhileLoop">
+		<exclude name="Generic.CodeAnalysis.ForLoopShouldBeWhileLoop"/>
+	</rule>
+
+	<!-- Allow development functions in Logger class -->
+	<rule ref="WordPress.PHP.DevelopmentFunctions">
+		<exclude-pattern>includes/utils/class-logger.php</exclude-pattern>
+	</rule>
+
+	<!-- Template files can use non-prefixed variables (they receive from parent) -->
+	<rule ref="WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound">
+		<exclude-pattern>admin/views/*</exclude-pattern>
+	</rule>
+
+	<!-- Text domain for translations -->
+	<rule ref="WordPress.WP.I18n">
+		<properties>
+			<property name="text_domain" type="array">
+				<element value="marketing-analytics-chat"/>
+			</property>
+		</properties>
+	</rule>
+
+	<!-- Minimum WP version for deprecated functions -->
+	<config name="minimum_wp_version" value="6.9"/>
+
+	<!-- Allow class files to use class naming -->
+	<rule ref="WordPress.NamingConventions.PrefixAllGlobals">
+		<properties>
+			<property name="prefixes" type="array">
+				<element value="marketing_analytics_mcp"/>
+				<element value="Marketing_Analytics_MCP"/>
+				<element value="mcp_"/>
+			</property>
+		</properties>
+	</rule>
+
+	<!-- Cache Manager needs direct database access -->
+	<rule ref="WordPress.DB.DirectDatabaseQuery">
+		<exclude-pattern>includes/cache/class-cache-manager.php</exclude-pattern>
+		<exclude-pattern>includes/analytics/class-anomaly-detector.php</exclude-pattern>
+	</rule>
+
+	<!-- Exception messages in throw don't need escaping -->
+	<rule ref="WordPress.Security.EscapeOutput.ExceptionNotEscaped">
+		<exclude-pattern>includes/api-clients/*</exclude-pattern>
+	</rule>
+
+	<!-- External APIs use camelCase properties -->
+	<rule ref="WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase">
+		<exclude-pattern>includes/api-clients/*</exclude-pattern>
+	</rule>
+
+	<!-- Allow base64_decode for encryption (not obfuscation) -->
+	<rule ref="WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_decode">
+		<exclude-pattern>includes/credentials/class-encryption.php</exclude-pattern>
+	</rule>
+
+	<!-- Table name interpolation is safe when using class property -->
+	<rule ref="WordPress.DB.PreparedSQL.InterpolatedNotPrepared">
+		<exclude-pattern>includes/analytics/class-anomaly-detector.php</exclude-pattern>
+	</rule>
+
+	<!-- Deactivator needs direct DB access for cleanup -->
+	<rule ref="WordPress.DB.DirectDatabaseQuery">
+		<exclude-pattern>includes/class-deactivator.php</exclude-pattern>
+	</rule>
+</ruleset>

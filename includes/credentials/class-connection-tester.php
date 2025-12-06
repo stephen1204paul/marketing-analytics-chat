@@ -49,14 +49,14 @@ class Connection_Tester {
 		if ( empty( $credentials ) ) {
 			return array(
 				'success' => false,
-				'message' => __( 'No Clarity credentials found.', 'marketing-analytics-mcp' ),
+				'message' => __( 'No Clarity credentials found.', 'marketing-analytics-chat' ),
 			);
 		}
 
 		if ( empty( $credentials['api_token'] ) || empty( $credentials['project_id'] ) ) {
 			return array(
 				'success' => false,
-				'message' => __( 'Clarity API token or project ID is missing.', 'marketing-analytics-mcp' ),
+				'message' => __( 'Clarity API token or project ID is missing.', 'marketing-analytics-chat' ),
 			);
 		}
 
@@ -69,7 +69,7 @@ class Connection_Tester {
 			if ( ! empty( $result ) ) {
 				return array(
 					'success' => true,
-					'message' => __( 'Successfully connected to Microsoft Clarity.', 'marketing-analytics-mcp' ),
+					'message' => __( 'Successfully connected to Microsoft Clarity.', 'marketing-analytics-chat' ),
 					'data'    => array(
 						'project_id' => $credentials['project_id'],
 					),
@@ -78,14 +78,14 @@ class Connection_Tester {
 
 			return array(
 				'success' => false,
-				'message' => __( 'Clarity API returned empty response.', 'marketing-analytics-mcp' ),
+				'message' => __( 'Clarity API returned empty response.', 'marketing-analytics-chat' ),
 			);
 		} catch ( \Exception $e ) {
 			return array(
 				'success' => false,
 				'message' => sprintf(
 					/* translators: %s: error message */
-					__( 'Clarity connection failed: %s', 'marketing-analytics-mcp' ),
+					__( 'Clarity connection failed: %s', 'marketing-analytics-chat' ),
 					$e->getMessage()
 				),
 			);
@@ -103,7 +103,7 @@ class Connection_Tester {
 		if ( empty( $access_token ) ) {
 			return array(
 				'success' => false,
-				'message' => __( 'No GA4 access token found. Please authorize Google Analytics.', 'marketing-analytics-mcp' ),
+				'message' => __( 'No GA4 access token found. Please authorize Google Analytics.', 'marketing-analytics-chat' ),
 			);
 		}
 
@@ -112,13 +112,13 @@ class Connection_Tester {
 			$client->setAccessToken( $access_token );
 
 			// Initialize Analytics Admin API to list properties
-			$analytics = new \Google\Service\AnalyticsAdmin( $client );
+			$analytics = new \Google\Service\GoogleAnalyticsAdmin( $client );
 
 			// Try to list account summaries (lightweight test)
 			$account_summaries = $analytics->accountSummaries->listAccountSummaries();
 
 			if ( ! empty( $account_summaries ) ) {
-				$summary_list = $account_summaries->getAccountSummaries();
+				$summary_list   = $account_summaries->getAccountSummaries();
 				$property_count = 0;
 
 				if ( ! empty( $summary_list ) ) {
@@ -138,7 +138,7 @@ class Connection_Tester {
 							'Successfully connected to Google Analytics. Found %d property.',
 							'Successfully connected to Google Analytics. Found %d properties.',
 							$property_count,
-							'marketing-analytics-mcp'
+							'marketing-analytics-chat'
 						),
 						$property_count
 					),
@@ -150,7 +150,7 @@ class Connection_Tester {
 
 			return array(
 				'success' => false,
-				'message' => __( 'GA4 API returned empty response.', 'marketing-analytics-mcp' ),
+				'message' => __( 'GA4 API returned empty response.', 'marketing-analytics-chat' ),
 			);
 		} catch ( \Exception $e ) {
 			// Check if token expired
@@ -165,7 +165,7 @@ class Connection_Tester {
 				'success' => false,
 				'message' => sprintf(
 					/* translators: %s: error message */
-					__( 'GA4 connection failed: %s', 'marketing-analytics-mcp' ),
+					__( 'GA4 connection failed: %s', 'marketing-analytics-chat' ),
 					$e->getMessage()
 				),
 			);
@@ -183,7 +183,7 @@ class Connection_Tester {
 		if ( empty( $access_token ) ) {
 			return array(
 				'success' => false,
-				'message' => __( 'No GSC access token found. Please authorize Google Search Console.', 'marketing-analytics-mcp' ),
+				'message' => __( 'No GSC access token found. Please authorize Google Search Console.', 'marketing-analytics-chat' ),
 			);
 		}
 
@@ -198,7 +198,7 @@ class Connection_Tester {
 			$sites_list = $search_console->sites->listSites();
 
 			if ( ! empty( $sites_list ) ) {
-				$sites = $sites_list->getSiteEntry();
+				$sites      = $sites_list->getSiteEntry();
 				$site_count = ! empty( $sites ) ? count( $sites ) : 0;
 
 				return array(
@@ -209,7 +209,7 @@ class Connection_Tester {
 							'Successfully connected to Google Search Console. Found %d site.',
 							'Successfully connected to Google Search Console. Found %d sites.',
 							$site_count,
-							'marketing-analytics-mcp'
+							'marketing-analytics-chat'
 						),
 						$site_count
 					),
@@ -221,7 +221,7 @@ class Connection_Tester {
 
 			return array(
 				'success' => false,
-				'message' => __( 'GSC API returned empty response.', 'marketing-analytics-mcp' ),
+				'message' => __( 'GSC API returned empty response.', 'marketing-analytics-chat' ),
 			);
 		} catch ( \Exception $e ) {
 			// Check if token expired
@@ -236,7 +236,7 @@ class Connection_Tester {
 				'success' => false,
 				'message' => sprintf(
 					/* translators: %s: error message */
-					__( 'GSC connection failed: %s', 'marketing-analytics-mcp' ),
+					__( 'GSC connection failed: %s', 'marketing-analytics-chat' ),
 					$e->getMessage()
 				),
 			);

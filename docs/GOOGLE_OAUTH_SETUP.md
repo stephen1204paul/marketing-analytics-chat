@@ -123,7 +123,7 @@ You'll need to:
    - **⚠️ IMPORTANT:** Go to your WordPress admin panel
    - Navigate to **Marketing Analytics** → **Connections** → **Google Analytics 4** tab
    - Copy the **Redirect URI** shown on that page
-   - It will look like: `https://yoursite.com/wp-admin/admin.php?page=marketing-analytics-mcp-connections&oauth_callback=1`
+   - It will look like: `https://yoursite.com/wp-admin/admin.php?page=marketing-analytics-chat-connections&oauth_callback=1`
    - Paste this URI into the Google Cloud Console
    - ⚠️ **Make sure it's an exact match (including https:// and any parameters)**
 

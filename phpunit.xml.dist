@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<phpunit
+	bootstrap="tests/bootstrap.php"
+	backupGlobals="false"
+	colors="true"
+	convertErrorsToExceptions="true"
+	convertNoticesToExceptions="true"
+	convertWarningsToExceptions="true"
+	>
+	<testsuites>
+		<testsuite name="Unit">
+			<directory suffix="Test.php">./tests/unit</directory>
+		</testsuite>
+		<testsuite name="Integration">
+			<directory suffix="Test.php">./tests/integration</directory>
+		</testsuite>
+	</testsuites>
+	<coverage processUncoveredFiles="true">
+		<include>
+			<directory suffix=".php">./includes</directory>
+		</include>
+		<exclude>
+			<directory>./vendor</directory>
+			<directory>./tests</directory>
+		</exclude>
+	</coverage>
+	<php>
+		<const name="WP_DEBUG" value="true"/>
+		<const name="ABSPATH" value="/tmp/wordpress/"/>
+	</php>
+</phpunit>

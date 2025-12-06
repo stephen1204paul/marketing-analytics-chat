@@ -69,7 +69,7 @@
 				success: function(response) {
 					if (response.success && response.data.conversation_id) {
 						// Redirect to new conversation
-						window.location.href = '?page=marketing-analytics-mcp-chat&conversation_id=' + response.data.conversation_id;
+						window.location.href = '?page=marketing-analytics-chat&conversation_id=' + response.data.conversation_id;
 					} else {
 						alert('Failed to create conversation. Please try again.');
 						$button.prop('disabled', false).html(originalText);
@@ -134,8 +134,31 @@
 					this.hideTypingIndicator();
 
 					if (response.success && response.data) {
-						// Add assistant response to UI
-						if (response.data.content) {
+						// Handle multiple messages if available (tool calls generate multiple responses)
+						if (response.data.messages && response.data.messages.length > 0) {
+							var self = this;
+							response.data.messages.forEach(function(msg, index) {
+								// Add each message to UI
+								// For tool_calls message, show a brief indicator
+								if (msg.tool_calls && msg.tool_calls.length > 0) {
+									var toolNames = msg.tool_calls.map(function(tc) { return tc.name; }).join(', ');
+									var toolIndicator = '🔧 *Using tools: ' + toolNames + '*';
+									if (msg.content) {
+										self.addMessageToUI('assistant', msg.content + '\n\n' + toolIndicator, null, response.data.tool_metadata);
+									} else {
+										self.addMessageToUI('assistant', toolIndicator, null, response.data.tool_metadata);
+									}
+								} else if (msg.content) {
+									// Regular message or final response after tool calls
+									// Use 'error' role if is_error flag is set for distinct styling
+									var msgRole = msg.is_error ? 'error' : 'assistant';
+									// Pass failed_tools for retry buttons on error messages
+									var failedTools = msg.is_error ? response.data.failed_tools : null;
+									self.addMessageToUI(msgRole, msg.content, msg.usage, index === 0 ? response.data.tool_metadata : null, failedTools);
+								}
+							});
+						} else if (response.data.content) {
+							// Fallback to single content (backward compatibility)
 							this.addMessageToUI('assistant', response.data.content, response.data.usage, response.data.tool_metadata);
 						}
 
@@ -165,14 +188,31 @@
 		/**
 		 * Add message to UI
 		 */
-		addMessageToUI: function(role, content, usage, toolMetadata) {
+		addMessageToUI: function(role, content, usage, toolMetadata, failedTools) {
 			var $messages = $('#chat-messages');
+			var self = this;
 
 			// Remove welcome message if present
 			$messages.find('.welcome-message').remove();
 
-			var avatarIcon = role === 'user' ? 'admin-users' : (role === 'assistant' ? 'superhero' : 'warning');
-			var roleName = role === 'user' ? 'You' : (role === 'assistant' ? 'AI Assistant' : 'System');
+			var avatarIcon, roleName;
+			switch (role) {
+				case 'user':
+					avatarIcon = 'admin-users';
+					roleName = 'You';
+					break;
+				case 'assistant':
+					avatarIcon = 'superhero';
+					roleName = 'AI Assistant';
+					break;
+				case 'error':
+					avatarIcon = 'warning';
+					roleName = 'AI Assistant';
+					break;
+				default:
+					avatarIcon = 'warning';
+					roleName = 'System';
+			}
 
 			var usageHTML = '';
 			if (usage && role === 'assistant') {
@@ -197,6 +237,27 @@
 				usageHTML += '</div>';
 			}
 
+			// Build failed tools HTML with retry buttons
+			var failedToolsHTML = '';
+			if (failedTools && failedTools.length > 0) {
+				failedToolsHTML = '<div class="failed-tools">' +
+					'<div class="failed-tools-header"><span class="dashicons dashicons-warning"></span> Failed Tools:</div>' +
+					'<ul class="failed-tools-list">';
+				failedTools.forEach(function(tool, index) {
+					var toolShortName = tool.name.split('/').pop();
+					failedToolsHTML += '<li class="failed-tool-item">' +
+						'<span class="tool-name">' + toolShortName + '</span>' +
+						'<span class="tool-error">' + tool.error + '</span>' +
+						'<button class="retry-tool-btn" data-tool-index="' + index + '" ' +
+							'data-tool-name="' + tool.name + '" ' +
+							'data-tool-args=\'' + JSON.stringify(tool.arguments) + '\'>' +
+							'<span class="dashicons dashicons-update"></span> Retry' +
+						'</button>' +
+					'</li>';
+				});
+				failedToolsHTML += '</ul></div>';
+			}
+
 			var messageHTML = '<div class="message message-' + role + '">' +
 				'<div class="message-avatar">' +
 					'<span class="dashicons dashicons-' + avatarIcon + '"></span>' +
@@ -204,13 +265,69 @@
 				'<div class="message-content">' +
 					'<div class="message-role">' + roleName + '</div>' +
 					'<div class="message-text">' + this.formatMessage(content) + '</div>' +
+					failedToolsHTML +
 					usageHTML +
 					'<div class="message-time">Just now</div>' +
 				'</div>' +
 			'</div>';
 
-			$messages.append(messageHTML);
+			var $message = $(messageHTML);
+			$messages.append($message);
+
+			// Bind retry button click handlers
+			$message.find('.retry-tool-btn').on('click', function() {
+				var $btn = $(this);
+				var toolName = $btn.data('tool-name');
+				var toolArgs = $btn.data('tool-args');
+				self.retryToolCall(toolName, toolArgs, $btn);
+			});
+
 			this.scrollToBottom();
+		},
+
+		/**
+		 * Retry a failed tool call
+		 */
+		retryToolCall: function(toolName, toolArgs, $button) {
+			var self = this;
+			var originalHTML = $button.html();
+
+			// Show loading state
+			$button.prop('disabled', true).html('<span class="dashicons dashicons-update spin"></span> Retrying...');
+
+			$.ajax({
+				url: marketingAnalyticsMCPChat.ajaxUrl,
+				type: 'POST',
+				data: {
+					action: 'marketing_analytics_mcp_retry_tool',
+					nonce: marketingAnalyticsMCPChat.nonce,
+					conversation_id: marketingAnalyticsMCPChat.conversationId,
+					tool_name: toolName,
+					tool_arguments: JSON.stringify(toolArgs)
+				},
+				success: function(response) {
+					if (response.success && response.data) {
+						// Replace the failed tool item with success message
+						var $failedItem = $button.closest('.failed-tool-item');
+						$failedItem.removeClass('failed-tool-item').addClass('retry-success-item');
+						$failedItem.html(
+							'<span class="dashicons dashicons-yes-alt"></span> ' +
+							'<span class="tool-name">' + toolName.split('/').pop() + '</span> - Success!'
+						);
+
+						// Add the result as a new message
+						self.addMessageToUI('assistant', response.data.content, null, null);
+					} else {
+						// Show error but keep retry button
+						$button.prop('disabled', false).html(originalHTML);
+						alert('Retry failed: ' + (response.data ? response.data.message : 'Unknown error'));
+					}
+				},
+				error: function() {
+					$button.prop('disabled', false).html(originalHTML);
+					alert('Retry failed. Please check your connection and try again.');
+				}
+			});
 		},
 
 		/**
@@ -254,10 +371,29 @@
 		},
 
 		/**
-		 * Show typing indicator
+		 * Show typing indicator with optional status message
+		 *
+		 * @param {string} status Optional status message (e.g., 'thinking', 'executing_tools')
 		 */
-		showTypingIndicator: function() {
+		showTypingIndicator: function(status) {
 			var $messages = $('#chat-messages');
+			var statusText = '';
+			var statusClass = '';
+
+			switch (status) {
+				case 'executing_tools':
+					statusText = 'Executing tools...';
+					statusClass = 'status-tools';
+					break;
+				case 'processing':
+					statusText = 'Processing results...';
+					statusClass = 'status-processing';
+					break;
+				default:
+					statusText = 'Thinking...';
+					statusClass = 'status-thinking';
+			}
+
 			var typingHTML = '<div class="message message-assistant typing-indicator">' +
 				'<div class="message-avatar">' +
 					'<span class="dashicons dashicons-superhero"></span>' +
@@ -267,11 +403,44 @@
 					'<div class="message-loading">' +
 						'<span></span><span></span><span></span>' +
 					'</div>' +
+					'<div class="message-status ' + statusClass + '">' + statusText + '</div>' +
 				'</div>' +
 			'</div>';
 
 			$messages.append(typingHTML);
 			this.scrollToBottom();
+		},
+
+		/**
+		 * Update typing indicator status
+		 *
+		 * @param {string} status New status message
+		 */
+		updateTypingStatus: function(status) {
+			var $indicator = $('#chat-messages').find('.typing-indicator');
+			if ($indicator.length) {
+				var statusText = '';
+				var statusClass = '';
+
+				switch (status) {
+					case 'executing_tools':
+						statusText = 'Executing tools...';
+						statusClass = 'status-tools';
+						break;
+					case 'processing':
+						statusText = 'Processing results...';
+						statusClass = 'status-processing';
+						break;
+					default:
+						statusText = 'Thinking...';
+						statusClass = 'status-thinking';
+				}
+
+				$indicator.find('.message-status')
+					.removeClass('status-thinking status-tools status-processing')
+					.addClass(statusClass)
+					.text(statusText);
+			}
 		},
 
 		/**
@@ -315,7 +484,7 @@
 	 * Initialize on document ready
 	 */
 	$(document).ready(function() {
-		if ($('.marketing-analytics-mcp-chat').length) {
+		if ($('.marketing-analytics-chat').length) {
 			ChatInterface.init();
 		}
 	});

@@ -5,8 +5,8 @@
 
 set -e
 
-PLUGIN_SLUG="marketing-analytics-mcp"
-VERSION=$(grep "Version:" marketing-analytics-mcp.php | awk '{print $3}')
+PLUGIN_SLUG="marketing-analytics-chat"
+VERSION=$(grep "Version:" marketing-analytics-chat.php | awk '{print $3}')
 BUILD_DIR="build"
 DIST_DIR="dist"
 
@@ -34,16 +34,22 @@ rsync -av --progress . ${BUILD_DIR}/${PLUGIN_SLUG} \
   --exclude dist \
   --exclude composer.lock \
   --exclude '*.log' \
-  --exclude build-plugin.sh \
-  --exclude build-plugin-optimized.sh \
+  --exclude '*.sh' \
   --exclude phpunit.xml \
   --exclude .phpcs.xml \
+  --exclude .phpunit.result.cache \
   --exclude phpstan.neon \
   --exclude plan.md \
   --exclude PRESENTATION_PLAN_ENHANCED.md \
   --exclude presentation.md \
   --exclude LIGHTNING_TALK.md \
-  --exclude docs
+  --exclude docs \
+  --exclude presentation \
+  --exclude CLAUDE.md \
+  --exclude README.md \
+  --exclude deploy-to-test.sh \
+  --exclude copy-plugin-to-clean-repo.sh \
+  --exclude assets
 
 echo "🎼 Installing production dependencies..."
 
@@ -73,31 +79,47 @@ find vendor -type f -name ".gitignore" -delete 2>/dev/null || true
 find vendor -type f -name "phpunit.xml*" -delete 2>/dev/null || true
 find vendor -type f -name "phpstan.neon*" -delete 2>/dev/null || true
 
-# Remove Google API services we don't use (keep only Analytics and Search Console)
+# Remove Google API services we don't use (read from composer.json)
 if [ -d "vendor/google/apiclient-services/src" ]; then
-  echo "🎯 Trimming Google API services (keeping only GA4 & Search Console)..."
-  cd vendor/google/apiclient-services/src
+  echo "🎯 Trimming Google API services..."
 
-  # Keep only these services
-  KEEP_SERVICES=("AnalyticsData" "SearchConsole" "Analytics")
+  # Read services to keep from composer.json and map to directory names (requires PHP)
+  # Note: Some services have different directory names (e.g., AnalyticsAdmin -> GoogleAnalyticsAdmin)
+  KEEP_SERVICES=($(php -r '
+    $composer = json_decode(file_get_contents("composer.json"), true);
+    $services = $composer["extra"]["google/apiclient-services"] ?? [];
+    // Map service names to actual directory names
+    $dir_map = [
+      "AnalyticsAdmin" => "GoogleAnalyticsAdmin",
+    ];
+    $dirs = array_map(fn($s) => $dir_map[$s] ?? $s, $services);
+    echo implode(" ", $dirs);
+  '))
 
-  # Remove all except kept services
-  for dir in */; do
-    dir_name="${dir%/}"
-    should_keep=false
-    for keep in "${KEEP_SERVICES[@]}"; do
-      if [ "$dir_name" == "$keep" ]; then
-        should_keep=true
-        break
+  if [ ${#KEEP_SERVICES[@]} -eq 0 ]; then
+    echo "⚠️  No google/apiclient-services defined in composer.json, skipping trim"
+  else
+    echo "   Keeping: ${KEEP_SERVICES[*]}"
+    cd vendor/google/apiclient-services/src
+
+    # Remove all except kept services
+    for dir in */; do
+      dir_name="${dir%/}"
+      should_keep=false
+      for keep in "${KEEP_SERVICES[@]}"; do
+        if [ "$dir_name" == "$keep" ]; then
+          should_keep=true
+          break
+        fi
+      done
+
+      if [ "$should_keep" = false ]; then
+        rm -rf "$dir_name"
       fi
     done
 
-    if [ "$should_keep" = false ]; then
-      rm -rf "$dir_name"
-    fi
-  done
-
-  cd ../../../..
+    cd ../../../..
+  fi
 fi
 
 # Remove composer files

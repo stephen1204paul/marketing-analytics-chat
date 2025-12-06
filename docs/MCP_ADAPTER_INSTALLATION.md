@@ -31,7 +31,7 @@ Without the MCP Adapter, the `/wp-json/mcp/mcp-adapter-default-server` endpoint 
 SSH into your WordPress server:
 
 ```bash
-cd /path/to/wordpress/wp-content/plugins/marketing-mcp
+cd /path/to/wordpress/wp-content/plugins/marketing-analytics-chat
 
 # Install both required packages
 composer require wordpress/abilities-api wordpress/mcp-adapter
@@ -91,7 +91,7 @@ wp plugin activate mcp-adapter
 
 ### Option 3: For Beta Testing (Packaged Plugin)
 
-If you're using the packaged `marketing-analytics-mcp-v1.0.0.zip` file, you **still need** to install the MCP Adapter separately because it's a WordPress-level dependency.
+If you're using the packaged `marketing-analytics-chat-v1.0.0.zip` file, you **still need** to install the MCP Adapter separately because it's a WordPress-level dependency.
 
 **Quick Install Script:**
 
@@ -217,7 +217,7 @@ EOF
 
 **Fix:**
 ```bash
-cd wp-content/plugins/marketing-mcp
+cd wp-content/plugins/marketing-analytics-chat
 composer require wordpress/mcp-adapter
 ```
 
@@ -257,11 +257,11 @@ wp plugin activate mcp-adapter
 
 **Fix:**
 ```bash
-# Check if marketing-mcp plugin is active
+# Check if marketing-analytics-chat plugin is active
 wp plugin list | grep marketing
 
 # Activate if needed
-wp plugin activate marketing-mcp
+wp plugin activate marketing-analytics-chat
 
 # Check for PHP errors
 tail -f wp-content/debug.log
@@ -273,7 +273,7 @@ tail -f wp-content/debug.log
 
 **Fix:**
 ```bash
-cd wp-content/plugins/marketing-mcp
+cd wp-content/plugins/marketing-analytics-chat
 composer install --no-dev --optimize-autoloader
 ```
 
@@ -345,7 +345,7 @@ After installation:
 composer require wordpress/abilities-api wordpress/mcp-adapter
 
 # Activate plugins
-wp plugin activate abilities-api mcp-adapter marketing-mcp
+wp plugin activate abilities-api mcp-adapter marketing-analytics-chat
 
 # Flush permalinks
 wp rewrite flush

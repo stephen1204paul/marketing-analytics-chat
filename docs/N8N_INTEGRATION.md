@@ -39,7 +39,7 @@ The Marketing Analytics MCP plugin exposes analytics data via the Model Context 
 ### 1.1 Install the Plugin
 
 Upload and activate the plugin:
-1. Upload `marketing-analytics-mcp-v1.0.0.zip` to WordPress
+1. Upload `marketing-analytics-chat-v1.0.0.zip` to WordPress
 2. Navigate to **Plugins → Add New → Upload Plugin**
 3. Activate the plugin
 

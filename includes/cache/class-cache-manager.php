@@ -204,7 +204,7 @@ class Cache_Manager {
 		// Count by platform
 		$by_platform = array();
 		foreach ( array( 'clarity', 'ga4', 'gsc' ) as $platform ) {
-			$platform_pattern = self::CACHE_PREFIX . $platform . '_%';
+			$platform_pattern         = self::CACHE_PREFIX . $platform . '_%';
 			$by_platform[ $platform ] = $wpdb->get_var(
 				$wpdb->prepare(
 					"SELECT COUNT(*) FROM {$wpdb->options}
@@ -217,10 +217,10 @@ class Cache_Manager {
 		}
 
 		return array(
-			'total_count'  => absint( $total_count ),
-			'total_size'   => absint( $cache_size ),
-			'size_human'   => size_format( $cache_size ),
-			'by_platform'  => $by_platform,
+			'total_count' => absint( $total_count ),
+			'total_size'  => absint( $cache_size ),
+			'size_human'  => size_format( $cache_size ),
+			'by_platform' => $by_platform,
 		);
 	}
 
@@ -279,7 +279,7 @@ class Cache_Manager {
 	public function get_cache_info( $key ) {
 		global $wpdb;
 
-		$cache_key = $this->build_cache_key( $key );
+		$cache_key   = $this->build_cache_key( $key );
 		$timeout_key = '_transient_timeout_' . $cache_key;
 
 		$timeout = $wpdb->get_var(
@@ -299,16 +299,16 @@ class Cache_Manager {
 			return false;
 		}
 
-		$now = time();
+		$now        = time();
 		$expires_at = absint( $timeout );
 
 		return array(
-			'key'          => $cache_key,
-			'expires_at'   => $expires_at,
-			'expires_in'   => max( 0, $expires_at - $now ),
-			'is_expired'   => $expires_at < $now,
-			'data_size'    => strlen( maybe_serialize( $data ) ),
-			'cached_at'    => date( 'Y-m-d H:i:s', $expires_at - HOUR_IN_SECONDS ),
+			'key'        => $cache_key,
+			'expires_at' => $expires_at,
+			'expires_in' => max( 0, $expires_at - $now ),
+			'is_expired' => $expires_at < $now,
+			'data_size'  => strlen( maybe_serialize( $data ) ),
+			'cached_at'  => gmdate( 'Y-m-d H:i:s', $expires_at - HOUR_IN_SECONDS ),
 		);
 	}
 }

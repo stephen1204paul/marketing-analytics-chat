@@ -11,6 +11,7 @@ namespace Marketing_Analytics_MCP\API_Clients;
 
 use Marketing_Analytics_MCP\Credentials\OAuth_Handler;
 use Marketing_Analytics_MCP\Cache\Cache_Manager;
+use Marketing_Analytics_MCP\Utils\Logger;
 
 /**
  * GA4 API Client class
@@ -67,7 +68,7 @@ class GA4_Client {
 
 			return new \Google\Service\AnalyticsData( $client );
 		} catch ( \Exception $e ) {
-			error_log( 'Marketing Analytics MCP: Failed to initialize GA4 client: ' . $e->getMessage() );
+			Logger::debug( 'Failed to initialize GA4 client: ' . $e->getMessage() );
 			return null;
 		}
 	}
@@ -87,12 +88,16 @@ class GA4_Client {
 		}
 
 		// Check cache first
-		$cache_key = $this->cache_manager->generate_key( 'ga4', 'run_report', array(
-			'metrics'    => $metrics,
-			'dimensions' => $dimensions,
-			'date_range' => $date_range,
-			'options'    => $options,
-		) );
+		$cache_key = $this->cache_manager->generate_key(
+			'ga4',
+			'run_report',
+			array(
+				'metrics'    => $metrics,
+				'dimensions' => $dimensions,
+				'date_range' => $date_range,
+				'options'    => $options,
+			)
+		);
 
 		$cached = $this->cache_manager->get( $cache_key );
 		if ( false !== $cached ) {
@@ -108,10 +113,12 @@ class GA4_Client {
 		try {
 			// Build date range
 			$date_ranges = array(
-				new \Google\Service\AnalyticsData\DateRange( array(
-					'startDate' => $this->parse_date_range( $date_range, 'start' ),
-					'endDate'   => $this->parse_date_range( $date_range, 'end' ),
-				) ),
+				new \Google\Service\AnalyticsData\DateRange(
+					array(
+						'startDate' => $this->parse_date_range( $date_range, 'start' ),
+						'endDate'   => $this->parse_date_range( $date_range, 'end' ),
+					)
+				),
 			);
 
 			// Build metrics
@@ -127,11 +134,13 @@ class GA4_Client {
 			}
 
 			// Build request
-			$request = new \Google\Service\AnalyticsData\RunReportRequest( array(
-				'dateRanges'  => $date_ranges,
-				'metrics'     => $metric_objects,
-				'dimensions'  => $dimension_objects,
-			) );
+			$request = new \Google\Service\AnalyticsData\RunReportRequest(
+				array(
+					'dateRanges' => $date_ranges,
+					'metrics'    => $metric_objects,
+					'dimensions' => $dimension_objects,
+				)
+			);
 
 			// Add optional parameters
 			if ( isset( $options['limit'] ) ) {
@@ -186,9 +195,11 @@ class GA4_Client {
 			}
 
 			// Build request
-			$request = new \Google\Service\AnalyticsData\RunRealtimeReportRequest( array(
-				'metrics' => $metric_objects,
-			) );
+			$request = new \Google\Service\AnalyticsData\RunRealtimeReportRequest(
+				array(
+					'metrics' => $metric_objects,
+				)
+			);
 
 			// Run realtime report
 			$response = $analytics->properties->runRealtimeReport( 'properties/' . $this->property_id, $request );
@@ -250,7 +261,7 @@ class GA4_Client {
 			$client = new \Google\Client();
 			$client->setAccessToken( $access_token );
 
-			$analytics_admin = new \Google\Service\AnalyticsAdmin( $client );
+			$analytics_admin = new \Google\Service\GoogleAnalyticsAdmin( $client );
 
 			// Get account summaries
 			$account_summaries = $analytics_admin->accountSummaries->listAccountSummaries();
@@ -263,9 +274,9 @@ class GA4_Client {
 				if ( ! empty( $property_summaries ) ) {
 					foreach ( $property_summaries as $property_summary ) {
 						$properties[] = array(
-							'property_id'   => str_replace( 'properties/', '', $property_summary->getProperty() ),
-							'display_name'  => $property_summary->getDisplayName(),
-							'account_name'  => $account_summary->getDisplayName(),
+							'property_id'  => str_replace( 'properties/', '', $property_summary->getProperty() ),
+							'display_name' => $property_summary->getDisplayName(),
+							'account_name' => $account_summary->getDisplayName(),
 						);
 					}
 				}
@@ -273,7 +284,7 @@ class GA4_Client {
 
 			return $properties;
 		} catch ( \Exception $e ) {
-			error_log( 'Marketing Analytics MCP: Failed to list GA4 properties: ' . $e->getMessage() );
+			Logger::debug( 'Failed to list GA4 properties: ' . $e->getMessage() );
 			return null;
 		}
 	}

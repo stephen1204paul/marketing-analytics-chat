@@ -50,6 +50,7 @@ class Chat_Ajax_Handler {
 	public function register_handlers() {
 		add_action( 'wp_ajax_marketing_analytics_mcp_create_conversation', array( $this, 'create_conversation' ) );
 		add_action( 'wp_ajax_marketing_analytics_mcp_send_message', array( $this, 'send_message' ) );
+		add_action( 'wp_ajax_marketing_analytics_mcp_retry_tool', array( $this, 'retry_tool_call' ) );
 	}
 
 	/**
@@ -57,12 +58,12 @@ class Chat_Ajax_Handler {
 	 */
 	public function create_conversation() {
 		// Verify nonce
-		check_ajax_referer( 'marketing-analytics-mcp-admin', 'nonce' );
+		check_ajax_referer( 'marketing-analytics-chat-admin', 'nonce' );
 
 		// Check user permissions
 		if ( ! current_user_can( 'manage_options' ) ) {
 			wp_send_json_error(
-				array( 'message' => __( 'Insufficient permissions', 'marketing-analytics-mcp' ) ),
+				array( 'message' => __( 'Insufficient permissions', 'marketing-analytics-chat' ) ),
 				403
 			);
 		}
@@ -77,12 +78,12 @@ class Chat_Ajax_Handler {
 			wp_send_json_success(
 				array(
 					'conversation_id' => $conversation_id,
-					'message'         => __( 'Conversation created successfully', 'marketing-analytics-mcp' ),
+					'message'         => __( 'Conversation created successfully', 'marketing-analytics-chat' ),
 				)
 			);
 		} else {
 			wp_send_json_error(
-				array( 'message' => __( 'Failed to create conversation', 'marketing-analytics-mcp' ) ),
+				array( 'message' => __( 'Failed to create conversation', 'marketing-analytics-chat' ) ),
 				500
 			);
 		}
@@ -93,12 +94,12 @@ class Chat_Ajax_Handler {
 	 */
 	public function send_message() {
 		// Verify nonce
-		check_ajax_referer( 'marketing-analytics-mcp-admin', 'nonce' );
+		check_ajax_referer( 'marketing-analytics-chat-admin', 'nonce' );
 
 		// Check user permissions
 		if ( ! current_user_can( 'manage_options' ) ) {
 			wp_send_json_error(
-				array( 'message' => __( 'Insufficient permissions', 'marketing-analytics-mcp' ) ),
+				array( 'message' => __( 'Insufficient permissions', 'marketing-analytics-chat' ) ),
 				403
 			);
 		}
@@ -110,14 +111,14 @@ class Chat_Ajax_Handler {
 		// Validate
 		if ( ! $conversation_id ) {
 			wp_send_json_error(
-				array( 'message' => __( 'Invalid conversation ID', 'marketing-analytics-mcp' ) ),
+				array( 'message' => __( 'Invalid conversation ID', 'marketing-analytics-chat' ) ),
 				400
 			);
 		}
 
 		if ( empty( $message ) ) {
 			wp_send_json_error(
-				array( 'message' => __( 'Message cannot be empty', 'marketing-analytics-mcp' ) ),
+				array( 'message' => __( 'Message cannot be empty', 'marketing-analytics-chat' ) ),
 				400
 			);
 		}
@@ -126,7 +127,7 @@ class Chat_Ajax_Handler {
 		$conversation = $this->chat_manager->get_conversation( $conversation_id );
 		if ( ! $conversation || (int) $conversation->user_id !== get_current_user_id() ) {
 			wp_send_json_error(
-				array( 'message' => __( 'Conversation not found', 'marketing-analytics-mcp' ) ),
+				array( 'message' => __( 'Conversation not found', 'marketing-analytics-chat' ) ),
 				404
 			);
 		}
@@ -140,7 +141,7 @@ class Chat_Ajax_Handler {
 
 		if ( ! $user_message_id ) {
 			wp_send_json_error(
-				array( 'message' => __( 'Failed to save message', 'marketing-analytics-mcp' ) ),
+				array( 'message' => __( 'Failed to save message', 'marketing-analytics-chat' ) ),
 				500
 			);
 		}
@@ -185,28 +186,80 @@ class Chat_Ajax_Handler {
 
 		if ( ! $assistant_message_id ) {
 			wp_send_json_error(
-				array( 'message' => __( 'Failed to save AI response', 'marketing-analytics-mcp' ) ),
+				array( 'message' => __( 'Failed to save AI response', 'marketing-analytics-chat' ) ),
 				500
 			);
 		}
+
+		// Collect all assistant messages to return to frontend
+		$all_messages = array();
+
+		// Add initial AI response if it has content
+		if ( ! empty( $ai_response ) ) {
+			$all_messages[] = array(
+				'role'       => 'assistant',
+				'content'    => $ai_response,
+				'usage'      => $usage,
+				'tool_calls' => $tool_calls,
+			);
+		}
+
+		// Track failed tools for retry functionality
+		$failed_tools = array();
 
 		// If there were tool calls, execute them and get a final response
 		if ( $tool_calls ) {
 			$final_response = $this->handle_tool_calls( $conversation_id, $tool_calls, $usage );
 			if ( ! is_wp_error( $final_response ) ) {
+				// Add the final response as a separate message
+				$all_messages[] = array(
+					'role'    => 'assistant',
+					'content' => $final_response['content'],
+					'usage'   => $final_response['usage'],
+				);
+				// Update main response vars for backward compatibility
 				$ai_response = $final_response['content'];
-				$usage       = $final_response['usage']; // Update with cumulative usage
+				$usage       = $final_response['usage'];
+				// Track any tools that failed during execution
+				$failed_tools = $final_response['failed_tools'] ?? array();
+			} else {
+				// Tool execution failed - add error message so frontend can display it
+				$error_content = sprintf(
+					/* translators: %s: Error message */
+					__( 'I tried to use tools to answer your question, but encountered an error: %s', 'marketing-analytics-chat' ),
+					$final_response->get_error_message()
+				);
+				$all_messages[] = array(
+					'role'     => 'assistant',
+					'content'  => $error_content,
+					'is_error' => true,
+				);
+				$ai_response    = $error_content;
 			}
 		}
 
-		// Return success with AI response
+		// Build failed tools list for the error message (if any tools failed)
+		$failed_tools_for_response = array();
+		if ( ! empty( $failed_tools ) ) {
+			foreach ( $failed_tools as $ft ) {
+				$failed_tools_for_response[] = array(
+					'name'      => $ft['name'],
+					'error'     => $ft['error'],
+					'arguments' => $ft['arguments'],
+				);
+			}
+		}
+
+		// Return success with AI response(s)
 		wp_send_json_success(
 			array(
-				'content'       => $ai_response,
+				'content'       => $ai_response, // Final/main content for backward compat
+				'messages'      => $all_messages, // All messages for proper UI update
 				'new_title'     => $new_title,
 				'usage'         => $usage,
 				'tool_metadata' => $ai_response_result['tool_metadata'] ?? null,
-				'message'       => __( 'Message sent successfully', 'marketing-analytics-mcp' ),
+				'failed_tools'  => $failed_tools_for_response, // Tools that failed for retry
+				'message'       => __( 'Message sent successfully', 'marketing-analytics-chat' ),
 			)
 		);
 	}
@@ -228,6 +281,26 @@ class Chat_Ajax_Handler {
 				'max_tokens'  => $settings['ai_max_tokens'] ?? 4096,
 			);
 			return new Claude_Provider( $config );
+		}
+
+		if ( $provider === 'openai' ) {
+			$config = array(
+				'api_key'     => $settings['openai_api_key'] ?? '',
+				'model'       => $settings['openai_model'] ?? 'gpt-5.1',
+				'temperature' => $settings['ai_temperature'] ?? 0.7,
+				'max_tokens'  => $settings['ai_max_tokens'] ?? 4096,
+			);
+			return new OpenAI_Provider( $config );
+		}
+
+		if ( $provider === 'gemini' ) {
+			$config = array(
+				'api_key'     => $settings['gemini_api_key'] ?? '',
+				'model'       => $settings['gemini_model'] ?? 'gemini-2.5-pro',
+				'temperature' => $settings['ai_temperature'] ?? 0.7,
+				'max_tokens'  => $settings['ai_max_tokens'] ?? 4096,
+			);
+			return new Gemini_Provider( $config );
 		}
 
 		return null;
@@ -280,12 +353,12 @@ class Chat_Ajax_Handler {
 		if ( ! $this->llm_provider || ! $this->llm_provider->is_configured() ) {
 			return new \WP_Error(
 				'provider_not_configured',
-				__( 'AI provider is not configured. Please configure your API key in Settings.', 'marketing-analytics-mcp' )
+				__( 'AI provider is not configured. Please configure your API key in Settings.', 'marketing-analytics-chat' )
 			);
 		}
 
 		// Get conversation history
-		$history_messages = $this->chat_manager->get_messages( $conversation_id );
+		$history_messages   = $this->chat_manager->get_messages( $conversation_id );
 		$formatted_messages = array();
 
 		foreach ( $history_messages as $msg ) {
@@ -329,10 +402,11 @@ class Chat_Ajax_Handler {
 	 * @param int   $conversation_id Conversation ID.
 	 * @param array $tool_calls Tool calls from AI.
 	 * @param array $initial_usage Initial token usage from tool_use request.
-	 * @return array|WP_Error Array with 'content' and 'usage', or WP_Error.
+	 * @return array|WP_Error Array with 'content', 'usage', and 'failed_tools', or WP_Error.
 	 */
 	private function handle_tool_calls( $conversation_id, $tool_calls, $initial_usage = array() ) {
 		$tool_results = array();
+		$failed_tools = array();
 
 		// Execute each tool call
 		foreach ( $tool_calls as $tool_call ) {
@@ -344,6 +418,13 @@ class Chat_Ajax_Handler {
 
 			if ( is_wp_error( $result ) ) {
 				$result_content = 'Error: ' . $result->get_error_message();
+				// Track failed tools for reporting
+				$failed_tools[] = array(
+					'name'      => $tool_name,
+					'id'        => $tool_call['id'],
+					'error'     => $result->get_error_message(),
+					'arguments' => $arguments,
+				);
 			} else {
 				$result_content = $this->mcp_client->format_tool_result( $tool_name, $result );
 			}
@@ -364,7 +445,7 @@ class Chat_Ajax_Handler {
 		}
 
 		// Get updated conversation history with tool results
-		$history_messages = $this->chat_manager->get_messages( $conversation_id );
+		$history_messages   = $this->chat_manager->get_messages( $conversation_id );
 		$formatted_messages = array();
 
 		foreach ( $history_messages as $msg ) {
@@ -405,8 +486,97 @@ class Chat_Ajax_Handler {
 		);
 
 		return array(
-			'content' => $final_response['content'],
-			'usage'   => $cumulative_usage,
+			'content'      => $final_response['content'],
+			'usage'        => $cumulative_usage,
+			'failed_tools' => $failed_tools,
 		);
+	}
+
+	/**
+	 * Retry failed tool calls
+	 */
+	public function retry_tool_call() {
+		// Verify nonce
+		check_ajax_referer( 'marketing-analytics-chat-admin', 'nonce' );
+
+		// Check user permissions
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_send_json_error(
+				array( 'message' => __( 'Insufficient permissions', 'marketing-analytics-chat' ) ),
+				403
+			);
+		}
+
+		// Get parameters
+		$conversation_id = isset( $_POST['conversation_id'] ) ? absint( $_POST['conversation_id'] ) : 0;
+		$tool_name       = isset( $_POST['tool_name'] ) ? sanitize_text_field( wp_unslash( $_POST['tool_name'] ) ) : '';
+		$tool_arguments  = isset( $_POST['tool_arguments'] ) ? json_decode( wp_unslash( $_POST['tool_arguments'] ), true ) : array();
+
+		// Validate
+		if ( ! $conversation_id || empty( $tool_name ) ) {
+			wp_send_json_error(
+				array( 'message' => __( 'Invalid parameters', 'marketing-analytics-chat' ) ),
+				400
+			);
+		}
+
+		// Execute the tool
+		$result = $this->mcp_client->call_tool( $tool_name, $tool_arguments );
+
+		if ( is_wp_error( $result ) ) {
+			wp_send_json_error(
+				array(
+					'message' => $result->get_error_message(),
+					'tool'    => $tool_name,
+				)
+			);
+		}
+
+		// Format the result
+		$formatted_result = $this->mcp_client->format_tool_result( $tool_name, $result );
+
+		// Get AI to interpret the result
+		$interpretation = $this->get_tool_result_interpretation( $formatted_result, $tool_name );
+
+		wp_send_json_success(
+			array(
+				'content'    => $interpretation,
+				'raw_result' => $formatted_result,
+				'tool'       => $tool_name,
+			)
+		);
+	}
+
+	/**
+	 * Get AI interpretation of tool result
+	 *
+	 * @param string $result Tool result.
+	 * @param string $tool_name Tool name.
+	 * @return string AI interpretation.
+	 */
+	private function get_tool_result_interpretation( $result, $tool_name ) {
+		if ( ! $this->llm_provider || ! $this->llm_provider->is_configured() ) {
+			// Return raw result if no AI available
+			return $result;
+		}
+
+		$messages = array(
+			array(
+				'role'    => 'user',
+				'content' => sprintf(
+					"Here's the result from the %s tool. Please provide a brief, helpful summary:\n\n%s",
+					$tool_name,
+					$result
+				),
+			),
+		);
+
+		$response = $this->llm_provider->send_message( $messages, array() );
+
+		if ( is_wp_error( $response ) ) {
+			return $result;
+		}
+
+		return $response['content'] ?? $result;
 	}
 }

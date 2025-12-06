@@ -28,6 +28,7 @@ class Plugin {
 		$this->define_admin_hooks();
 		$this->define_ajax_hooks();
 		$this->define_abilities_hooks();
+		$this->define_notification_hooks();
 	}
 
 	/**
@@ -53,7 +54,7 @@ class Plugin {
 	 */
 	public function load_plugin_textdomain() {
 		load_plugin_textdomain(
-			'marketing-analytics-mcp',
+			'marketing-analytics-chat',
 			false,
 			dirname( MARKETING_ANALYTICS_MCP_BASENAME ) . '/languages/'
 		);
@@ -99,10 +100,16 @@ class Plugin {
 
 		// Register abilities when the Abilities API is ready
 		$this->loader->add_action( 'wp_abilities_api_init', $abilities_registrar, 'register_all_abilities' );
+	}
 
-		// Initialize MCP server
-		$mcp_server = new MCP_Server();
-		$mcp_server->register_hooks();
+	/**
+	 * Register notification-related hooks
+	 */
+	private function define_notification_hooks() {
+		// Initialize notification manager to set up cron schedules
+		if ( class_exists( 'Marketing_Analytics_MCP\\Notifications\\Notification_Manager' ) ) {
+			new Notifications\Notification_Manager();
+		}
 	}
 
 	/**

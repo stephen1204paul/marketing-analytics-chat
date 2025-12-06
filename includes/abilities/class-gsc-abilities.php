@@ -38,11 +38,11 @@ class GSC_Abilities {
 		wp_register_ability(
 			'marketing-analytics/get-search-performance',
 			array(
-				'label'       => __( 'Get Search Performance', 'marketing-analytics-mcp' ),
-				'description' => __( 'Retrieve search performance data from Google Search Console including clicks, impressions, CTR, and position.', 'marketing-analytics-mcp' ),
-				'category'    => 'marketing-analytics',
+				'label'               => __( 'Get Search Performance', 'marketing-analytics-chat' ),
+				'description'         => __( 'Retrieve search performance data from Google Search Console including clicks, impressions, CTR, and position.', 'marketing-analytics-chat' ),
+				'category'            => 'marketing-analytics',
 
-				'input_schema' => array(
+				'input_schema'        => array(
 					'type'       => 'object',
 					'properties' => array(
 						'date_range' => array(
@@ -72,7 +72,7 @@ class GSC_Abilities {
 					),
 				),
 
-				'output_schema' => array(
+				'output_schema'       => array(
 					'type'       => 'object',
 					'properties' => array(
 						'rows'      => array(
@@ -99,11 +99,11 @@ class GSC_Abilities {
 		wp_register_ability(
 			'marketing-analytics/get-top-queries',
 			array(
-				'label'       => __( 'Get Top Queries', 'marketing-analytics-mcp' ),
-				'description' => __( 'Get top-performing search queries from Google Search Console.', 'marketing-analytics-mcp' ),
-				'category'    => 'marketing-analytics',
+				'label'               => __( 'Get Top Queries', 'marketing-analytics-chat' ),
+				'description'         => __( 'Get top-performing search queries from Google Search Console.', 'marketing-analytics-chat' ),
+				'category'            => 'marketing-analytics',
 
-				'input_schema' => array(
+				'input_schema'        => array(
 					'type'       => 'object',
 					'properties' => array(
 						'date_range'      => array(
@@ -127,7 +127,7 @@ class GSC_Abilities {
 					),
 				),
 
-				'output_schema' => array(
+				'output_schema'       => array(
 					'type'       => 'object',
 					'properties' => array(
 						'rows'      => array(
@@ -154,11 +154,11 @@ class GSC_Abilities {
 		wp_register_ability(
 			'marketing-analytics/get-indexing-status',
 			array(
-				'label'       => __( 'Get Indexing Status', 'marketing-analytics-mcp' ),
-				'description' => __( 'Check page indexing status and coverage issues in Google Search Console.', 'marketing-analytics-mcp' ),
-				'category'    => 'marketing-analytics',
+				'label'               => __( 'Get Indexing Status', 'marketing-analytics-chat' ),
+				'description'         => __( 'Check page indexing status and coverage issues in Google Search Console.', 'marketing-analytics-chat' ),
+				'category'            => 'marketing-analytics',
 
-				'input_schema' => array(
+				'input_schema'        => array(
 					'type'       => 'object',
 					'properties' => array(
 						'page_url' => array(
@@ -168,7 +168,7 @@ class GSC_Abilities {
 					),
 				),
 
-				'output_schema' => array(
+				'output_schema'       => array(
 					'type'       => 'object',
 					'properties' => array(
 						'coverage' => array(
@@ -199,16 +199,16 @@ class GSC_Abilities {
 		wp_register_ability(
 			'marketing-analytics/gsc-overview',
 			array(
-				'label'       => __( 'Search Console Overview', 'marketing-analytics-mcp' ),
-				'description' => __( 'Get Google Search Console site summary with verification status, indexed pages, and top queries.', 'marketing-analytics-mcp' ),
-				'category'    => 'marketing-analytics',
+				'label'               => __( 'Search Console Overview', 'marketing-analytics-chat' ),
+				'description'         => __( 'Get Google Search Console site summary with verification status, indexed pages, and top queries.', 'marketing-analytics-chat' ),
+				'category'            => 'marketing-analytics',
 
-				'output_schema' => array(
+				'output_schema'       => array(
 					'type'       => 'object',
 					'properties' => array(
-						'site_url'          => array( 'type' => 'string' ),
+						'site_url'            => array( 'type' => 'string' ),
 						'verification_status' => array( 'type' => 'string' ),
-						'summary'           => array( 'type' => 'object' ),
+						'summary'             => array( 'type' => 'object' ),
 					),
 				),
 
@@ -349,8 +349,8 @@ class GSC_Abilities {
 			$performance = $client->query_search_analytics( '7daysAgo', array(), array(), array( 'row_limit' => 1 ) );
 
 			$summary = array(
-				'site_url' => $client->get_site_url(),
-				'period'   => 'Last 7 days',
+				'site_url'    => $client->get_site_url(),
+				'period'      => 'Last 7 days',
 				'top_queries' => $top_queries,
 				'performance' => $performance,
 			);

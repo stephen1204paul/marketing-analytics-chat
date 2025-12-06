@@ -39,12 +39,15 @@ function marketing_analytics_mcp_uninstall() {
 	// Delete rate limit counters
 	delete_option( 'marketing_analytics_mcp_rate_limits' );
 
-	// Delete all transients
+	// Delete all transients (properly escape LIKE patterns)
+	$transient_pattern = $wpdb->esc_like( '_transient_marketing_analytics_mcp_' ) . '%';
+	$timeout_pattern   = $wpdb->esc_like( '_transient_timeout_marketing_analytics_mcp_' ) . '%';
+
 	$wpdb->query(
 		$wpdb->prepare(
 			"DELETE FROM {$wpdb->options} WHERE option_name LIKE %s OR option_name LIKE %s",
-			$wpdb->esc_like( '_transient_marketing_analytics_mcp_' ) . '%',
-			$wpdb->esc_like( '_transient_timeout_marketing_analytics_mcp_' ) . '%'
+			$transient_pattern,
+			$timeout_pattern
 		)
 	);
 

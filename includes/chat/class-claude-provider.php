@@ -10,6 +10,7 @@
 namespace Marketing_Analytics_MCP\Chat;
 
 use WP_Error;
+use Marketing_Analytics_MCP\Utils\Logger;
 
 /**
  * Claude API provider
@@ -41,7 +42,7 @@ class Claude_Provider extends Abstract_LLM_Provider {
 	 * @return string Provider display name.
 	 */
 	public function get_display_name() {
-		return __( 'Claude (Anthropic)', 'marketing-analytics-mcp' );
+		return __( 'Claude (Anthropic)', 'marketing-analytics-chat' );
 	}
 
 	/**
@@ -65,7 +66,7 @@ class Claude_Provider extends Abstract_LLM_Provider {
 		if ( ! $this->is_configured() ) {
 			return new WP_Error(
 				'provider_not_configured',
-				__( 'Claude API is not configured', 'marketing-analytics-mcp' )
+				__( 'Claude API is not configured', 'marketing-analytics-chat' )
 			);
 		}
 
@@ -92,7 +93,13 @@ class Claude_Provider extends Abstract_LLM_Provider {
 
 		// Add tools if provided
 		if ( ! empty( $tools ) ) {
-			$body['tools'] = $this->convert_tools_format( $tools );
+			$converted_tools = $this->convert_tools_format( $tools );
+			$body['tools']   = $converted_tools;
+
+			// Log the tools being sent to Claude API
+			Logger::debug( 'Claude: Sending ' . count( $converted_tools ) . ' tools to API' );
+			Logger::debug( 'Claude: First tool structure: ' . wp_json_encode( $converted_tools[0] ?? 'none' ) );
+			Logger::debug( 'Claude: Full tools array: ' . wp_json_encode( $converted_tools ) );
 		}
 
 		// Make API request
@@ -134,9 +141,9 @@ class Claude_Provider extends Abstract_LLM_Provider {
 					'role'    => 'user',
 					'content' => array(
 						array(
-							'type'         => 'tool_result',
-							'tool_use_id'  => $message['tool_call_id'] ?? 'unknown',
-							'content'      => $message['content'],
+							'type'        => 'tool_result',
+							'tool_use_id' => $message['tool_call_id'] ?? 'unknown',
+							'content'     => $message['content'],
 						),
 					),
 				);
@@ -163,11 +170,22 @@ class Claude_Provider extends Abstract_LLM_Provider {
 
 				// Add tool use blocks
 				foreach ( $message['tool_calls'] as $tool_call ) {
+					// Get input/arguments and ensure it's an object, not an array
+					$input = $tool_call['arguments'] ?? $tool_call['input'] ?? array();
+					if ( empty( $input ) || ( is_array( $input ) && array_keys( $input ) === range( 0, count( $input ) - 1 ) ) ) {
+						// Empty or sequential array - convert to empty object
+						$input = new \stdClass();
+					}
+
+					// Convert tool name to Claude format (in case history has old format)
+					$tool_name = str_replace( '/', '__', $tool_call['name'] );
+					$tool_name = preg_replace( '/[^a-zA-Z0-9_-]/', '_', $tool_name );
+
 					$formatted_message['content'][] = array(
 						'type'  => 'tool_use',
 						'id'    => $tool_call['id'],
-						'name'  => $tool_call['name'],
-						'input' => $tool_call['arguments'] ?? new \stdClass(),
+						'name'  => $tool_name,
+						'input' => $input,
 					);
 				}
 			}
@@ -181,6 +199,10 @@ class Claude_Provider extends Abstract_LLM_Provider {
 	/**
 	 * Convert MCP tools to Claude format
 	 *
+	 * Claude API requires tool names to match pattern: ^[a-zA-Z0-9_-]{1,128}
+	 * WordPress abilities use names like "marketing-analytics/get-ga4-metrics"
+	 * We need to convert slashes to underscores.
+	 *
 	 * @param array $mcp_tools MCP tool definitions.
 	 * @return array Claude tool definitions.
 	 */
@@ -188,8 +210,24 @@ class Claude_Provider extends Abstract_LLM_Provider {
 		$claude_tools = array();
 
 		foreach ( $mcp_tools as $tool ) {
+			// Skip tools without valid names
+			$name = $tool['name'] ?? '';
+			if ( empty( $name ) ) {
+				continue;
+			}
+
+			// Convert tool name to Claude-compatible format
+			// Replace slashes with double underscores (to allow reverse conversion)
+			$claude_name = str_replace( '/', '__', $name );
+
+			// Ensure name only contains valid characters (alphanumeric, underscore, hyphen)
+			$claude_name = preg_replace( '/[^a-zA-Z0-9_-]/', '_', $claude_name );
+
+			// Ensure name is not longer than 128 characters
+			$claude_name = substr( $claude_name, 0, 128 );
+
 			$claude_tools[] = array(
-				'name'         => $tool['name'],
+				'name'         => $claude_name,
 				'description'  => $tool['description'] ?? '',
 				'input_schema' => $tool['inputSchema'] ?? array(
 					'type'       => 'object',
@@ -202,6 +240,17 @@ class Claude_Provider extends Abstract_LLM_Provider {
 	}
 
 	/**
+	 * Convert Claude tool name back to MCP format
+	 *
+	 * @param string $claude_name Claude tool name.
+	 * @return string MCP tool name.
+	 */
+	public function convert_tool_name_to_mcp( $claude_name ) {
+		// Convert double underscores back to slashes
+		return str_replace( '__', '/', $claude_name );
+	}
+
+	/**
 	 * Parse Claude API response
 	 *
 	 * @param array $response Raw API response.
@@ -209,11 +258,11 @@ class Claude_Provider extends Abstract_LLM_Provider {
 	 */
 	private function parse_response( $response ) {
 		$result = array(
-			'content'    => $this->extract_text_content( $response ),
-			'tool_calls' => $this->extract_tool_calls( $response ),
+			'content'     => $this->extract_text_content( $response ),
+			'tool_calls'  => $this->extract_tool_calls( $response ),
 			'stop_reason' => $response['stop_reason'] ?? null,
-			'usage'      => $response['usage'] ?? array(),
-			'raw'        => $response,
+			'usage'       => $response['usage'] ?? array(),
+			'raw'         => $response,
 		);
 
 		return $result;
@@ -256,9 +305,12 @@ class Claude_Provider extends Abstract_LLM_Provider {
 
 		foreach ( $response['content'] as $content_block ) {
 			if ( $content_block['type'] === 'tool_use' ) {
+				// Convert Claude tool name back to MCP format
+				$mcp_name = $this->convert_tool_name_to_mcp( $content_block['name'] );
+
 				$tool_calls[] = array(
 					'id'        => $content_block['id'],
-					'name'      => $content_block['name'],
+					'name'      => $mcp_name,
 					'arguments' => $content_block['input'] ?? array(),
 				);
 			}
@@ -273,6 +325,6 @@ class Claude_Provider extends Abstract_LLM_Provider {
 	 * @return string System message.
 	 */
 	private function get_default_system_message() {
-		return __( 'You are a helpful AI assistant with access to marketing analytics data from Google Analytics 4, Google Search Console, and Microsoft Clarity. Use the available tools to answer questions about website performance, user behavior, and marketing metrics. Provide clear, actionable insights based on the data.', 'marketing-analytics-mcp' );
+		return __( 'You are a helpful AI assistant with access to marketing analytics data from Google Analytics 4, Google Search Console, and Microsoft Clarity. Use the available tools to answer questions about website performance, user behavior, and marketing metrics. Provide clear, actionable insights based on the data.', 'marketing-analytics-chat' );
 	}
 }

@@ -21,7 +21,7 @@ class Cross_Platform_Abilities {
 	 */
 	public function register() {
 		// Only register abilities if at least one platform has credentials configured
-		$credential_manager = new Credential_Manager();
+		$credential_manager  = new Credential_Manager();
 		$has_any_credentials = $credential_manager->has_credentials( 'clarity' )
 			|| $credential_manager->has_credentials( 'ga4' )
 			|| $credential_manager->has_credentials( 'gsc' );

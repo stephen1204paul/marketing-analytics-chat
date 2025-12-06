@@ -72,8 +72,8 @@ wp plugin activate abilities-api mcp-adapter
 
 ```bash
 cd wp-content/plugins/
-git clone https://github.com/yourusername/marketing-analytics-mcp.git
-cd marketing-analytics-mcp
+git clone https://github.com/yourusername/marketing-analytics-chat.git
+cd marketing-analytics-chat
 ```
 
 ### 2. Install Dependencies
@@ -85,7 +85,7 @@ composer install --no-dev
 ### 3. Activate Plugin
 
 ```bash
-wp plugin activate marketing-analytics-mcp
+wp plugin activate marketing-analytics-chat
 ```
 
 Or activate via WordPress Admin → Plugins → Marketing Analytics MCP → Activate
@@ -233,8 +233,8 @@ Built with:
 
 ## 📧 Support
 
-- **Issues**: [GitHub Issues](https://github.com/yourusername/marketing-analytics-mcp/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/yourusername/marketing-analytics-mcp/discussions)
+- **Issues**: [GitHub Issues](https://github.com/yourusername/marketing-analytics-chat/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/yourusername/marketing-analytics-chat/discussions)
 - **Documentation**: [docs/](docs/)
 
 ---

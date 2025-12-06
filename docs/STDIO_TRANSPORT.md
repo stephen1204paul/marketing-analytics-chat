@@ -266,7 +266,7 @@ echo '{"jsonrpc":"2.0","method":"tools/list","id":1}' | \
 | `Command not found: wp` | Install WP-CLI or provide full path |
 | `Permission denied` | Check file permissions, use `--allow-root` if needed |
 | `Server not found` | Verify MCP Adapter plugin is activated |
-| `No tools returned` | Check marketing-mcp plugin is active and registered abilities |
+| `No tools returned` | Check marketing-analytics-chat plugin is active and registered abilities |
 
 ## Performance Comparison
 
