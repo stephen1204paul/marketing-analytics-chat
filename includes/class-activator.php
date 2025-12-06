@@ -31,9 +31,9 @@ class Activator {
 		}
 
 		// Check minimum PHP version
-		if ( version_compare( PHP_VERSION, '7.4', '<' ) ) {
+		if ( version_compare( PHP_VERSION, '8.3', '<' ) ) {
 			wp_die(
-				esc_html__( 'Marketing Analytics MCP requires PHP 7.4 or higher.', 'marketing-analytics-chat' ),
+				esc_html__( 'Marketing Analytics MCP requires PHP 8.3 or higher.', 'marketing-analytics-chat' ),
 				esc_html__( 'Plugin Activation Error', 'marketing-analytics-chat' ),
 				array( 'back_link' => true )
 			);

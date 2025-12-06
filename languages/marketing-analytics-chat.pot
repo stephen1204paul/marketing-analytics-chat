@@ -2649,7 +2649,7 @@ msgid "Plugin Activation Error"
 msgstr ""
 
 #: includes/class-activator.php:36
-msgid "Marketing Analytics MCP requires PHP 7.4 or higher."
+msgid "Marketing Analytics MCP requires PHP 8.3 or higher."
 msgstr ""
 
 #. translators: %s: comma-separated list of PHP extensions

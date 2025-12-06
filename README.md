@@ -3,7 +3,7 @@
 > Exposes marketing analytics data (Microsoft Clarity, Google Analytics 4, Google Search Console) via Model Context Protocol for AI assistants.
 
 [![WordPress Version](https://img.shields.io/badge/WordPress-6.9%2B-blue)](https://wordpress.org/)
-[![PHP Version](https://img.shields.io/badge/PHP-7.4%2B-purple)](https://www.php.net/)
+[![PHP Version](https://img.shields.io/badge/PHP-8.3%2B-purple)](https://www.php.net/)
 [![License](https://img.shields.io/badge/License-GPL%20v2%2B-green)](LICENSE)
 
 ## 🚀 Overview
