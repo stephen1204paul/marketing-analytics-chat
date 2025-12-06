@@ -408,12 +408,12 @@ class Ajax_Handler {
 				)
 			);
 		} catch ( \Exception $e ) {
-			Logger::debug( '===== LIST PROPERTIES EXCEPTION =====' );
-			Logger::debug( sprintf( 'Exception: %s', $e->getMessage() ) );
+			Logger::error( '===== LIST PROPERTIES EXCEPTION =====' );
+			Logger::error( sprintf( 'Exception: %s', $e->getMessage() ) );
 
 			wp_send_json_error(
 				array(
-					'message' => 'Error fetching properties: ' . $e->getMessage(),
+					'message' => $e->getMessage(),
 				)
 			);
 		}

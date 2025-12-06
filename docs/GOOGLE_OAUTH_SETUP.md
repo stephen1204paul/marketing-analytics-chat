@@ -43,7 +43,13 @@ You'll need to:
 
 ## Step 2: Enable Required APIs
 
-### Enable Google Analytics Data API
+⚠️ **IMPORTANT:** This step is critical! If you skip these APIs, you'll see errors when trying to connect your analytics properties.
+
+### Required APIs for Google Analytics 4
+
+You need to enable **TWO** separate APIs for GA4 to work properly:
+
+#### 1. Google Analytics Data API (for reading analytics data)
 
 1. In your Google Cloud project, go to **APIs & Services** → **Library**
 
@@ -55,19 +61,40 @@ You'll need to:
 
 5. Wait for the API to be enabled
 
-### Enable Google Analytics Admin API
+**Direct link:** https://console.cloud.google.com/apis/library/analyticsdata.googleapis.com
+
+#### 2. Google Analytics Admin API (for listing your GA4 properties)
+
+⚠️ **Don't skip this one!** This API is required to list your GA4 properties after connecting.
 
 1. Still in the API Library, search for **"Google Analytics Admin API"**
 
 2. Click on it and click **"Enable"**
 
-### Enable Google Search Console API
+3. Wait for the API to be enabled
+
+**Direct link:** https://console.cloud.google.com/apis/library/analyticsadmin.googleapis.com
+
+### Required API for Google Search Console
+
+#### 3. Google Search Console API (if using Search Console)
 
 1. Search for **"Google Search Console API"**
 
 2. Click on it and click **"Enable"**
 
-**Verification:** You should now have 3 APIs enabled. Check via **APIs & Services** → **Enabled APIs & services**
+**Direct link:** https://console.cloud.google.com/apis/library/searchconsole.googleapis.com
+
+### Verification
+
+**You should now have 3 APIs enabled.** Check via **APIs & Services** → **Enabled APIs & services**
+
+Required for GA4:
+- ✅ Google Analytics Data API
+- ✅ Google Analytics Admin API
+
+Required for GSC:
+- ✅ Google Search Console API
 
 ---
 
@@ -194,6 +221,20 @@ You'll need to:
 ---
 
 ## Troubleshooting
+
+### Error: "Google Analytics Admin API has not been used" or "Failed to retrieve properties"
+
+**Cause:** The Google Analytics Admin API is not enabled in your Google Cloud project.
+
+**Solution:**
+1. Go to https://console.cloud.google.com/apis/library/analyticsadmin.googleapis.com
+2. Make sure you're in the correct Google Cloud project (check the project dropdown at the top)
+3. Click **"Enable"**
+4. Wait for the API to be enabled (takes a few seconds)
+5. Go back to WordPress and refresh the GA4 connection page
+6. Try selecting your property again
+
+**Note:** You need BOTH the Google Analytics Data API AND the Google Analytics Admin API enabled. The Data API is for reading analytics data, while the Admin API is specifically for listing your GA4 properties during setup.
 
 ### Error: "redirect_uri_mismatch"
 

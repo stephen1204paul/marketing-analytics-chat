@@ -60,6 +60,32 @@ $ga4_connected = isset( $platforms['ga4']['connected'] ) && $platforms['ga4']['c
 			<p><?php esc_html_e( 'Before you can connect to Google Analytics 4, you need to set up OAuth credentials from the Google Cloud Console.', 'marketing-analytics-chat' ); ?></p>
 		</div>
 
+		<div class="notice notice-info">
+			<p><strong><?php esc_html_e( 'Required Google APIs', 'marketing-analytics-chat' ); ?></strong></p>
+			<p><?php esc_html_e( 'Make sure you have enabled these APIs in your Google Cloud project:', 'marketing-analytics-chat' ); ?></p>
+			<ul style="list-style: disc; margin-left: 20px;">
+				<li><strong><?php esc_html_e( 'Google Analytics Data API', 'marketing-analytics-chat' ); ?></strong> - <?php esc_html_e( 'For reading analytics data', 'marketing-analytics-chat' ); ?></li>
+				<li><strong><?php esc_html_e( 'Google Analytics Admin API', 'marketing-analytics-chat' ); ?></strong> - <?php esc_html_e( 'For listing your GA4 properties', 'marketing-analytics-chat' ); ?></li>
+			</ul>
+			<p>
+				<a href="<?php echo esc_url( 'https://console.cloud.google.com/apis/library/analyticsdata.googleapis.com' ); ?>" target="_blank" class="button button-secondary">
+					<?php esc_html_e( 'Enable Analytics Data API', 'marketing-analytics-chat' ); ?>
+				</a>
+				<a href="<?php echo esc_url( 'https://console.cloud.google.com/apis/library/analyticsadmin.googleapis.com' ); ?>" target="_blank" class="button button-secondary">
+					<?php esc_html_e( 'Enable Analytics Admin API', 'marketing-analytics-chat' ); ?>
+				</a>
+			</p>
+			<p>
+				<?php
+				printf(
+					/* translators: %s: link to setup guide */
+					esc_html__( 'Need help? See the %s for detailed instructions.', 'marketing-analytics-chat' ),
+					'<a href="' . esc_url( plugin_dir_url( dirname( dirname( __FILE__ ) ) ) . '../docs/GOOGLE_OAUTH_SETUP.md' ) . '" target="_blank">' . esc_html__( 'Google OAuth Setup Guide', 'marketing-analytics-chat' ) . '</a>'
+				);
+				?>
+			</p>
+		</div>
+
 		<form method="post" action="" id="ga4-oauth-config-form">
 			<?php wp_nonce_field( 'marketing_analytics_mcp_oauth_config', 'oauth_config_nonce' ); ?>
 			<input type="hidden" name="save_oauth_config" value="1" />
@@ -111,6 +137,23 @@ $ga4_connected = isset( $platforms['ga4']['connected'] ) && $platforms['ga4']['c
 		<div class="notice notice-info">
 			<p><strong><?php esc_html_e( 'Step 2: Connect to Google Analytics', 'marketing-analytics-chat' ); ?></strong></p>
 			<p><?php esc_html_e( 'Click the button below to authorize access to your Google Analytics 4 properties.', 'marketing-analytics-chat' ); ?></p>
+		</div>
+
+		<div class="notice notice-warning" style="border-left-color: #00a0d2;">
+			<p><strong><?php esc_html_e( 'Before you connect:', 'marketing-analytics-chat' ); ?></strong></p>
+			<p><?php esc_html_e( 'Ensure these APIs are enabled in your Google Cloud project, or you will see errors when selecting properties:', 'marketing-analytics-chat' ); ?></p>
+			<ul style="list-style: disc; margin-left: 20px;">
+				<li><strong><?php esc_html_e( 'Google Analytics Data API', 'marketing-analytics-chat' ); ?></strong></li>
+				<li><strong><?php esc_html_e( 'Google Analytics Admin API', 'marketing-analytics-chat' ); ?></strong></li>
+			</ul>
+			<p>
+				<a href="<?php echo esc_url( 'https://console.cloud.google.com/apis/library/analyticsdata.googleapis.com' ); ?>" target="_blank" class="button button-secondary button-small">
+					<?php esc_html_e( 'Enable Data API', 'marketing-analytics-chat' ); ?>
+				</a>
+				<a href="<?php echo esc_url( 'https://console.cloud.google.com/apis/library/analyticsadmin.googleapis.com' ); ?>" target="_blank" class="button button-secondary button-small">
+					<?php esc_html_e( 'Enable Admin API', 'marketing-analytics-chat' ); ?>
+				</a>
+			</p>
 		</div>
 
 		<p>
