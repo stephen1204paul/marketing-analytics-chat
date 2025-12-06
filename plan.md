@@ -133,8 +133,8 @@ This revised plan leverages the **official WordPress Abilities API** (WordPress 
 
 ### 2.2 WordPress Requirements
 
-- **WordPress**: 6.0+ (6.9+ for native Abilities API)
-- **PHP**: 7.4+ (8.0+ recommended)
+- **WordPress**: 6.9+ (6.9+ for native Abilities API)
+- **PHP**: 7.4+ (8.3+ recommended)
 - **PHP Extensions**: `openssl`, `json`, `curl`
 - **Capabilities**: `manage_options` for admin access
 
@@ -713,7 +713,7 @@ This revised plan leverages the **official WordPress Abilities API** (WordPress 
 
 **Responsive Design**
 - [ ] Ensure admin pages work on mobile
-- [ ] Test in WordPress 6.0, 6.3, 6.9
+- [ ] Test in WordPress 6.9, 6.3, 6.9
 - [ ] Browser compatibility check
 
 **Deliverables:**
@@ -753,8 +753,8 @@ This revised plan leverages the **official WordPress Abilities API** (WordPress 
   - Full workflow: connect → invoke → response
   - Test with real API credentials (sandbox)
 - [ ] WordPress compatibility
-  - Test on WordPress 6.0, 6.3, 6.9
-  - Test on PHP 7.4, 8.0, 8.1, 8.2
+  - Test on WordPress 6.9, 6.3, 6.9
+  - Test on PHP 7.4, 8.3, 8.1, 8.2
   - Test with popular themes
   - Test with common plugins (conflict check)
 - [ ] MCP client testing
@@ -1326,7 +1326,7 @@ marketing-analytics-chat/
  * Plugin URI: https://github.com/yourusername/marketing-analytics-chat
  * Description: Exposes marketing analytics data (Clarity, GA4, Search Console) via Model Context Protocol for AI assistants.
  * Version: 1.0.0
- * Requires at least: 6.0
+ * Requires at least: 6.9
  * Requires PHP: 7.4
  * Author: Your Name
  * Author URI: https://yourwebsite.com

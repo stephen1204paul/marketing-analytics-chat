@@ -282,7 +282,7 @@ composer install --no-dev --optimize-autoloader
 | Component | Requirement |
 |-----------|-------------|
 | PHP | >= 8.1 |
-| WordPress | >= 6.0 (6.9+ recommended) |
+| WordPress | >= 6.9 (6.9+ recommended) |
 | Composer | >= 2.0 |
 | WP-CLI | >= 2.5 (optional but recommended) |
 | HTTPS | Required for production |

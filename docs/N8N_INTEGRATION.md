@@ -21,7 +21,7 @@ The Marketing Analytics MCP plugin exposes analytics data via the Model Context 
 
 ### WordPress Site Requirements
 
-1. **WordPress 6.0+** (6.9+ recommended for native Abilities API)
+1. **WordPress 6.9+** (6.9+ recommended for native Abilities API)
 2. **PHP 8.1+**
 3. **Marketing Analytics MCP Plugin** installed and activated
 4. **HTTPS enabled** (required for secure authentication)

@@ -134,7 +134,7 @@ After comprehensive analysis of the requested marketing platforms, I recommend t
 ### 2. Meta Business Suite API (Facebook + Instagram Unified)
 
 #### API Availability & Documentation
-- **Official API:** Graph API v18.0+ with Instagram Graph API
+- **Official API:** Graph API v18.3+ with Instagram Graph API
 - **Documentation Quality:** 8/10 - Comprehensive but complex
 - **API Stability:** Very stable, Meta-backed
 - **SDK:** Official PHP SDK available (facebook/graph-sdk)
@@ -341,7 +341,7 @@ class DataForSEO_Client extends Base_API_Client {
 
 class Meta_Business_Client extends Base_API_Client {
     private $access_token;
-    private $graph_url = 'https://graph.facebook.com/v18.0/';
+    private $graph_url = 'https://graph.facebook.com/v18.3/';
 
     public function __construct($credentials) {
         $this->access_token = $credentials['access_token'];

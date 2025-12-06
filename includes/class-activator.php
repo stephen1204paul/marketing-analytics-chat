@@ -22,9 +22,9 @@ class Activator {
 	 */
 	public static function activate() {
 		// Check minimum WordPress version
-		if ( version_compare( get_bloginfo( 'version' ), '6.0', '<' ) ) {
+		if ( version_compare( get_bloginfo( 'version' ), '6.9', '<' ) ) {
 			wp_die(
-				esc_html__( 'Marketing Analytics MCP requires WordPress 6.0 or higher.', 'marketing-analytics-chat' ),
+				esc_html__( 'Marketing Analytics MCP requires WordPress 6.90 or higher.', 'marketing-analytics-chat' ),
 				esc_html__( 'Plugin Activation Error', 'marketing-analytics-chat' ),
 				array( 'back_link' => true )
 			);

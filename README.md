@@ -2,7 +2,7 @@
 
 > Exposes marketing analytics data (Microsoft Clarity, Google Analytics 4, Google Search Console) via Model Context Protocol for AI assistants.
 
-[![WordPress Version](https://img.shields.io/badge/WordPress-6.0%2B-blue)](https://wordpress.org/)
+[![WordPress Version](https://img.shields.io/badge/WordPress-6.9%2B-blue)](https://wordpress.org/)
 [![PHP Version](https://img.shields.io/badge/PHP-7.4%2B-purple)](https://www.php.net/)
 [![License](https://img.shields.io/badge/License-GPL%20v2%2B-green)](LICENSE)
 
@@ -42,8 +42,8 @@ Pre-configured analysis workflows:
 
 ## 📋 Requirements
 
-- **WordPress**: 6.0+ (6.9+ recommended for native Abilities API)
-- **PHP**: 7.4+ (8.0+ recommended)
+- **WordPress**: 6.9+ ( recommended for native Abilities API)
+- **PHP**: 8.3+ recommended
 - **PHP Extensions**: `json`, `curl`, `openssl`, `sodium`
 - **Composer**: For dependency management
 

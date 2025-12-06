@@ -2639,7 +2639,7 @@ msgid "Invalid JSON response from MCP server"
 msgstr ""
 
 #: includes/class-activator.php:27
-msgid "Marketing Analytics MCP requires WordPress 6.0 or higher."
+msgid "Marketing Analytics MCP requires WordPress 6.9 or higher."
 msgstr ""
 
 #: includes/class-activator.php:28

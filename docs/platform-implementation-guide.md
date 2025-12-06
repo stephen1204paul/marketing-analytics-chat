@@ -55,8 +55,8 @@ namespace Marketing_Analytics_MCP\API_Clients;
 
 class Meta_OAuth_Handler {
 
-    const OAUTH_BASE = 'https://www.facebook.com/v18.0/dialog/oauth';
-    const TOKEN_ENDPOINT = 'https://graph.facebook.com/v18.0/oauth/access_token';
+    const OAUTH_BASE = 'https://www.facebook.com/v18.3/dialog/oauth';
+    const TOKEN_ENDPOINT = 'https://graph.facebook.com/v18.3/oauth/access_token';
 
     private $app_id;
     private $app_secret;
@@ -197,7 +197,7 @@ namespace Marketing_Analytics_MCP\API_Clients;
 
 class Meta_Business_Client extends Base_API_Client {
 
-    const GRAPH_API_VERSION = 'v18.0';
+    const GRAPH_API_VERSION = 'v18.3';
     const BASE_URL = 'https://graph.facebook.com/';
 
     private $access_token;

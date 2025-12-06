@@ -1328,7 +1328,7 @@ class WooCommerce_MCP_Settings {
 - [ ] Add multi-currency support
 - [ ] Write unit tests for revenue calculations
 
-**Dependencies**: Existing plugin infrastructure, WordPress 6.0+, WooCommerce 4.0+
+**Dependencies**: Existing plugin infrastructure, WordPress 6.9+, WooCommerce 4.0+
 **Testing**: Unit tests for calculations, integration tests with sample data
 **Documentation**: API client usage, revenue tool parameters
 
