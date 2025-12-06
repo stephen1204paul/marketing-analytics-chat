@@ -1,4 +1,4 @@
-# Marketing Analytics MCP - WordPress Plugin
+# Marketing Analytics Chat - WordPress Plugin
 
 This is a clean development repository for the WordPress MCP Marketing Analytics Plugin.
 

@@ -1,6 +1,6 @@
 <?php
 /**
- * PHPUnit bootstrap file for Marketing Analytics MCP plugin tests.
+ * PHPUnit bootstrap file for Marketing Analytics Chat plugin tests.
  *
  * @package Marketing_Analytics_MCP
  */

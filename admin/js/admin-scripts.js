@@ -1,5 +1,5 @@
 /**
- * Admin JavaScript for Marketing Analytics MCP
+ * Admin JavaScript for Marketing Analytics Chat
  *
  * @package Marketing_Analytics_MCP
  */

@@ -2,7 +2,7 @@
 # This file is distributed under the GPL v2 or later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Marketing Analytics MCP 1.0.0\n"
+"Project-Id-Version: Marketing Analytics Chat 1.0.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/marketing-analytics-chat\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,7 +16,7 @@ msgstr ""
 
 #. Plugin Name of the plugin
 #: marketing-analytics-chat.php
-msgid "Marketing Analytics MCP"
+msgid "Marketing Analytics Chat"
 msgstr ""
 
 #. Plugin URI of the plugin
@@ -965,7 +965,7 @@ msgid "Are you sure you want to disconnect Meta Business Suite?"
 msgstr ""
 
 #: admin/views/dashboard.php:29
-msgid "Welcome to Marketing Analytics MCP"
+msgid "Welcome to Marketing Analytics Chat"
 msgstr ""
 
 #: admin/views/dashboard.php:30
@@ -2639,7 +2639,7 @@ msgid "Invalid JSON response from MCP server"
 msgstr ""
 
 #: includes/class-activator.php:27
-msgid "Marketing Analytics MCP requires WordPress 6.9 or higher."
+msgid "Marketing Analytics Chat requires WordPress 6.9 or higher."
 msgstr ""
 
 #: includes/class-activator.php:28
@@ -2649,13 +2649,13 @@ msgid "Plugin Activation Error"
 msgstr ""
 
 #: includes/class-activator.php:36
-msgid "Marketing Analytics MCP requires PHP 8.3 or higher."
+msgid "Marketing Analytics Chat requires PHP 8.3 or higher."
 msgstr ""
 
 #. translators: %s: comma-separated list of PHP extensions
 #: includes/class-activator.php:56
 #, php-format
-msgid "Marketing Analytics MCP requires the following PHP extensions: %s"
+msgid "Marketing Analytics Chat requires the following PHP extensions: %s"
 msgstr ""
 
 #: includes/credentials/class-connection-tester.php:52
@@ -2848,7 +2848,7 @@ msgstr ""
 
 #: includes/notifications/class-notification-manager.php:639
 #, php-format
-msgid "Test notification from Marketing Analytics MCP - %s"
+msgid "Test notification from Marketing Analytics Chat - %s"
 msgstr ""
 
 #: includes/notifications/class-slack-notifier.php:65
@@ -2898,7 +2898,7 @@ msgid "Dependencies are missing. Please run \"composer install\" in the plugin d
 msgstr ""
 
 #: marketing-analytics-chat.php:68
-msgid "Marketing Analytics MCP:"
+msgid "Marketing Analytics Chat:"
 msgstr ""
 
 #: marketing-analytics-chat.php:69

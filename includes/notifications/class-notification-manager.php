@@ -637,7 +637,7 @@ class Notification_Manager {
 
 		$test_message = sprintf(
 			/* translators: %s: current timestamp */
-			__( 'Test notification from Marketing Analytics MCP - %s', 'marketing-analytics-chat' ),
+			__( 'Test notification from Marketing Analytics Chat - %s', 'marketing-analytics-chat' ),
 			current_time( 'Y-m-d H:i:s' )
 		);
 

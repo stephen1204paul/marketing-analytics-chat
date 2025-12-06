@@ -234,7 +234,7 @@ class WhatsApp_Notifier {
 		}
 
 		// Add footer
-		$formatted .= "\n\n_Sent from Marketing Analytics MCP_";
+		$formatted .= "\n\n_Sent from Marketing Analytics Chat_";
 
 		// Truncate if too long (WhatsApp has a 4096 character limit)
 		if ( strlen( $formatted ) > 4000 ) {

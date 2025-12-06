@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Marketing Analytics MCP - Release Script
+# Marketing Analytics Chat - Release Script
 # Bumps version, updates files, builds distribution, and optionally creates git tag
 
 set -e  # Exit on error
@@ -21,7 +21,7 @@ MAIN_FILE="marketing-analytics-chat.php"
 # Get current version from plugin file
 CURRENT_VERSION=$(grep -m 1 "Version:" "$MAIN_FILE" | awk '{print $3}' | tr -d '\r')
 
-echo -e "${BLUE}📦 Marketing Analytics MCP - Release Script${NC}"
+echo -e "${BLUE}📦 Marketing Analytics Chat - Release Script${NC}"
 echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
 echo ""
 echo -e "Current version: ${YELLOW}$CURRENT_VERSION${NC}"

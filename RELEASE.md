@@ -1,6 +1,6 @@
 # Release Process
 
-This document describes how to create releases for the Marketing Analytics MCP plugin.
+This document describes how to create releases for the Marketing Analytics Chat plugin.
 
 ## Release Script
 

@@ -279,7 +279,7 @@ class Slack_Notifier {
 			'elements' => array(
 				array(
 					'type' => 'mrkdwn',
-					'text' => 'Sent from Marketing Analytics MCP | ' . current_time( 'g:i A' ),
+					'text' => 'Sent from Marketing Analytics Chat | ' . current_time( 'g:i A' ),
 				),
 			),
 		);

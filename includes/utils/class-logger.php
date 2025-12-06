@@ -1,6 +1,6 @@
 <?php
 /**
- * Logger utility for Marketing Analytics MCP
+ * Logger utility for Marketing Analytics Chat
  *
  * Centralizes logging and respects debug mode settings.
  *
@@ -29,7 +29,7 @@ class Logger {
 			$message = print_r( $message, true ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
 		}
 
-		error_log( '[Marketing Analytics MCP] ' . $message ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
+		error_log( '[Marketing Analytics Chat] ' . $message ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
 	}
 
 	/**
@@ -43,7 +43,7 @@ class Logger {
 			$message = print_r( $message, true ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
 		}
 
-		error_log( '[Marketing Analytics MCP ERROR] ' . $message ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
+		error_log( '[Marketing Analytics Chat ERROR] ' . $message ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
 	}
 
 	/**
@@ -61,7 +61,7 @@ class Logger {
 			$message = print_r( $message, true ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r
 		}
 
-		error_log( '[Marketing Analytics MCP WARNING] ' . $message ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
+		error_log( '[Marketing Analytics Chat WARNING] ' . $message ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
 	}
 
 	/**

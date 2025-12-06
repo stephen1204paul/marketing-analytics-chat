@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
-<ruleset name="Marketing Analytics MCP">
-	<description>PHP CodeSniffer ruleset for Marketing Analytics MCP plugin.</description>
+<ruleset name="Marketing Analytics Chat">
+	<description>PHP CodeSniffer ruleset for Marketing Analytics Chat plugin.</description>
 
 	<!-- What to scan -->
 	<file>.</file>

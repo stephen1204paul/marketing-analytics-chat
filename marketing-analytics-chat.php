@@ -39,7 +39,7 @@ if ( file_exists( MARKETING_ANALYTICS_MCP_PATH . 'vendor/autoload.php' ) ) {
 			?>
 		<div class="notice notice-error">
 			<p>
-				<strong>Marketing Analytics MCP:</strong>
+				<strong>Marketing Analytics Chat:</strong>
 				<?php esc_html_e( 'Dependencies are missing. Please run "composer install" in the plugin directory.', 'marketing-analytics-chat' ); ?>
 			</p>
 		</div>
@@ -65,7 +65,7 @@ function check_plugin_dependencies() {
 				?>
 			<div class="notice notice-error">
 				<p>
-					<strong><?php esc_html_e( 'Marketing Analytics MCP:', 'marketing-analytics-chat' ); ?></strong>
+					<strong><?php esc_html_e( 'Marketing Analytics Chat:', 'marketing-analytics-chat' ); ?></strong>
 					<?php esc_html_e( 'This plugin requires the MCP Adapter plugin to be installed and activated.', 'marketing-analytics-chat' ); ?>
 				</p>
 				<p>

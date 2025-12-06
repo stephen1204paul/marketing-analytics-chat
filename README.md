@@ -1,4 +1,4 @@
-# Marketing Analytics MCP - WordPress Plugin
+# Marketing Analytics Chat - WordPress Plugin
 
 > Exposes marketing analytics data (Microsoft Clarity, Google Analytics 4, Google Search Console) via Model Context Protocol for AI assistants.
 
@@ -88,7 +88,7 @@ composer install --no-dev
 wp plugin activate marketing-analytics-chat
 ```
 
-Or activate via WordPress Admin → Plugins → Marketing Analytics MCP → Activate
+Or activate via WordPress Admin → Plugins → Marketing Analytics Chat → Activate
 
 ### 4. Verify Installation
 
@@ -213,7 +213,7 @@ Contributions are welcome! Please read our [Contributing Guidelines](CONTRIBUTIN
 This plugin is licensed under the GPL v2 or later.
 
 ```
-Copyright (C) 2024 Marketing Analytics MCP
+Copyright (C) 2024 Marketing Analytics Chat
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by

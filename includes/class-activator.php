@@ -24,7 +24,7 @@ class Activator {
 		// Check minimum WordPress version
 		if ( version_compare( get_bloginfo( 'version' ), '6.9', '<' ) ) {
 			wp_die(
-				esc_html__( 'Marketing Analytics MCP requires WordPress 6.90 or higher.', 'marketing-analytics-chat' ),
+				esc_html__( 'Marketing Analytics Chat requires WordPress 6.90 or higher.', 'marketing-analytics-chat' ),
 				esc_html__( 'Plugin Activation Error', 'marketing-analytics-chat' ),
 				array( 'back_link' => true )
 			);
@@ -33,7 +33,7 @@ class Activator {
 		// Check minimum PHP version
 		if ( version_compare( PHP_VERSION, '8.3', '<' ) ) {
 			wp_die(
-				esc_html__( 'Marketing Analytics MCP requires PHP 8.3 or higher.', 'marketing-analytics-chat' ),
+				esc_html__( 'Marketing Analytics Chat requires PHP 8.3 or higher.', 'marketing-analytics-chat' ),
 				esc_html__( 'Plugin Activation Error', 'marketing-analytics-chat' ),
 				array( 'back_link' => true )
 			);
@@ -53,7 +53,7 @@ class Activator {
 			wp_die(
 				sprintf(
 					/* translators: %s: comma-separated list of PHP extensions */
-					esc_html__( 'Marketing Analytics MCP requires the following PHP extensions: %s', 'marketing-analytics-chat' ),
+					esc_html__( 'Marketing Analytics Chat requires the following PHP extensions: %s', 'marketing-analytics-chat' ),
 					esc_html( implode( ', ', $missing_extensions ) )
 				),
 				esc_html__( 'Plugin Activation Error', 'marketing-analytics-chat' ),
