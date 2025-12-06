@@ -45,11 +45,10 @@
 }
 
 .conversation-item {
-	display: block;
-	padding: 12px 16px;
+	position: relative;
+	display: flex;
+	align-items: stretch;
 	border-bottom: 1px solid #e5e5e5;
-	text-decoration: none;
-	color: #2c3338;
 	transition: background 0.15s ease;
 }
 
@@ -60,6 +59,52 @@
 .conversation-item.active {
 	background: #fff;
 	border-left: 3px solid #2271b1;
+}
+
+.conversation-item.active .conversation-link {
+	padding-left: 13px; /* Compensate for border-left */
+}
+
+.conversation-link {
+	flex: 1;
+	padding: 12px 16px;
+	text-decoration: none;
+	color: #2c3338;
+	display: block;
+}
+
+.delete-conversation {
+	position: relative;
+	background: transparent;
+	border: none;
+	color: #646970;
+	cursor: pointer;
+	padding: 12px;
+	opacity: 0;
+	transition: opacity 0.15s ease, color 0.15s ease;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	min-width: 40px;
+}
+
+.conversation-item:hover .delete-conversation {
+	opacity: 1;
+}
+
+.delete-conversation:hover {
+	color: #d63638;
+}
+
+.delete-conversation:disabled {
+	cursor: not-allowed;
+	opacity: 0.5;
+}
+
+.delete-conversation .dashicons {
+	width: 18px;
+	height: 18px;
+	font-size: 18px;
 }
 
 .conversation-title {

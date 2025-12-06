@@ -52,10 +52,21 @@ $messages               = $active_conversation_id ? $chat_manager->get_messages(
 						$is_active = $active_conversation_id === (int) $conversation->id;
 						$class     = $is_active ? 'conversation-item active' : 'conversation-item';
 						?>
-						<a href="?page=marketing-analytics-chat&conversation_id=<?php echo esc_attr( $conversation->id ); ?>" class="<?php echo esc_attr( $class ); ?>">
-							<div class="conversation-title"><?php echo esc_html( $conversation->title ); ?></div>
-							<div class="conversation-date"><?php echo esc_html( human_time_diff( strtotime( $conversation->updated_at ), current_time( 'timestamp' ) ) . ' ago' ); ?></div>
-						</a>
+						<div class="<?php echo esc_attr( $class ); ?>">
+							<a href="?page=marketing-analytics-chat&conversation_id=<?php echo esc_attr( $conversation->id ); ?>" class="conversation-link">
+								<div class="conversation-title"><?php echo esc_html( $conversation->title ); ?></div>
+								<div class="conversation-date"><?php echo esc_html( human_time_diff( strtotime( $conversation->updated_at ), current_time( 'timestamp' ) ) . ' ago' ); ?></div>
+							</a>
+							<button
+								type="button"
+								class="delete-conversation"
+								data-conversation-id="<?php echo esc_attr( $conversation->id ); ?>"
+								data-conversation-title="<?php echo esc_attr( $conversation->title ); ?>"
+								title="<?php esc_attr_e( 'Delete conversation', 'marketing-analytics-chat' ); ?>"
+							>
+								<span class="dashicons dashicons-trash"></span>
+							</button>
+						</div>
 					<?php endforeach; ?>
 				<?php endif; ?>
 			</div>

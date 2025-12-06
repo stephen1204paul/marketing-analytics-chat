@@ -28,6 +28,9 @@
 			$('#new-conversation, #new-conversation-main').on('click', this.createNewConversation.bind(this));
 
 			// Suggested prompts
+
+ttt// Delete conversation buttons
+ttt$(document).on('click', '.delete-conversation', this.deleteConversation.bind(this));
 			$('.suggested-prompt').on('click', this.fillSuggestedPrompt.bind(this));
 
 			// Form submission
@@ -82,6 +85,57 @@
 			});
 		},
 
+
+	/**
+	 * Delete a conversation
+	 */
+	deleteConversation: function(e) {
+		e.preventDefault();
+		e.stopPropagation();
+
+		var $button = $(e.currentTarget);
+		var conversationId = $button.data('conversation-id');
+		var conversationTitle = $button.data('conversation-title');
+
+		// Confirm deletion
+		if (!confirm('Are you sure you want to delete "' + conversationTitle + '"? This action cannot be undone.')) {
+			return;
+		}
+
+		// Show loading state
+		$button.prop('disabled', true).html('<span class="dashicons dashicons-update-alt"></span>');
+
+		// Delete conversation via AJAX
+		$.ajax({
+			url: marketingAnalyticsMCPChat.ajaxUrl,
+			type: 'POST',
+			data: {
+				action: 'marketing_analytics_mcp_delete_conversation',
+				nonce: marketingAnalyticsMCPChat.nonce,
+				conversation_id: conversationId
+			},
+			success: function(response) {
+				if (response.success) {
+					// If this was the active conversation, redirect to chat page without conversation
+					if (parseInt(marketingAnalyticsMCPChat.conversationId) === parseInt(conversationId)) {
+						window.location.href = '?page=marketing-analytics-chat';
+					} else {
+						// Just remove from sidebar
+						$button.closest('.conversation-item').fadeOut(300, function() {
+							$(this).remove();
+						});
+					}
+				} else {
+					alert(response.data.message || 'Failed to delete conversation. Please try again.');
+					$button.prop('disabled', false).html('<span class="dashicons dashicons-trash"></span>');
+				}
+			},
+			error: function() {
+				alert('Failed to delete conversation. Please try again.');
+				$button.prop('disabled', false).html('<span class="dashicons dashicons-trash"></span>');
+			}
+		});
+	},
 		/**
 		 * Fill suggested prompt into input
 		 */

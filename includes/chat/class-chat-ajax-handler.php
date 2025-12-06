@@ -51,6 +51,7 @@ class Chat_Ajax_Handler {
 		add_action( 'wp_ajax_marketing_analytics_mcp_create_conversation', array( $this, 'create_conversation' ) );
 		add_action( 'wp_ajax_marketing_analytics_mcp_send_message', array( $this, 'send_message' ) );
 		add_action( 'wp_ajax_marketing_analytics_mcp_retry_tool', array( $this, 'retry_tool_call' ) );
+		add_action( 'wp_ajax_marketing_analytics_mcp_delete_conversation', array( $this, 'delete_conversation' ) );
 	}
 
 	/**
@@ -578,5 +579,57 @@ class Chat_Ajax_Handler {
 		}
 
 		return $response['content'] ?? $result;
+	}
+
+	/**
+	 * Delete a conversation
+	 */
+	public function delete_conversation() {
+		// Verify nonce
+		check_ajax_referer( 'marketing-analytics-chat-admin', 'nonce' );
+
+		// Check user permissions
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_send_json_error(
+				array( 'message' => __( 'Insufficient permissions', 'marketing-analytics-chat' ) ),
+				403
+			);
+		}
+
+		// Get conversation ID
+		$conversation_id = isset( $_POST['conversation_id'] ) ? absint( $_POST['conversation_id'] ) : 0;
+
+		// Validate
+		if ( ! $conversation_id ) {
+			wp_send_json_error(
+				array( 'message' => __( 'Invalid conversation ID', 'marketing-analytics-chat' ) ),
+				400
+			);
+		}
+
+		// Verify conversation belongs to user
+		$conversation = $this->chat_manager->get_conversation( $conversation_id );
+		if ( ! $conversation || (int) $conversation->user_id !== get_current_user_id() ) {
+			wp_send_json_error(
+				array( 'message' => __( 'Conversation not found or access denied', 'marketing-analytics-chat' ) ),
+				404
+			);
+		}
+
+		// Delete conversation
+		$deleted = $this->chat_manager->delete_conversation( $conversation_id );
+
+		if ( $deleted ) {
+			wp_send_json_success(
+				array(
+					'message' => __( 'Conversation deleted successfully', 'marketing-analytics-chat' ),
+				)
+			);
+		} else {
+			wp_send_json_error(
+				array( 'message' => __( 'Failed to delete conversation', 'marketing-analytics-chat' ) ),
+				500
+			);
+		}
 	}
 }

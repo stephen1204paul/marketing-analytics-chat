@@ -43,7 +43,7 @@ class Admin {
 			__( 'AI Assistant', 'marketing-analytics-chat' ),
 			__( 'AI Assistant', 'marketing-analytics-chat' ),
 			'manage_options',
-			'marketing-analytics-chat',
+			'marketing-analytics-chat-ai-assistant',
 			array( $this, 'render_chat_page' )
 		);
 
@@ -55,6 +55,16 @@ class Admin {
 			'manage_options',
 			'marketing-analytics-chat-connections',
 			array( $this, 'render_connections_page' )
+		);
+
+		// Custom Prompts page
+		add_submenu_page(
+			'marketing-analytics-chat',
+			__( 'Custom Prompts', 'marketing-analytics-chat' ),
+			__( 'Custom Prompts', 'marketing-analytics-chat' ),
+			'manage_options',
+			'marketing-analytics-chat-prompts',
+			array( $this, 'render_prompts_page' )
 		);
 
 		// Settings page
@@ -87,7 +97,7 @@ class Admin {
 		);
 
 		// Enqueue chat interface styles on chat page
-		if ( strpos( $hook, 'marketing-analytics-chat' ) !== false ) {
+		if ( strpos( $hook, 'marketing-analytics-chat-ai-assistant' ) !== false ) {
 			wp_enqueue_style(
 				'marketing-analytics-chat',
 				MARKETING_ANALYTICS_MCP_URL . 'admin/css/chat-interface.css',
@@ -133,7 +143,7 @@ class Admin {
 		);
 
 		// Enqueue chat interface script on chat page
-		if ( strpos( $hook, 'marketing-analytics-chat' ) !== false ) {
+		if ( strpos( $hook, 'marketing-analytics-chat-ai-assistant' ) !== false ) {
 			wp_enqueue_script(
 				'marketing-analytics-chat',
 				MARKETING_ANALYTICS_MCP_URL . 'admin/js/chat-interface.js',
@@ -183,6 +193,17 @@ class Admin {
 		}
 
 		require_once MARKETING_ANALYTICS_MCP_PATH . 'admin/views/chat.php';
+	}
+
+	/**
+	 * Render prompts page
+	 */
+	public function render_prompts_page() {
+		if ( ! current_user_can( 'manage_options' ) ) {
+			return;
+		}
+
+		require_once MARKETING_ANALYTICS_MCP_PATH . 'admin/views/prompts.php';
 	}
 
 	/**
