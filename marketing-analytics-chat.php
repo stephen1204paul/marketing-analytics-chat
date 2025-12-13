@@ -3,7 +3,7 @@
  * Plugin Name: Marketing Analytics Chat
  * Plugin URI: https://github.com/stephen1204paul/marketing-analytics-chat
  * Description: Chat with your marketing analytics data using AI. Connects Google Analytics 4, Search Console, Microsoft Clarity, and more.
- * Version: 0.1.1
+ * Version: 0.1.2
  * Requires at least: 6.9
  * Requires PHP: 8.1
  * Requires Plugins: mcp-adapter
@@ -23,7 +23,7 @@ if ( ! defined( 'WPINC' ) ) {
 }
 
 // Plugin version
-define( 'MARKETING_ANALYTICS_MCP_VERSION', '0.1.1' );
+define( 'MARKETING_ANALYTICS_MCP_VERSION', '0.1.2' );
 define( 'MARKETING_ANALYTICS_MCP_PATH', plugin_dir_path( __FILE__ ) );
 define( 'MARKETING_ANALYTICS_MCP_URL', plugin_dir_url( __FILE__ ) );
 define( 'MARKETING_ANALYTICS_MCP_BASENAME', plugin_basename( __FILE__ ) );
