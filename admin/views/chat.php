@@ -53,7 +53,7 @@ $messages               = $active_conversation_id ? $chat_manager->get_messages(
 						$class     = $is_active ? 'conversation-item active' : 'conversation-item';
 						?>
 						<div class="<?php echo esc_attr( $class ); ?>">
-							<a href="?page=marketing-analytics-chat&conversation_id=<?php echo esc_attr( $conversation->id ); ?>" class="conversation-link">
+							<a href="<?php echo esc_url( admin_url( 'admin.php?page=marketing-analytics-chat-ai-assistant&conversation_id=' . $conversation->id ) ); ?>" class="conversation-link">
 								<div class="conversation-title"><?php echo esc_html( $conversation->title ); ?></div>
 								<div class="conversation-date"><?php echo esc_html( human_time_diff( strtotime( $conversation->updated_at ), current_time( 'timestamp' ) ) . ' ago' ); ?></div>
 							</a>
@@ -199,6 +199,7 @@ $messages               = $active_conversation_id ? $chat_manager->get_messages(
 		ajaxUrl: '<?php echo esc_js( admin_url( 'admin-ajax.php' ) ); ?>',
 		nonce: '<?php echo esc_js( wp_create_nonce( 'marketing-analytics-chat-admin' ) ); ?>',
 		conversationId: <?php echo $active_conversation_id ? absint( $active_conversation_id ) : 'null'; ?>,
-		userId: <?php echo absint( $user_id ); ?>
+		userId: <?php echo absint( $user_id ); ?>,
+		chatPageUrl: '<?php echo esc_js( admin_url( 'admin.php?page=marketing-analytics-chat-ai-assistant' ) ); ?>'
 	};
 </script>

@@ -72,7 +72,7 @@ ttt$(document).on('click', '.delete-conversation', this.deleteConversation.bind(
 				success: function(response) {
 					if (response.success && response.data.conversation_id) {
 						// Redirect to new conversation
-						window.location.href = '?page=marketing-analytics-chat&conversation_id=' + response.data.conversation_id;
+						window.location.href = marketingAnalyticsMCPChat.chatPageUrl + '&conversation_id=' + response.data.conversation_id;
 					} else {
 						alert('Failed to create conversation. Please try again.');
 						$button.prop('disabled', false).html(originalText);
@@ -118,7 +118,7 @@ ttt$(document).on('click', '.delete-conversation', this.deleteConversation.bind(
 				if (response.success) {
 					// If this was the active conversation, redirect to chat page without conversation
 					if (parseInt(marketingAnalyticsMCPChat.conversationId) === parseInt(conversationId)) {
-						window.location.href = '?page=marketing-analytics-chat';
+						window.location.href = marketingAnalyticsMCPChat.chatPageUrl;
 					} else {
 						// Just remove from sidebar
 						$button.closest('.conversation-item').fadeOut(300, function() {
