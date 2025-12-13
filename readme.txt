@@ -4,7 +4,7 @@ Donate link: https://www.specflux.com/
 Tags: marketing analytics, ai, chat, mcp
 Requires at least: 6.9
 Tested up to: 6.9
-Stable tag: 0.1.0
+Stable tag: 0.1.1
 Requires PHP: 8.1
 Requires Plugins: mcp-adapter
 License: GPLv2 or later
@@ -128,6 +128,9 @@ WordPress 6.9 and higher is required. The plugin uses the Abilities API (include
 4. Settings page with API configuration
 
 == Changelog ==
+
+= 0.1.1 - 2025-12-13 =
+* Release version 0.1.1
 
 = 0.1.0 - 2025-12-06 =
 * Release version 0.1.0
