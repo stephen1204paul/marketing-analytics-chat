@@ -27,10 +27,10 @@
 			// New conversation buttons
 			$('#new-conversation, #new-conversation-main').on('click', this.createNewConversation.bind(this));
 
-			// Suggested prompts
+			// Delete conversation buttons
+			$(document).on('click', '.delete-conversation', this.deleteConversation.bind(this));
 
-ttt// Delete conversation buttons
-ttt$(document).on('click', '.delete-conversation', this.deleteConversation.bind(this));
+			// Suggested prompts
 			$('.suggested-prompt').on('click', this.fillSuggestedPrompt.bind(this));
 
 			// Form submission

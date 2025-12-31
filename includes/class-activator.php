@@ -7,6 +7,8 @@
 
 namespace Marketing_Analytics_MCP;
 
+use Marketing_Analytics_MCP\Utils\Permission_Manager;
+
 /**
  * Fired during plugin activation
  */
@@ -70,6 +72,9 @@ class Activator {
 
 		// Generate encryption key if it doesn't exist
 		self::generate_encryption_key();
+
+		// Register custom capabilities for role-based access control
+		Permission_Manager::register_capabilities();
 
 		// Flush rewrite rules
 		flush_rewrite_rules();

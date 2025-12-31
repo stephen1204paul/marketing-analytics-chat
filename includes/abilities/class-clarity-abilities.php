@@ -9,6 +9,7 @@ namespace Marketing_Analytics_MCP\Abilities;
 
 use Marketing_Analytics_MCP\API_Clients\Clarity_Client;
 use Marketing_Analytics_MCP\Credentials\Credential_Manager;
+use Marketing_Analytics_MCP\Utils\Permission_Manager;
 
 /**
  * Registers Microsoft Clarity MCP abilities
@@ -415,6 +416,6 @@ class Clarity_Abilities {
 	 * @return bool True if user has permission, false otherwise.
 	 */
 	public function check_permissions() {
-		return current_user_can( 'manage_options' );
+		return Permission_Manager::can_access_plugin();
 	}
 }

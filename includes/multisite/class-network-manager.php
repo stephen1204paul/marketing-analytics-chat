@@ -8,6 +8,8 @@
 
 namespace Marketing_Analytics_MCP\Multisite;
 
+use Marketing_Analytics_MCP\Utils\Permission_Manager;
+
 /**
  * Class for managing multiple WordPress sites in a network
  */
@@ -863,6 +865,6 @@ class Network_Manager {
 	 * @return bool Permission result
 	 */
 	public function verify_admin_request() {
-		return current_user_can( 'manage_options' );
+		return Permission_Manager::can_access_plugin();
 	}
 }

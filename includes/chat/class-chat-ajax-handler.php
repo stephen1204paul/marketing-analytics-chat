@@ -9,6 +9,8 @@
 
 namespace Marketing_Analytics_MCP\Chat;
 
+use Marketing_Analytics_MCP\Utils\Permission_Manager;
+
 /**
  * Handles chat-related AJAX requests
  */
@@ -62,7 +64,7 @@ class Chat_Ajax_Handler {
 		check_ajax_referer( 'marketing-analytics-chat-admin', 'nonce' );
 
 		// Check user permissions
-		if ( ! current_user_can( 'manage_options' ) ) {
+		if ( ! Permission_Manager::can_access_plugin() ) {
 			wp_send_json_error(
 				array( 'message' => __( 'Insufficient permissions', 'marketing-analytics-chat' ) ),
 				403
@@ -98,7 +100,7 @@ class Chat_Ajax_Handler {
 		check_ajax_referer( 'marketing-analytics-chat-admin', 'nonce' );
 
 		// Check user permissions
-		if ( ! current_user_can( 'manage_options' ) ) {
+		if ( ! Permission_Manager::can_access_plugin() ) {
 			wp_send_json_error(
 				array( 'message' => __( 'Insufficient permissions', 'marketing-analytics-chat' ) ),
 				403
@@ -501,7 +503,7 @@ class Chat_Ajax_Handler {
 		check_ajax_referer( 'marketing-analytics-chat-admin', 'nonce' );
 
 		// Check user permissions
-		if ( ! current_user_can( 'manage_options' ) ) {
+		if ( ! Permission_Manager::can_access_plugin() ) {
 			wp_send_json_error(
 				array( 'message' => __( 'Insufficient permissions', 'marketing-analytics-chat' ) ),
 				403
@@ -589,7 +591,7 @@ class Chat_Ajax_Handler {
 		check_ajax_referer( 'marketing-analytics-chat-admin', 'nonce' );
 
 		// Check user permissions
-		if ( ! current_user_can( 'manage_options' ) ) {
+		if ( ! Permission_Manager::can_access_plugin() ) {
 			wp_send_json_error(
 				array( 'message' => __( 'Insufficient permissions', 'marketing-analytics-chat' ) ),
 				403

@@ -18,6 +18,7 @@ use Marketing_Analytics_MCP\Credentials\Credential_Manager;
 use Marketing_Analytics_MCP\Credentials\OAuth_Handler;
 use Marketing_Analytics_MCP\Notifications\Notification_Manager;
 use Marketing_Analytics_MCP\Utils\Logger;
+use Marketing_Analytics_MCP\Utils\Permission_Manager;
 
 /**
  * Handles AJAX requests from admin interface
@@ -77,7 +78,7 @@ class Ajax_Handler {
 		}
 
 		// Check permissions
-		if ( ! current_user_can( 'manage_options' ) ) {
+		if ( ! Permission_Manager::can_access_plugin() ) {
 			Logger::error( 'User lacks manage_options capability' );
 			wp_send_json_error(
 				array(
@@ -260,7 +261,7 @@ class Ajax_Handler {
 		}
 
 		// Check permissions
-		if ( ! current_user_can( 'manage_options' ) ) {
+		if ( ! Permission_Manager::can_access_plugin() ) {
 			Logger::error( 'User lacks permissions' );
 			wp_send_json_error(
 				array(
@@ -325,7 +326,7 @@ class Ajax_Handler {
 		}
 
 		// Check permissions
-		if ( ! current_user_can( 'manage_options' ) ) {
+		if ( ! Permission_Manager::can_access_plugin() ) {
 			Logger::error( 'User lacks permissions' );
 			wp_send_json_error(
 				array(
@@ -370,7 +371,7 @@ class Ajax_Handler {
 		}
 
 		// Check permissions
-		if ( ! current_user_can( 'manage_options' ) ) {
+		if ( ! Permission_Manager::can_access_plugin() ) {
 			Logger::error( 'User lacks permissions' );
 			wp_send_json_error(
 				array(
@@ -436,7 +437,7 @@ class Ajax_Handler {
 		}
 
 		// Check permissions
-		if ( ! current_user_can( 'manage_options' ) ) {
+		if ( ! Permission_Manager::can_access_plugin() ) {
 			Logger::error( 'User lacks permissions' );
 			wp_send_json_error(
 				array(
@@ -505,7 +506,7 @@ class Ajax_Handler {
 		}
 
 		// Check permissions
-		if ( ! current_user_can( 'manage_options' ) ) {
+		if ( ! Permission_Manager::can_access_plugin() ) {
 			Logger::error( 'User lacks permissions' );
 			wp_send_json_error(
 				array(
@@ -571,7 +572,7 @@ class Ajax_Handler {
 		}
 
 		// Check permissions
-		if ( ! current_user_can( 'manage_options' ) ) {
+		if ( ! Permission_Manager::can_access_plugin() ) {
 			Logger::error( 'User lacks permissions' );
 			wp_send_json_error(
 				array(
@@ -640,7 +641,7 @@ class Ajax_Handler {
 		}
 
 		// Check permissions
-		if ( ! current_user_can( 'manage_options' ) ) {
+		if ( ! Permission_Manager::can_access_plugin() ) {
 			Logger::error( 'User lacks permissions' );
 			wp_send_json_error(
 				array(
@@ -690,7 +691,7 @@ class Ajax_Handler {
 		}
 
 		// Check permissions
-		if ( ! current_user_can( 'manage_options' ) ) {
+		if ( ! Permission_Manager::can_access_plugin() ) {
 			Logger::error( 'User lacks permissions' );
 			wp_send_json_error(
 				array(
@@ -755,7 +756,7 @@ class Ajax_Handler {
 		}
 
 		// Check permissions
-		if ( ! current_user_can( 'manage_options' ) ) {
+		if ( ! Permission_Manager::can_access_plugin() ) {
 			Logger::error( 'User lacks permissions' );
 			wp_send_json_error(
 				array(
@@ -812,7 +813,7 @@ class Ajax_Handler {
 		}
 
 		// Check permissions
-		if ( ! current_user_can( 'manage_options' ) ) {
+		if ( ! Permission_Manager::can_access_plugin() ) {
 			Logger::error( 'User lacks permissions' );
 			wp_send_json_error(
 				array(
@@ -880,7 +881,7 @@ class Ajax_Handler {
 		}
 
 		// Check permissions
-		if ( ! current_user_can( 'manage_options' ) ) {
+		if ( ! Permission_Manager::can_access_plugin() ) {
 			Logger::error( 'User lacks permissions' );
 			wp_send_json_error(
 				array(
@@ -937,7 +938,7 @@ class Ajax_Handler {
 		}
 
 		// Check permissions
-		if ( ! current_user_can( 'manage_options' ) ) {
+		if ( ! Permission_Manager::can_access_plugin() ) {
 			Logger::error( 'User lacks permissions' );
 			wp_send_json_error(
 				array(
@@ -1013,7 +1014,7 @@ class Ajax_Handler {
 		}
 
 		// Check permissions
-		if ( ! current_user_can( 'manage_options' ) ) {
+		if ( ! Permission_Manager::can_access_plugin() ) {
 			Logger::error( 'User lacks permissions' );
 			wp_send_json_error(
 				array(
@@ -1103,7 +1104,7 @@ class Ajax_Handler {
 		}
 
 		// Check permissions
-		if ( ! current_user_can( 'manage_options' ) ) {
+		if ( ! Permission_Manager::can_access_plugin() ) {
 			Logger::error( 'User lacks permissions' );
 			wp_send_json_error(
 				array(
@@ -1150,7 +1151,7 @@ class Ajax_Handler {
 		}
 
 		// Check permissions
-		if ( ! current_user_can( 'manage_options' ) ) {
+		if ( ! Permission_Manager::can_access_plugin() ) {
 			Logger::error( 'User lacks permissions' );
 			wp_send_json_error( 'Insufficient permissions.' );
 			return;
@@ -1187,7 +1188,7 @@ class Ajax_Handler {
 		}
 
 		// Check permissions
-		if ( ! current_user_can( 'manage_options' ) ) {
+		if ( ! Permission_Manager::can_access_plugin() ) {
 			Logger::error( 'User lacks permissions' );
 			wp_send_json_error( 'Insufficient permissions.' );
 			return;
@@ -1223,7 +1224,7 @@ class Ajax_Handler {
 		}
 
 		// Check permissions
-		if ( ! current_user_can( 'manage_options' ) ) {
+		if ( ! Permission_Manager::can_access_plugin() ) {
 			Logger::error( 'User lacks permissions' );
 			wp_die( esc_html__( 'Insufficient permissions.', 'marketing-analytics-chat' ) );
 		}

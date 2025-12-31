@@ -9,6 +9,7 @@ namespace Marketing_Analytics_MCP\Abilities;
 
 use Marketing_Analytics_MCP\Credentials\Credential_Manager;
 use Marketing_Analytics_MCP\Prompts\Prompt_Manager;
+use Marketing_Analytics_MCP\Utils\Permission_Manager;
 
 /**
  * Registers MCP prompts for common analysis workflows
@@ -141,6 +142,6 @@ class Prompts {
 	 * @return bool True if user has permission, false otherwise.
 	 */
 	public function check_permissions() {
-		return current_user_can( 'manage_options' );
+		return Permission_Manager::can_access_plugin();
 	}
 }

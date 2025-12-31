@@ -9,6 +9,7 @@ namespace Marketing_Analytics_MCP\Abilities;
 
 use Marketing_Analytics_MCP\API_Clients\GSC_Client;
 use Marketing_Analytics_MCP\Credentials\Credential_Manager;
+use Marketing_Analytics_MCP\Utils\Permission_Manager;
 
 /**
  * Registers Google Search Console MCP abilities
@@ -383,6 +384,6 @@ class GSC_Abilities {
 	 * @return bool True if user has permission, false otherwise.
 	 */
 	public function check_permissions() {
-		return current_user_can( 'manage_options' );
+		return Permission_Manager::can_access_plugin();
 	}
 }

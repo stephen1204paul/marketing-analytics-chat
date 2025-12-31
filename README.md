@@ -145,6 +145,58 @@ Ask Claude:
 Can you show me my marketing analytics dashboard summary?
 ```
 
+## 🔐 Access Control
+
+### Role-Based Permissions
+
+By default, only **Administrators** can access the plugin. You can grant access to other WordPress roles through the Access Control settings.
+
+**Navigate to**: Marketing Analytics → Settings → Access Control
+
+### Configuring Access
+
+1. Go to **Marketing Analytics → Settings**
+2. Click the **Access Control** tab
+3. Select which WordPress roles can access the plugin:
+   - Administrator (Recommended - Full access)
+   - Editor
+   - Author
+   - Contributor
+   - Subscriber
+4. Click **Save Access Control Settings**
+
+### How It Works
+
+The plugin uses WordPress custom capabilities for flexible permission management:
+
+- **Custom Capability**: `access_marketing_analytics` is assigned to selected roles
+- **All-or-Nothing Access**: Selected roles get access to all plugin features
+- **Menu Visibility**: Plugin menu only appears for users with access
+- **API Security**: All AJAX requests and MCP abilities check permissions
+
+### Important Notes
+
+- **Default Behavior**: If no roles are selected, only Administrators have access
+- **Backward Compatible**: Existing installations default to Administrator-only
+- **Security Layers**: Permission checks work alongside WordPress nonces for defense-in-depth
+- **Works with Role Plugins**: Compatible with third-party role management plugins
+
+### Example Use Cases
+
+**Agency Teams**: Grant Editors access so content teams can view analytics without full admin rights
+
+**Client Access**: Give specific users Contributor role and enable it to let clients view their own analytics
+
+**Multi-Site Networks**: Different sites can have different access configurations
+
+### Technical Details
+
+The access control system:
+- Uses WordPress's native capability system (`user_can()`)
+- Syncs capabilities when roles are updated
+- Removes capabilities on plugin deactivation for clean uninstall
+- Centralized permission checks via `Permission_Manager` class
+
 ## 📚 Documentation
 
 - **[n8n Quick Start](docs/N8N_QUICK_START.md)** - Connect to n8n in 5 minutes
@@ -191,12 +243,14 @@ composer phpstan    # Static analysis
 
 ## 🔒 Security
 
+- **Role-Based Access Control**: Custom WordPress capabilities with configurable role permissions
 - **Credential Encryption**: libsodium `crypto_secretbox` with per-site keys
 - **OAuth Security**: State parameter CSRF protection, HTTPS-only callbacks
 - **WordPress Security**: Nonces, capability checks, input sanitization, output escaping
+- **Defense-in-Depth**: Multiple security layers (nonces + capabilities) on all AJAX/API endpoints
 - **No Credential Logging**: Sensitive data never appears in logs or error messages
 
-Found a security issue? Please email security@example.com (do not open public issues).
+Found a security issue? Please email stephenpaul@specflux.com (do not open public issues).
 
 ## 🤝 Contributing
 

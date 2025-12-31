@@ -13,6 +13,7 @@ use Marketing_Analytics_MCP\Analytics\Anomaly_Detector;
 use Marketing_Analytics_MCP\Export\Sheets_Exporter;
 use Marketing_Analytics_MCP\Notifications\Notification_Manager;
 use Marketing_Analytics_MCP\Multisite\Network_Manager;
+use Marketing_Analytics_MCP\Utils\Permission_Manager;
 
 /**
  * Class for registering Quick Wins MCP abilities
@@ -922,6 +923,6 @@ class QuickWins_Abilities {
 	 * @return bool True if user has permission.
 	 */
 	public function check_permissions() {
-		return current_user_can( 'manage_options' );
+		return Permission_Manager::can_access_plugin();
 	}
 }

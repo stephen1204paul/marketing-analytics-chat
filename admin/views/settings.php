@@ -11,6 +11,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 use Marketing_Analytics_MCP\Credentials\OAuth_Handler;
+use Marketing_Analytics_MCP\Utils\Permission_Manager;
 
 $active_tab      = isset( $_GET['tab'] ) ? sanitize_key( $_GET['tab'] ) : 'general';
 $success_message = '';
@@ -109,6 +110,9 @@ $has_oauth_credentials = $oauth_handler->has_oauth_credentials();
 		</a>
 		<a href="?page=marketing-analytics-chat-settings&tab=advanced" class="nav-tab <?php echo esc_attr( $active_tab === 'advanced' ? 'nav-tab-active' : '' ); ?>">
 			<?php esc_html_e( 'Advanced', 'marketing-analytics-chat' ); ?>
+		</a>
+		<a href="?page=marketing-analytics-chat-settings&tab=access-control" class="nav-tab <?php echo esc_attr( $active_tab === 'access-control' ? 'nav-tab-active' : '' ); ?>">
+			<?php esc_html_e( 'Access Control', 'marketing-analytics-chat' ); ?>
 		</a>
 	</h2>
 
@@ -712,6 +716,74 @@ $has_oauth_credentials = $oauth_handler->has_oauth_credentials();
 
 					<p class="submit">
 						<input type="submit" name="save_settings" class="button button-primary" value="<?php esc_attr_e( 'Save Settings', 'marketing-analytics-chat' ); ?>" />
+					</p>
+				</form>
+				<?php
+				break;
+
+			case 'access-control':
+				// Handle form submission
+				if ( isset( $_POST['save_access_control'] ) && check_admin_referer( 'marketing_analytics_mcp_save_access_control', 'access_control_nonce' ) ) {
+
+					$allowed_roles = isset( $_POST['allowed_roles'] ) && is_array( $_POST['allowed_roles'] )
+						? array_map( 'sanitize_text_field', $_POST['allowed_roles'] )
+						: array();
+
+					if ( Permission_Manager::set_allowed_roles( $allowed_roles ) ) {
+						echo '<div class="notice notice-success is-dismissible"><p>' .
+							esc_html__( 'Access control settings saved successfully.', 'marketing-analytics-chat' ) .
+							'</p></div>';
+					} else {
+						echo '<div class="notice notice-error is-dismissible"><p>' .
+							esc_html__( 'Failed to save access control settings.', 'marketing-analytics-chat' ) .
+							'</p></div>';
+					}
+				}
+
+				$current_allowed = Permission_Manager::get_allowed_roles();
+				$available_roles = Permission_Manager::get_available_roles();
+				?>
+
+				<form method="post" action="">
+					<?php wp_nonce_field( 'marketing_analytics_mcp_save_access_control', 'access_control_nonce' ); ?>
+
+					<h2><?php esc_html_e( 'Plugin Access Permissions', 'marketing-analytics-chat' ); ?></h2>
+					<p class="description">
+						<?php esc_html_e( 'Select which WordPress roles can access this plugin. All features are accessible to selected roles (all-or-nothing access).', 'marketing-analytics-chat' ); ?>
+					</p>
+
+					<table class="form-table">
+						<tr>
+							<th scope="row">
+								<label><?php esc_html_e( 'Allowed Roles', 'marketing-analytics-chat' ); ?></label>
+							</th>
+							<td>
+								<fieldset>
+									<legend class="screen-reader-text">
+										<span><?php esc_html_e( 'Allowed Roles', 'marketing-analytics-chat' ); ?></span>
+									</legend>
+									<?php foreach ( $available_roles as $slug => $name ) : ?>
+										<label style="display: block; margin: 8px 0;">
+											<input type="checkbox" name="allowed_roles[]"
+												value="<?php echo esc_attr( $slug ); ?>"
+												<?php checked( in_array( $slug, $current_allowed, true ) ); ?> />
+											<strong><?php echo esc_html( $name ); ?></strong>
+											<?php if ( $slug === 'administrator' ) : ?>
+												<span class="description"><?php esc_html_e( '(Recommended - Full access)', 'marketing-analytics-chat' ); ?></span>
+											<?php endif; ?>
+										</label>
+									<?php endforeach; ?>
+								</fieldset>
+								<p class="description">
+									<?php esc_html_e( 'If no roles are selected, only Administrators will have access (default behavior).', 'marketing-analytics-chat' ); ?>
+								</p>
+							</td>
+						</tr>
+					</table>
+
+					<p class="submit">
+						<input type="submit" name="save_access_control" class="button button-primary"
+							value="<?php esc_attr_e( 'Save Access Control Settings', 'marketing-analytics-chat' ); ?>" />
 					</p>
 				</form>
 				<?php

@@ -7,6 +7,8 @@
 
 namespace Marketing_Analytics_MCP\Admin;
 
+use Marketing_Analytics_MCP\Utils\Permission_Manager;
+
 /**
  * Handles admin menu and pages
  */
@@ -20,7 +22,7 @@ class Admin {
 		add_menu_page(
 			__( 'Marketing Analytics', 'marketing-analytics-chat' ),
 			__( 'Marketing Analytics', 'marketing-analytics-chat' ),
-			'manage_options',
+			'access_marketing_analytics',
 			'marketing-analytics-chat',
 			array( $this, 'render_dashboard_page' ),
 			'dashicons-chart-line',
@@ -32,7 +34,7 @@ class Admin {
 			'marketing-analytics-chat',
 			__( 'Dashboard', 'marketing-analytics-chat' ),
 			__( 'Dashboard', 'marketing-analytics-chat' ),
-			'manage_options',
+			'access_marketing_analytics',
 			'marketing-analytics-chat',
 			array( $this, 'render_dashboard_page' )
 		);
@@ -42,7 +44,7 @@ class Admin {
 			'marketing-analytics-chat',
 			__( 'AI Assistant', 'marketing-analytics-chat' ),
 			__( 'AI Assistant', 'marketing-analytics-chat' ),
-			'manage_options',
+			'access_marketing_analytics',
 			'marketing-analytics-chat-ai-assistant',
 			array( $this, 'render_chat_page' )
 		);
@@ -52,7 +54,7 @@ class Admin {
 			'marketing-analytics-chat',
 			__( 'Connections', 'marketing-analytics-chat' ),
 			__( 'Connections', 'marketing-analytics-chat' ),
-			'manage_options',
+			'access_marketing_analytics',
 			'marketing-analytics-chat-connections',
 			array( $this, 'render_connections_page' )
 		);
@@ -62,7 +64,7 @@ class Admin {
 			'marketing-analytics-chat',
 			__( 'Custom Prompts', 'marketing-analytics-chat' ),
 			__( 'Custom Prompts', 'marketing-analytics-chat' ),
-			'manage_options',
+			'access_marketing_analytics',
 			'marketing-analytics-chat-prompts',
 			array( $this, 'render_prompts_page' )
 		);
@@ -72,7 +74,7 @@ class Admin {
 			'marketing-analytics-chat',
 			__( 'Settings', 'marketing-analytics-chat' ),
 			__( 'Settings', 'marketing-analytics-chat' ),
-			'manage_options',
+			'access_marketing_analytics',
 			'marketing-analytics-chat-settings',
 			array( $this, 'render_settings_page' )
 		);
@@ -158,7 +160,7 @@ class Admin {
 	 * Render dashboard page
 	 */
 	public function render_dashboard_page() {
-		if ( ! current_user_can( 'manage_options' ) ) {
+		if ( ! Permission_Manager::can_access_plugin() ) {
 			return;
 		}
 
@@ -169,7 +171,7 @@ class Admin {
 	 * Render connections page
 	 */
 	public function render_connections_page() {
-		if ( ! current_user_can( 'manage_options' ) ) {
+		if ( ! Permission_Manager::can_access_plugin() ) {
 			return;
 		}
 
@@ -180,7 +182,7 @@ class Admin {
 	 * Render chat page
 	 */
 	public function render_chat_page() {
-		if ( ! current_user_can( 'manage_options' ) ) {
+		if ( ! Permission_Manager::can_access_plugin() ) {
 			return;
 		}
 
@@ -199,7 +201,7 @@ class Admin {
 	 * Render prompts page
 	 */
 	public function render_prompts_page() {
-		if ( ! current_user_can( 'manage_options' ) ) {
+		if ( ! Permission_Manager::can_access_plugin() ) {
 			return;
 		}
 
@@ -210,7 +212,7 @@ class Admin {
 	 * Render settings page
 	 */
 	public function render_settings_page() {
-		if ( ! current_user_can( 'manage_options' ) ) {
+		if ( ! Permission_Manager::can_access_plugin() ) {
 			return;
 		}
 

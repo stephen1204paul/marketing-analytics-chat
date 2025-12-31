@@ -7,6 +7,8 @@
 
 namespace Marketing_Analytics_MCP;
 
+use Marketing_Analytics_MCP\Utils\Permission_Manager;
+
 /**
  * Fired during plugin deactivation
  */
@@ -25,6 +27,9 @@ class Deactivator {
 
 		// Clear any scheduled cron jobs
 		self::clear_scheduled_events();
+
+		// Remove custom capabilities for role-based access control
+		Permission_Manager::remove_capabilities();
 
 		// Flush rewrite rules
 		flush_rewrite_rules();

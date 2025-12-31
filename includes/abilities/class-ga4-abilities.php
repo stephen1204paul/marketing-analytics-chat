@@ -9,6 +9,7 @@ namespace Marketing_Analytics_MCP\Abilities;
 
 use Marketing_Analytics_MCP\API_Clients\GA4_Client;
 use Marketing_Analytics_MCP\Credentials\Credential_Manager;
+use Marketing_Analytics_MCP\Utils\Permission_Manager;
 
 /**
  * Registers Google Analytics 4 MCP abilities
@@ -444,6 +445,6 @@ class GA4_Abilities {
 	 * @return bool True if user has permission, false otherwise.
 	 */
 	public function check_permissions() {
-		return current_user_can( 'manage_options' );
+		return Permission_Manager::can_access_plugin();
 	}
 }
