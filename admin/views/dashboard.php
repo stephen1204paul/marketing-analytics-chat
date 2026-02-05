@@ -63,7 +63,7 @@ $gsc_connected      = $credential_manager->has_credentials( 'gsc' );
 
 		<div class="status-cards-grid">
 			<!-- Microsoft Clarity -->
-			<div class="status-card <?php echo $clarity_connected ? 'connected' : 'disconnected'; ?>">
+			<div class="status-card <?php echo esc_attr( $clarity_connected ? 'connected' : 'disconnected' ); ?>">
 				<div class="status-icon">
 					<span class="dashicons dashicons-chart-area"></span>
 				</div>
@@ -84,7 +84,7 @@ $gsc_connected      = $credential_manager->has_credentials( 'gsc' );
 			</div>
 
 			<!-- Google Analytics 4 -->
-			<div class="status-card <?php echo $ga4_connected ? 'connected' : 'disconnected'; ?>">
+			<div class="status-card <?php echo esc_attr( $ga4_connected ? 'connected' : 'disconnected' ); ?>">
 				<div class="status-icon">
 					<span class="dashicons dashicons-chart-line"></span>
 				</div>
@@ -105,7 +105,7 @@ $gsc_connected      = $credential_manager->has_credentials( 'gsc' );
 			</div>
 
 			<!-- Google Search Console -->
-			<div class="status-card <?php echo $gsc_connected ? 'connected' : 'disconnected'; ?>">
+			<div class="status-card <?php echo esc_attr( $gsc_connected ? 'connected' : 'disconnected' ); ?>">
 				<div class="status-icon">
 					<span class="dashicons dashicons-search"></span>
 				</div>

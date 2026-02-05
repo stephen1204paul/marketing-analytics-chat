@@ -80,7 +80,7 @@ $ga4_connected = isset( $platforms['ga4']['connected'] ) && $platforms['ga4']['c
 				printf(
 					/* translators: %s: link to setup guide */
 					esc_html__( 'Need help? See the %s for detailed instructions.', 'marketing-analytics-chat' ),
-					'<a href="' . esc_url( plugin_dir_url( dirname( dirname( __FILE__ ) ) ) . '../docs/GOOGLE_OAUTH_SETUP.md' ) . '" target="_blank">' . esc_html__( 'Google OAuth Setup Guide', 'marketing-analytics-chat' ) . '</a>'
+					'<a href="' . esc_url( plugin_dir_url( dirname( __DIR__ ) ) . '../docs/GOOGLE_OAUTH_SETUP.md' ) . '" target="_blank">' . esc_html__( 'Google OAuth Setup Guide', 'marketing-analytics-chat' ) . '</a>'
 				);
 				?>
 			</p>

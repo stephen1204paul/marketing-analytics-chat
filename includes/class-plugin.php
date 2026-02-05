@@ -7,6 +7,8 @@
 
 namespace Marketing_Analytics_MCP;
 
+use Marketing_Analytics_MCP\Utils\Permission_Manager;
+
 /**
  * Main plugin class that initializes all components
  */
@@ -67,6 +69,8 @@ class Plugin {
 		if ( ! is_admin() ) {
 			return;
 		}
+
+		$this->loader->add_action( 'admin_init', Permission_Manager::class, 'register_capabilities' );
 
 		$admin = new Admin\Admin();
 

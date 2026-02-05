@@ -17,8 +17,19 @@ use Marketing_Analytics_MCP\Multisite\Network_Manager;
 $network_manager = new Network_Manager();
 
 // Handle actions
-$action  = isset( $_GET['action'] ) ? sanitize_text_field( wp_unslash( $_GET['action'] ) ) : '';
-$site_id = isset( $_GET['site_id'] ) ? intval( $_GET['site_id'] ) : 0;
+$requested_action  = '';
+$requested_site_id = 0;
+
+if ( isset( $_GET['action'] ) ) {
+	$requested_action  = sanitize_text_field( wp_unslash( $_GET['action'] ) );
+	$requested_site_id = isset( $_GET['site_id'] ) ? absint( $_GET['site_id'] ) : 0;
+	$request_nonce     = isset( $_GET['_wpnonce'] ) ? sanitize_text_field( wp_unslash( $_GET['_wpnonce'] ) ) : '';
+
+	if ( ! $request_nonce || ! wp_verify_nonce( $request_nonce, 'marketing_analytics_network_site_action' ) ) {
+		$requested_action  = '';
+		$requested_site_id = 0;
+	}
+}
 
 // Get all sites
 $sites = $network_manager->get_sites();
@@ -70,7 +81,7 @@ $sites = $network_manager->get_sites();
 						<td>
 							<?php
 							if ( $site->last_sync ) {
-								echo esc_html( human_time_diff( strtotime( $site->last_sync ), current_time( 'timestamp' ) ) );
+								echo esc_html( human_time_diff( strtotime( $site->last_sync ), time() ) );
 								esc_html_e( ' ago', 'marketing-analytics-chat' );
 							} else {
 								esc_html_e( 'Never', 'marketing-analytics-chat' );

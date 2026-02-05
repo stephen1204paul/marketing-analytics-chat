@@ -43,13 +43,28 @@ function marketing_analytics_mcp_uninstall() {
 	$transient_pattern = $wpdb->esc_like( '_transient_marketing_analytics_mcp_' ) . '%';
 	$timeout_pattern   = $wpdb->esc_like( '_transient_timeout_marketing_analytics_mcp_' ) . '%';
 
-	$wpdb->query(
-		$wpdb->prepare(
-			"DELETE FROM {$wpdb->options} WHERE option_name LIKE %s OR option_name LIKE %s",
-			$transient_pattern,
-			$timeout_pattern
-		)
-	);
+	// Fetch matching transients and delete via API to clear caches.
+	$cache_group       = 'marketing_analytics_mcp_uninstall';
+	$cache_key         = 'transient_options';
+	$transient_options = wp_cache_get( $cache_key, $cache_group );
+
+	if ( false === $transient_options ) {
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Needed to locate all matching transients for cleanup with transient cache.
+		$transient_options = $wpdb->get_col(
+			$wpdb->prepare(
+				"SELECT option_name FROM {$wpdb->options} WHERE option_name LIKE %s OR option_name LIKE %s",
+				$transient_pattern,
+				$timeout_pattern
+			)
+		);
+		wp_cache_set( $cache_key, $transient_options, $cache_group, MINUTE_IN_SECONDS );
+	}
+
+	if ( ! empty( $transient_options ) ) {
+		foreach ( $transient_options as $option_name ) {
+			delete_option( $option_name );
+		}
+	}
 
 	// Clear any scheduled cron jobs
 	$scheduled_hooks = array(

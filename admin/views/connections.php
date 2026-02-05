@@ -202,7 +202,13 @@ $clarity_connected = $credential_manager->has_credentials( 'clarity' );
 										class="regular-text"
 										value="<?php echo esc_attr( $clarity_token_display ); ?>"
 										placeholder="<?php echo $clarity_has_token ? esc_attr__( 'Token saved (enter new token to update)', 'marketing-analytics-chat' ) : esc_attr__( 'Enter your API token', 'marketing-analytics-chat' ); ?>"
-										<?php echo $clarity_has_token ? 'readonly onfocus="this.removeAttribute(\'readonly\'); this.value=\'\'; this.type=\'password\';"' : 'type="password"'; ?>
+											<?php
+											if ( $clarity_has_token ) {
+												echo 'readonly onfocus="this.removeAttribute(\'readonly\'); this.value=\'\'; this.type=\'password\';"';
+											} else {
+												echo 'type="password"';
+											}
+											?>
 									/>
 									<?php if ( $clarity_has_token ) : ?>
 										<p class="description" style="color: #46b450;">
@@ -373,7 +379,7 @@ $clarity_connected = $credential_manager->has_credentials( 'clarity' );
 								<button type="button" class="button button-secondary test-connection" data-platform="ga4">
 									<?php esc_html_e( 'Test Connection', 'marketing-analytics-chat' ); ?>
 								</button>
-								<input type="submit" name="disconnect_oauth" class="button button-secondary" value="<?php esc_attr_e( 'Disconnect', 'marketing-analytics-chat' ); ?>" onclick="return confirm('<?php esc_attr_e( 'Are you sure you want to disconnect from Google Analytics?', 'marketing-analytics-chat' ); ?>');" />
+								<input type="submit" name="disconnect_oauth" class="button button-secondary" value="<?php esc_attr_e( 'Disconnect', 'marketing-analytics-chat' ); ?>" onclick="return confirm('<?php echo esc_js( __( 'Are you sure you want to disconnect from Google Analytics?', 'marketing-analytics-chat' ) ); ?>');" />
 							</p>
 						</form>
 					<?php endif; ?>
@@ -510,7 +516,7 @@ $clarity_connected = $credential_manager->has_credentials( 'clarity' );
 								<button type="button" class="button button-secondary test-connection" data-platform="gsc">
 									<?php esc_html_e( 'Test Connection', 'marketing-analytics-chat' ); ?>
 								</button>
-								<input type="submit" name="disconnect_oauth" class="button button-secondary" value="<?php esc_attr_e( 'Disconnect', 'marketing-analytics-chat' ); ?>" onclick="return confirm('<?php esc_attr_e( 'Are you sure you want to disconnect from Google Search Console?', 'marketing-analytics-chat' ); ?>');" />
+								<input type="submit" name="disconnect_oauth" class="button button-secondary" value="<?php esc_attr_e( 'Disconnect', 'marketing-analytics-chat' ); ?>" onclick="return confirm('<?php echo esc_js( __( 'Are you sure you want to disconnect from Google Search Console?', 'marketing-analytics-chat' ) ); ?>');" />
 							</p>
 						</form>
 					<?php endif; ?>

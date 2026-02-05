@@ -22,7 +22,7 @@ class Admin {
 		add_menu_page(
 			__( 'Marketing Analytics', 'marketing-analytics-chat' ),
 			__( 'Marketing Analytics', 'marketing-analytics-chat' ),
-			'access_marketing_analytics',
+			'access_marketing_analytics', // phpcs:ignore WordPress.WP.Capabilities.Unknown -- Custom capability registered on activation.
 			'marketing-analytics-chat',
 			array( $this, 'render_dashboard_page' ),
 			'dashicons-chart-line',
@@ -34,7 +34,7 @@ class Admin {
 			'marketing-analytics-chat',
 			__( 'Dashboard', 'marketing-analytics-chat' ),
 			__( 'Dashboard', 'marketing-analytics-chat' ),
-			'access_marketing_analytics',
+			'access_marketing_analytics', // phpcs:ignore WordPress.WP.Capabilities.Unknown -- Custom capability registered on activation.
 			'marketing-analytics-chat',
 			array( $this, 'render_dashboard_page' )
 		);
@@ -44,7 +44,7 @@ class Admin {
 			'marketing-analytics-chat',
 			__( 'AI Assistant', 'marketing-analytics-chat' ),
 			__( 'AI Assistant', 'marketing-analytics-chat' ),
-			'access_marketing_analytics',
+			'access_marketing_analytics', // phpcs:ignore WordPress.WP.Capabilities.Unknown -- Custom capability registered on activation.
 			'marketing-analytics-chat-ai-assistant',
 			array( $this, 'render_chat_page' )
 		);
@@ -54,7 +54,7 @@ class Admin {
 			'marketing-analytics-chat',
 			__( 'Connections', 'marketing-analytics-chat' ),
 			__( 'Connections', 'marketing-analytics-chat' ),
-			'access_marketing_analytics',
+			'access_marketing_analytics', // phpcs:ignore WordPress.WP.Capabilities.Unknown -- Custom capability registered on activation.
 			'marketing-analytics-chat-connections',
 			array( $this, 'render_connections_page' )
 		);
@@ -64,7 +64,7 @@ class Admin {
 			'marketing-analytics-chat',
 			__( 'Custom Prompts', 'marketing-analytics-chat' ),
 			__( 'Custom Prompts', 'marketing-analytics-chat' ),
-			'access_marketing_analytics',
+			'access_marketing_analytics', // phpcs:ignore WordPress.WP.Capabilities.Unknown -- Custom capability registered on activation.
 			'marketing-analytics-chat-prompts',
 			array( $this, 'render_prompts_page' )
 		);
@@ -74,7 +74,7 @@ class Admin {
 			'marketing-analytics-chat',
 			__( 'Settings', 'marketing-analytics-chat' ),
 			__( 'Settings', 'marketing-analytics-chat' ),
-			'access_marketing_analytics',
+			'access_marketing_analytics', // phpcs:ignore WordPress.WP.Capabilities.Unknown -- Custom capability registered on activation.
 			'marketing-analytics-chat-settings',
 			array( $this, 'render_settings_page' )
 		);
@@ -103,6 +103,16 @@ class Admin {
 			wp_enqueue_style(
 				'marketing-analytics-chat',
 				MARKETING_ANALYTICS_MCP_URL . 'admin/css/chat-interface.css',
+				array(),
+				MARKETING_ANALYTICS_MCP_VERSION
+			);
+		}
+
+		// Enqueue wizard styles on settings page
+		if ( strpos( $hook, 'marketing-analytics-chat-settings' ) !== false ) {
+			wp_enqueue_style(
+				'marketing-analytics-wizard',
+				MARKETING_ANALYTICS_MCP_URL . 'admin/css/wizard.css',
 				array(),
 				MARKETING_ANALYTICS_MCP_VERSION
 			);
@@ -149,6 +159,17 @@ class Admin {
 			wp_enqueue_script(
 				'marketing-analytics-chat',
 				MARKETING_ANALYTICS_MCP_URL . 'admin/js/chat-interface.js',
+				array( 'jquery' ),
+				MARKETING_ANALYTICS_MCP_VERSION,
+				true
+			);
+		}
+
+		// Enqueue wizard script on settings page
+		if ( strpos( $hook, 'marketing-analytics-chat-settings' ) !== false ) {
+			wp_enqueue_script(
+				'marketing-analytics-wizard',
+				MARKETING_ANALYTICS_MCP_URL . 'admin/js/wizard.js',
 				array( 'jquery' ),
 				MARKETING_ANALYTICS_MCP_VERSION,
 				true

@@ -1,0 +1,44 @@
+<?xml version="1.0"?>
+<ruleset name="Marketing Analytics Chat">
+    <description>WordPress Coding Standards for Marketing Analytics Chat Plugin</description>
+
+    <!-- What to scan -->
+    <file>.</file>
+
+    <!-- Exclude patterns -->
+    <exclude-pattern>/vendor/*</exclude-pattern>
+    <exclude-pattern>/node_modules/*</exclude-pattern>
+    <exclude-pattern>/tests/*</exclude-pattern>
+    <exclude-pattern>/coverage/*</exclude-pattern>
+    <exclude-pattern>*.js</exclude-pattern>
+    <exclude-pattern>*.css</exclude-pattern>
+    <exclude-pattern>/.github/*</exclude-pattern>
+    <exclude-pattern>/.claude/*</exclude-pattern>
+
+    <!-- Use WordPress Coding Standards -->
+    <rule ref="WordPress-Core"/>
+    <rule ref="WordPress-Docs"/>
+    <rule ref="WordPress-Extra"/>
+    <rule ref="WordPress.WP.Capabilities.Unknown">
+        <properties>
+            <property name="custom_capabilities" type="array">
+                <element value="access_marketing_analytics"/>
+            </property>
+        </properties>
+    </rule>
+
+    <!-- Check PHP version compatibility -->
+    <config name="testVersion" value="8.1-"/>
+
+    <!-- Show progress -->
+    <arg value="ps"/>
+
+    <!-- Show sniff codes -->
+    <arg value="s"/>
+
+    <!-- Use colors -->
+    <arg name="colors"/>
+
+    <!-- Set memory limit -->
+    <ini name="memory_limit" value="512M"/>
+</ruleset>

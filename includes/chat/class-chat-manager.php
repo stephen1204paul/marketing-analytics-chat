@@ -10,9 +10,19 @@
 namespace Marketing_Analytics_MCP\Chat;
 
 /**
- * Manages chat conversations and messages
+ * Manages chat conversations and messages.
+ *
+ * Provides CRUD access with lightweight caching.
  */
 class Chat_Manager {
+	// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+
+	/**
+	 * Cache group for chat data
+	 *
+	 * @var string
+	 */
+	private $cache_group = 'marketing_analytics_chat';
 
 	/**
 	 * Get conversations for a user
@@ -27,6 +37,12 @@ class Chat_Manager {
 
 		$table = $wpdb->prefix . 'marketing_analytics_mcp_conversations';
 
+		$cache_key = 'conversations_' . $this->get_cache_version() . '_' . (int) $user_id . '_' . (int) $limit . '_' . (int) $offset;
+		$cached    = wp_cache_get( $cache_key, $this->cache_group );
+		if ( false !== $cached ) {
+			return $cached;
+		}
+
 		$conversations = $wpdb->get_results(
 			$wpdb->prepare(
 				// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Table name is safe, defined by plugin.
@@ -39,6 +55,8 @@ class Chat_Manager {
 				$offset
 			)
 		);
+
+		wp_cache_set( $cache_key, $conversations, $this->cache_group, MINUTE_IN_SECONDS * 5 );
 
 		return $conversations;
 	}
@@ -54,6 +72,12 @@ class Chat_Manager {
 
 		$table = $wpdb->prefix . 'marketing_analytics_mcp_conversations';
 
+		$cache_key = 'conversation_' . $this->get_cache_version() . '_' . (int) $conversation_id;
+		$cached    = wp_cache_get( $cache_key, $this->cache_group );
+		if ( false !== $cached ) {
+			return $cached;
+		}
+
 		$conversation = $wpdb->get_row(
 			$wpdb->prepare(
 				// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Table name is safe, defined by plugin.
@@ -61,6 +85,10 @@ class Chat_Manager {
 				$conversation_id
 			)
 		);
+
+		if ( $conversation ) {
+			wp_cache_set( $cache_key, $conversation, $this->cache_group, MINUTE_IN_SECONDS * 5 );
+		}
 
 		return $conversation;
 	}
@@ -90,6 +118,7 @@ class Chat_Manager {
 		);
 
 		if ( $result ) {
+			$this->bump_cache_version();
 			return $wpdb->insert_id;
 		}
 
@@ -119,7 +148,12 @@ class Chat_Manager {
 			array( '%d' )
 		);
 
-		return $result !== false;
+		if ( false !== $result ) {
+			$this->bump_cache_version();
+			return true;
+		}
+
+		return false;
 	}
 
 	/**
@@ -141,7 +175,12 @@ class Chat_Manager {
 			array( '%d' )
 		);
 
-		return $result !== false;
+		if ( false !== $result ) {
+			$this->bump_cache_version();
+			return true;
+		}
+
+		return false;
 	}
 
 	/**
@@ -162,7 +201,12 @@ class Chat_Manager {
 			array( '%d' )
 		);
 
-		return $result !== false;
+		if ( false !== $result ) {
+			$this->bump_cache_version();
+			return true;
+		}
+
+		return false;
 	}
 
 	/**
@@ -176,6 +220,12 @@ class Chat_Manager {
 		global $wpdb;
 
 		$table = $wpdb->prefix . 'marketing_analytics_mcp_messages';
+
+		$cache_key = 'messages_' . $this->get_cache_version() . '_' . (int) $conversation_id . '_' . (int) $limit;
+		$cached    = wp_cache_get( $cache_key, $this->cache_group );
+		if ( false !== $cached ) {
+			return $cached;
+		}
 
 		$messages = $wpdb->get_results(
 			$wpdb->prepare(
@@ -198,6 +248,8 @@ class Chat_Manager {
 				$message->metadata = json_decode( $message->metadata, true );
 			}
 		}
+
+		wp_cache_set( $cache_key, $messages, $this->cache_group, MINUTE_IN_SECONDS * 5 );
 
 		return $messages;
 	}
@@ -325,6 +377,12 @@ class Chat_Manager {
 
 		$table = $wpdb->prefix . 'marketing_analytics_mcp_messages';
 
+		$cache_key = 'message_count_' . $this->get_cache_version() . '_' . (int) $conversation_id;
+		$cached    = wp_cache_get( $cache_key, $this->cache_group );
+		if ( false !== $cached ) {
+			return (int) $cached;
+		}
+
 		$count = $wpdb->get_var(
 			$wpdb->prepare(
 				// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Table name is safe, defined by plugin.
@@ -332,6 +390,8 @@ class Chat_Manager {
 				$conversation_id
 			)
 		);
+
+		wp_cache_set( $cache_key, (int) $count, $this->cache_group, MINUTE_IN_SECONDS * 5 );
 
 		return (int) $count;
 	}
@@ -361,6 +421,12 @@ class Chat_Manager {
 
 		$table = $wpdb->prefix . 'marketing_analytics_mcp_conversations';
 
+		$cache_key = 'search_' . $this->get_cache_version() . '_' . (int) $user_id . '_' . md5( $search ) . '_' . (int) $limit;
+		$cached    = wp_cache_get( $cache_key, $this->cache_group );
+		if ( false !== $cached ) {
+			return $cached;
+		}
+
 		$conversations = $wpdb->get_results(
 			$wpdb->prepare(
 				// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Table name is safe, defined by plugin.
@@ -375,6 +441,36 @@ class Chat_Manager {
 			)
 		);
 
+		wp_cache_set( $cache_key, $conversations, $this->cache_group, MINUTE_IN_SECONDS * 5 );
+
 		return $conversations;
 	}
+
+	/**
+	 * Get cache version for chat data.
+	 *
+	 * @return int Cache version.
+	 */
+	private function get_cache_version() {
+		$version = wp_cache_get( 'version', $this->cache_group );
+		if ( false === $version ) {
+			$version = 1;
+			wp_cache_set( 'version', $version, $this->cache_group );
+		}
+
+		return (int) $version;
+	}
+
+	/**
+	 * Bump cache version to invalidate cached data.
+	 *
+	 * @return int New cache version.
+	 */
+	private function bump_cache_version() {
+		$version = $this->get_cache_version() + 1;
+		wp_cache_set( 'version', $version, $this->cache_group );
+
+		return $version;
+	}
+	// phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 }

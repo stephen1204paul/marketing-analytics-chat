@@ -17,6 +17,7 @@
 .gitignore
 .gitattributes
 .phpcs.xml
+phpcs.xml.dist
 phpstan.neon
 phpunit.xml
 phpunit.xml.dist
@@ -27,8 +28,13 @@ package-lock.json
 Gruntfile.js
 webpack.config.js
 CLAUDE.md
+CHANGELOG.md
 CONTRIBUTING.md
+README.md
+RELEASE.md
+REPOSITORY.md
 plan.md
+upload-to-repo.md
 
 # Development and test files
 *.log

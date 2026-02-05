@@ -49,12 +49,22 @@ $redirect_uri = admin_url( 'admin.php?page=marketing-analytics-connections&oauth
 				<span class="dashicons dashicons-yes"></span>
 				<?php esc_html_e( 'Connected to Meta Business Suite', 'marketing-analytics-chat' ); ?>
 			</p>
-			<?php if ( $page_name ) : ?>
-				<p><?php echo esc_html( sprintf( __( 'Facebook Page: %s', 'marketing-analytics-chat' ), $page_name ) ); ?></p>
-			<?php endif; ?>
-			<?php if ( $instagram_name ) : ?>
-				<p><?php echo esc_html( sprintf( __( 'Instagram Account: %s', 'marketing-analytics-chat' ), $instagram_name ) ); ?></p>
-			<?php endif; ?>
+				<?php if ( $page_name ) : ?>
+					<p>
+						<?php
+						/* translators: %s: Facebook page name */
+						echo esc_html( sprintf( __( 'Facebook Page: %s', 'marketing-analytics-chat' ), $page_name ) );
+						?>
+					</p>
+				<?php endif; ?>
+				<?php if ( $instagram_name ) : ?>
+					<p>
+						<?php
+						/* translators: %s: Instagram account name */
+						echo esc_html( sprintf( __( 'Instagram Account: %s', 'marketing-analytics-chat' ), $instagram_name ) );
+						?>
+					</p>
+				<?php endif; ?>
 		</div>
 	<?php elseif ( $has_credentials ) : ?>
 		<div class="notice notice-warning inline">

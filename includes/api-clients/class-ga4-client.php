@@ -289,7 +289,7 @@ class GA4_Client {
 
 			// Check if the error is about the Admin API not being enabled
 			if ( strpos( $error_message, 'analyticsadmin.googleapis.com' ) !== false ||
-				 strpos( $error_message, 'Google Analytics Admin API' ) !== false ) {
+				strpos( $error_message, 'Google Analytics Admin API' ) !== false ) {
 				throw new \Exception( 'Google Analytics Admin API is not enabled. Please enable it in your Google Cloud Console: https://console.cloud.google.com/apis/library/analyticsadmin.googleapis.com' );
 			}
 

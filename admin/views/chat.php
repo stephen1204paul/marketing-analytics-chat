@@ -19,9 +19,14 @@ $user_id      = get_current_user_id();
 $conversations = $chat_manager->get_conversations( $user_id, 20 );
 
 // Get active conversation
-$active_conversation_id = isset( $_GET['conversation_id'] ) ? absint( $_GET['conversation_id'] ) : null;
+$conversation_nonce     = isset( $_GET['_wpnonce'] ) ? sanitize_text_field( wp_unslash( $_GET['_wpnonce'] ) ) : '';
+$active_conversation_id = null;
+if ( isset( $_GET['conversation_id'] ) && $conversation_nonce && wp_verify_nonce( $conversation_nonce, 'marketing_analytics_chat_conversation' ) ) {
+	$active_conversation_id = absint( wp_unslash( $_GET['conversation_id'] ) );
+}
 $active_conversation    = $active_conversation_id ? $chat_manager->get_conversation( $active_conversation_id ) : null;
 $messages               = $active_conversation_id ? $chat_manager->get_messages( $active_conversation_id ) : array();
+$conversation_link_nonce = wp_create_nonce( 'marketing_analytics_chat_conversation' );
 
 ?>
 
@@ -53,9 +58,9 @@ $messages               = $active_conversation_id ? $chat_manager->get_messages(
 						$class     = $is_active ? 'conversation-item active' : 'conversation-item';
 						?>
 						<div class="<?php echo esc_attr( $class ); ?>">
-							<a href="<?php echo esc_url( admin_url( 'admin.php?page=marketing-analytics-chat-ai-assistant&conversation_id=' . $conversation->id ) ); ?>" class="conversation-link">
+							<a href="<?php echo esc_url( admin_url( 'admin.php?page=marketing-analytics-chat-ai-assistant&conversation_id=' . $conversation->id . '&_wpnonce=' . $conversation_link_nonce ) ); ?>" class="conversation-link">
 								<div class="conversation-title"><?php echo esc_html( $conversation->title ); ?></div>
-								<div class="conversation-date"><?php echo esc_html( human_time_diff( strtotime( $conversation->updated_at ), current_time( 'timestamp' ) ) . ' ago' ); ?></div>
+								<div class="conversation-date"><?php echo esc_html( human_time_diff( strtotime( $conversation->updated_at ), time() ) . ' ago' ); ?></div>
 							</a>
 							<button
 								type="button"
@@ -108,6 +113,7 @@ $messages               = $active_conversation_id ? $chat_manager->get_messages(
 										} elseif ( $message->role === 'assistant' ) {
 											esc_html_e( 'AI Assistant', 'marketing-analytics-chat' );
 										} elseif ( $message->role === 'tool' ) {
+											/* translators: %s: Tool name */
 											echo esc_html( sprintf( __( 'Tool: %s', 'marketing-analytics-chat' ), $message->tool_name ) );
 										}
 										?>
@@ -135,7 +141,7 @@ $messages               = $active_conversation_id ? $chat_manager->get_messages(
 										</div>
 									<?php endif; ?>
 									<div class="message-time">
-										<?php echo esc_html( human_time_diff( strtotime( $message->created_at ), current_time( 'timestamp' ) ) . ' ago' ); ?>
+										<?php echo esc_html( human_time_diff( strtotime( $message->created_at ), time() ) . ' ago' ); ?>
 									</div>
 								</div>
 							</div>

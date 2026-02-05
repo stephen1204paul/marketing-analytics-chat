@@ -115,6 +115,7 @@ class Connection_Tester {
 			$analytics = new \Google\Service\GoogleAnalyticsAdmin( $client );
 
 			// Try to list account summaries (lightweight test)
+			// phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase -- SDK property name.
 			$account_summaries = $analytics->accountSummaries->listAccountSummaries();
 
 			if ( ! empty( $account_summaries ) ) {

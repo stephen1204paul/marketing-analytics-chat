@@ -45,7 +45,7 @@ class Notification_Manager {
 		}
 
 		// Allow plugins to register additional channels
-		$this->channels = apply_filters( 'marketing_analytics_notification_channels', $this->channels );
+		$this->channels = apply_filters( 'marketing_analytics_mcp_notification_channels', $this->channels );
 	}
 
 	/**

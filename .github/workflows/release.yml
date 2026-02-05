@@ -1,0 +1,180 @@
+name: Build Release ZIP
+
+on:
+  push:
+    tags:
+      - 'v*'
+  pull_request:
+    types:
+      - closed
+    branches:
+      - main
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version tag (e.g. 0.1.2). Leave empty to use version from plugin header.'
+        required: false
+
+jobs:
+  # Auto-tag when a release/* PR is merged to main
+  tag-release:
+    if: >
+      github.event_name == 'pull_request' &&
+      github.event.pull_request.merged == true &&
+      startsWith(github.event.pull_request.head.ref, 'release/')
+    runs-on: ubuntu-latest
+    name: Tag Release
+
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Extract version from branch name
+        id: extract
+        run: |
+          BRANCH="${{ github.event.pull_request.head.ref }}"
+          VERSION="${BRANCH#release/}"
+          echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
+          echo "Extracted version: ${VERSION}"
+
+      - name: Create and push tag
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git tag -a "v${{ steps.extract.outputs.version }}" -m "Release ${{ steps.extract.outputs.version }}"
+          git push origin "v${{ steps.extract.outputs.version }}"
+
+  # Build ZIP and create GitHub Release (triggered by tag push)
+  build:
+    if: >
+      github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v') ||
+      github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    name: Build Plugin ZIP
+
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.1'
+          extensions: sodium, mbstring, json, curl
+
+      - name: Install production dependencies
+        run: composer install --no-dev --prefer-dist --optimize-autoloader
+
+      - name: Read version from plugin header
+        id: version
+        run: |
+          if [ -n "${{ github.event.inputs.version }}" ]; then
+            echo "version=${{ github.event.inputs.version }}" >> "$GITHUB_OUTPUT"
+          elif [[ "$GITHUB_REF" == refs/tags/v* ]]; then
+            echo "version=${GITHUB_REF#refs/tags/v}" >> "$GITHUB_OUTPUT"
+          else
+            VERSION=$(grep -oP 'Version:\s*\K[0-9.]+' marketing-analytics-chat.php)
+            echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Build release ZIP
+        run: |
+          PLUGIN_SLUG="marketing-analytics-chat"
+          VERSION="${{ steps.version.outputs.version }}"
+          BUILD_DIR="/tmp/build"
+          DEST_DIR="${BUILD_DIR}/${PLUGIN_SLUG}"
+
+          mkdir -p "$DEST_DIR"
+
+          # Copy production files using rsync, excluding dev files via .distignore
+          rsync -a \
+            --exclude='.git' \
+            --exclude='.github' \
+            --exclude='node_modules' \
+            --exclude='tests' \
+            --exclude='bin' \
+            --exclude='.wordpress-org' \
+            --exclude='presentation' \
+            --exclude='docs' \
+            --exclude='build' \
+            --exclude='dist' \
+            --exclude='assets' \
+            --exclude='.distignore' \
+            --exclude='.editorconfig' \
+            --exclude='.gitignore' \
+            --exclude='.gitattributes' \
+            --exclude='.phpcs.xml' \
+            --exclude='phpcs.xml.dist' \
+            --exclude='phpstan.neon' \
+            --exclude='phpunit.xml' \
+            --exclude='phpunit.xml.dist' \
+            --exclude='composer.json' \
+            --exclude='composer.lock' \
+            --exclude='package.json' \
+            --exclude='package-lock.json' \
+            --exclude='Gruntfile.js' \
+            --exclude='webpack.config.js' \
+            --exclude='CLAUDE.md' \
+            --exclude='CONTRIBUTING.md' \
+            --exclude='CHANGELOG.md' \
+            --exclude='RELEASE.md' \
+            --exclude='REPOSITORY.md' \
+            --exclude='README.md' \
+            --exclude='plan.md' \
+            --exclude='upload-to-repo.md' \
+            --exclude='*.log' \
+            --exclude='*.sql' \
+            --exclude='*.tar.gz' \
+            --exclude='*.zip' \
+            --exclude='*.sh' \
+            --exclude='.phpunit.result.cache' \
+            --exclude='.idea' \
+            --exclude='.vscode' \
+            --exclude='*.swp' \
+            --exclude='*.swo' \
+            --exclude='.DS_Store' \
+            --exclude='Thumbs.db' \
+            --exclude='docker-compose.yml' \
+            --exclude='Dockerfile' \
+            --exclude='.travis.yml' \
+            --exclude='.circleci' \
+            --exclude='.gitlab-ci.yml' \
+            ./ "$DEST_DIR/"
+
+          # Remove dev-only vendor packages that may have been included
+          cd "$DEST_DIR"
+          rm -rf vendor/phpunit vendor/phpstan vendor/squizlabs vendor/sebastian \
+                 vendor/phpcsstandards vendor/wp-coding-standards vendor/dealerdirect \
+                 vendor/phar-io vendor/myclabs vendor/nikic vendor/theseer
+
+          # Create ZIP
+          cd "$BUILD_DIR"
+          zip -r "${GITHUB_WORKSPACE}/${PLUGIN_SLUG}-${VERSION}.zip" "$PLUGIN_SLUG"
+
+          # Print ZIP contents for verification
+          echo "=== ZIP Contents ==="
+          unzip -l "${GITHUB_WORKSPACE}/${PLUGIN_SLUG}-${VERSION}.zip" | tail -5
+          echo ""
+          echo "=== ZIP Size ==="
+          du -h "${GITHUB_WORKSPACE}/${PLUGIN_SLUG}-${VERSION}.zip"
+
+      - name: Upload ZIP as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: marketing-analytics-chat-${{ steps.version.outputs.version }}
+          path: marketing-analytics-chat-${{ steps.version.outputs.version }}.zip
+
+      - name: Create GitHub Release
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: marketing-analytics-chat-${{ steps.version.outputs.version }}.zip
+          generate_release_notes: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

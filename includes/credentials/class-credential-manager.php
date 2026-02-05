@@ -162,14 +162,14 @@ class Credential_Manager {
 	 *
 	 * @param string $platform Platform identifier.
 	 * @param string $field Field name to retrieve.
-	 * @param mixed  $default Default value if field doesn't exist.
+	 * @param mixed  $fallback Default value if field doesn't exist.
 	 * @return mixed Field value or default.
 	 */
-	public function get_credential_field( $platform, $field, $default = null ) {
+	public function get_credential_field( $platform, $field, $fallback = null ) {
 		$credentials = $this->get_credentials( $platform );
 
 		if ( null === $credentials || ! isset( $credentials[ $field ] ) ) {
-			return $default;
+			return $fallback;
 		}
 
 		return $credentials[ $field ];

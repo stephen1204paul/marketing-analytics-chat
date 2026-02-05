@@ -11,9 +11,12 @@ namespace Marketing_Analytics_MCP\Multisite;
 use Marketing_Analytics_MCP\Utils\Permission_Manager;
 
 /**
- * Class for managing multiple WordPress sites in a network
+ * Class for managing multiple WordPress sites in a network.
+ *
+ * Handles CRUD, sync, and verification for networked sites.
  */
 class Network_Manager {
+	// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 
 	/**
 	 * Database table name for network sites
@@ -21,6 +24,13 @@ class Network_Manager {
 	 * @var string
 	 */
 	private $table_name;
+
+	/**
+	 * Cache group for network sites
+	 *
+	 * @var string
+	 */
+	private $cache_group = 'marketing_analytics_network_sites';
 
 	/**
 	 * Constructor
@@ -160,7 +170,9 @@ class Network_Manager {
 		}
 
 		// Log the addition
-		do_action( 'marketing_analytics_network_site_added', $site_id, $site_data );
+		do_action( 'marketing_analytics_mcp_network_site_added', $site_id, $site_data );
+
+		$this->bump_cache_version();
 
 		return $site_id;
 	}
@@ -202,7 +214,9 @@ class Network_Manager {
 		delete_transient( 'marketing_analytics_site_data_' . $site_id );
 
 		// Log the removal
-		do_action( 'marketing_analytics_network_site_removed', $site_id, $site );
+		do_action( 'marketing_analytics_mcp_network_site_removed', $site_id, $site );
+
+		$this->bump_cache_version();
 
 		return true;
 	}
@@ -241,6 +255,7 @@ class Network_Manager {
 
 		// Clear cached data
 		delete_transient( 'marketing_analytics_site_data_' . $site_id );
+		$this->bump_cache_version();
 
 		return true;
 	}
@@ -254,6 +269,12 @@ class Network_Manager {
 	public function get_site( $site_id ) {
 		global $wpdb;
 
+		$cache_key = 'site_' . $this->get_cache_version() . '_' . (int) $site_id;
+		$cached    = wp_cache_get( $cache_key, $this->cache_group );
+		if ( false !== $cached ) {
+			return $cached;
+		}
+
 		$site = $wpdb->get_row(
 			$wpdb->prepare(
 				// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Table name is safe, defined by plugin.
@@ -264,6 +285,10 @@ class Network_Manager {
 
 		if ( $site && isset( $site->capabilities ) ) {
 			$site->capabilities = json_decode( $site->capabilities, true );
+		}
+
+		if ( $site ) {
+			wp_cache_set( $cache_key, $site, $this->cache_group, MINUTE_IN_SECONDS * 5 );
 		}
 
 		return $site;
@@ -287,6 +312,12 @@ class Network_Manager {
 		);
 
 		$args = wp_parse_args( $args, $defaults );
+
+		$cache_key = 'sites_' . $this->get_cache_version() . '_' . md5( wp_json_encode( $args ) );
+		$cached    = wp_cache_get( $cache_key, $this->cache_group );
+		if ( false !== $cached ) {
+			return $cached;
+		}
 
 		// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Table name is safe, defined by plugin.
 		$query  = "SELECT * FROM {$this->table_name} WHERE 1=1";
@@ -319,6 +350,8 @@ class Network_Manager {
 				$site->capabilities = json_decode( $site->capabilities, true );
 			}
 		}
+
+		wp_cache_set( $cache_key, $sites, $this->cache_group, MINUTE_IN_SECONDS * 5 );
 
 		return $sites;
 	}
@@ -392,6 +425,7 @@ class Network_Manager {
 			return new \WP_Error(
 				'connection_failed',
 				sprintf(
+					/* translators: %d: HTTP status code */
 					__( 'Connection failed with status %d', 'marketing-analytics-chat' ),
 					$status_code
 				)
@@ -458,6 +492,7 @@ class Network_Manager {
 			return new \WP_Error(
 				'connection_failed',
 				sprintf(
+					/* translators: %d: HTTP status code */
 					__( 'Connection failed with status %d', 'marketing-analytics-chat' ),
 					$status_code
 				)
@@ -553,6 +588,7 @@ class Network_Manager {
 			return new \WP_Error(
 				'data_request_failed',
 				sprintf(
+					/* translators: %d: HTTP status code */
 					__( 'Data request failed with status %d', 'marketing-analytics-chat' ),
 					$status_code
 				)
@@ -623,8 +659,15 @@ class Network_Manager {
 
 			// Check each platform's data
 			foreach ( $data as $platform => $platform_data ) {
-				// Detector will handle the anomaly detection
-				// This is a simplified call
+				/**
+				 * Allow custom anomaly checks for network site data.
+				 *
+				 * @param int    $site_id       Site ID.
+				 * @param string $platform      Platform name.
+				 * @param array  $platform_data Platform data payload.
+				 * @param object $detector      Anomaly detector instance.
+				 */
+				do_action( 'marketing_analytics_mcp_network_site_anomaly_check', $site_id, $platform, $platform_data, $detector );
 			}
 		}
 	}
@@ -733,6 +776,33 @@ class Network_Manager {
 	}
 
 	/**
+	 * Get cache version for network site data.
+	 *
+	 * @return int Cache version.
+	 */
+	private function get_cache_version() {
+		$version = wp_cache_get( 'version', $this->cache_group );
+		if ( false === $version ) {
+			$version = 1;
+			wp_cache_set( 'version', $version, $this->cache_group );
+		}
+
+		return (int) $version;
+	}
+
+	/**
+	 * Bump cache version to invalidate cached data.
+	 *
+	 * @return int New cache version.
+	 */
+	private function bump_cache_version() {
+		$version = $this->get_cache_version() + 1;
+		wp_cache_set( 'version', $version, $this->cache_group );
+
+		return $version;
+	}
+
+	/**
 	 * Generate API key
 	 *
 	 * @return string API key
@@ -835,15 +905,24 @@ class Network_Manager {
 			);
 		}
 
-		global $wpdb;
+		$cache_key = 'api_key_' . $this->get_cache_version() . '_' . md5( $api_key );
+		$site      = wp_cache_get( $cache_key, $this->cache_group );
 
-		$site = $wpdb->get_row(
-			$wpdb->prepare(
-				// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Table name is safe, defined by plugin.
-				"SELECT * FROM {$this->table_name} WHERE api_key = %s AND is_active = 1",
-				$api_key
-			)
-		);
+		if ( false === $site ) {
+			global $wpdb;
+
+			$site = $wpdb->get_row(
+				$wpdb->prepare(
+					// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Table name is safe, defined by plugin.
+					"SELECT * FROM {$this->table_name} WHERE api_key = %s AND is_active = 1",
+					$api_key
+				)
+			);
+
+			if ( $site ) {
+				wp_cache_set( $cache_key, $site, $this->cache_group, MINUTE_IN_SECONDS * 5 );
+			}
+		}
 
 		if ( ! $site ) {
 			return new \WP_Error(
@@ -867,4 +946,5 @@ class Network_Manager {
 	public function verify_admin_request() {
 		return Permission_Manager::can_access_plugin();
 	}
+	// phpcs:enable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
 }

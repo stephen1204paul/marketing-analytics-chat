@@ -64,7 +64,6 @@ class Ajax_Handler {
 	 */
 	public function test_connection() {
 		Logger::debug( '===== AJAX TEST CONNECTION REQUEST =====' );
-		Logger::debug( sprintf( 'Request data: %s', wp_json_encode( $_POST ) ) );
 
 		// Check nonce
 		if ( ! isset( $_POST['nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['nonce'] ) ), 'marketing-analytics-chat-admin' ) ) {
@@ -87,6 +86,9 @@ class Ajax_Handler {
 			);
 			return;
 		}
+
+		$request_data = map_deep( wp_unslash( $_POST ), 'sanitize_text_field' );
+		Logger::debug( sprintf( 'Request data: %s', wp_json_encode( $request_data ) ) );
 
 		$platform = isset( $_POST['platform'] ) ? sanitize_text_field( wp_unslash( $_POST['platform'] ) ) : '';
 		Logger::debug( sprintf( 'Testing connection for platform: %s', $platform ) );
@@ -114,7 +116,9 @@ class Ajax_Handler {
 		Logger::debug( 'Testing Clarity connection' );
 
 		// Get credentials from POST
+		// phpcs:ignore WordPress.Security.NonceVerification.Missing -- Nonce verified in test_connection().
 		$api_token  = isset( $_POST['api_token'] ) ? sanitize_text_field( wp_unslash( $_POST['api_token'] ) ) : '';
+		// phpcs:ignore WordPress.Security.NonceVerification.Missing -- Nonce verified in test_connection().
 		$project_id = isset( $_POST['project_id'] ) ? sanitize_text_field( wp_unslash( $_POST['project_id'] ) ) : '';
 
 		Logger::debug( sprintf( 'API Token provided: %s', $api_token ? 'yes (length: ' . strlen( $api_token ) . ')' : 'NO' ) );
@@ -194,6 +198,8 @@ class Ajax_Handler {
 
 	/**
 	 * Test OAuth platform connection (GA4 or GSC)
+	 *
+	 * @param string $platform Platform key.
 	 */
 	private function test_oauth_platform_connection( $platform ) {
 		Logger::debug( sprintf( 'Testing OAuth connection for: %s', $platform ) );
@@ -338,6 +344,7 @@ class Ajax_Handler {
 		global $wpdb;
 		// Use proper escaping for LIKE patterns with wpdb
 		$pattern = $wpdb->esc_like( '_transient_marketing_analytics_mcp_' ) . '%';
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Bulk cache purge.
 		$deleted = $wpdb->query(
 			$wpdb->prepare(
 				"DELETE FROM {$wpdb->options} WHERE option_name LIKE %s",

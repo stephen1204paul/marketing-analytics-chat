@@ -8,13 +8,42 @@
 	convertWarningsToExceptions="true"
 	>
 	<testsuites>
+		<!-- Unit Tests: Fast, isolated tests -->
 		<testsuite name="Unit">
 			<directory suffix="Test.php">./tests/unit</directory>
+			<exclude>./tests/unit/SecurityTest.php</exclude>
 		</testsuite>
+
+		<!-- Integration Tests: Tests with external dependencies -->
 		<testsuite name="Integration">
 			<directory suffix="Test.php">./tests/integration</directory>
+			<exclude>./tests/integration/WordPressOrgValidationTest.php</exclude>
+		</testsuite>
+
+		<!-- Security Tests: Security and validation checks -->
+		<testsuite name="Security">
+			<file>./tests/unit/SecurityTest.php</file>
+		</testsuite>
+
+		<!-- WordPress.org Validation: Pre-submission checks -->
+		<testsuite name="WordPress.org">
+			<file>./tests/integration/WordPressOrgValidationTest.php</file>
+		</testsuite>
+
+		<!-- Quick Tests: Fast tests only (for development) -->
+		<testsuite name="Quick">
+			<directory suffix="Test.php">./tests/unit</directory>
+			<exclude>./tests/unit/SecurityTest.php</exclude>
+			<exclude>./tests/integration</exclude>
+		</testsuite>
+
+		<!-- All Tests: Complete test suite -->
+		<testsuite name="All">
+			<directory suffix="Test.php">./tests</directory>
 		</testsuite>
 	</testsuites>
+
+	<!-- Code Coverage Configuration -->
 	<coverage processUncoveredFiles="true">
 		<include>
 			<directory suffix=".php">./includes</directory>
@@ -22,10 +51,35 @@
 		<exclude>
 			<directory>./vendor</directory>
 			<directory>./tests</directory>
+			<directory>./includes/admin/views</directory>
 		</exclude>
+		<report>
+			<html outputDirectory="coverage/html"/>
+			<text outputFile="php://stdout" showUncoveredFiles="false"/>
+		</report>
 	</coverage>
+
+	<!-- PHP Settings for Tests -->
 	<php>
 		<const name="WP_DEBUG" value="true"/>
 		<const name="ABSPATH" value="/tmp/wordpress/"/>
+		<const name="WP_TESTS_PHPUNIT_POLYFILLS_PATH" value="./vendor/yoast/phpunit-polyfills"/>
+
+		<!-- Environment Variables for Integration Tests -->
+		<!-- Set these in your CI/CD or local .env file -->
+		<env name="CLARITY_PROJECT_ID" value="" force="false"/>
+		<env name="CLARITY_API_KEY" value="" force="false"/>
+		<env name="GA4_CLIENT_ID" value="" force="false"/>
+		<env name="GA4_CLIENT_SECRET" value="" force="false"/>
+		<env name="GA4_REFRESH_TOKEN" value="" force="false"/>
+		<env name="GA4_PROPERTY_ID" value="" force="false"/>
+		<env name="GSC_CLIENT_ID" value="" force="false"/>
+		<env name="GSC_CLIENT_SECRET" value="" force="false"/>
 	</php>
+
+	<!-- Logging Configuration -->
+	<logging>
+		<testdoxText outputFile="tests/output/testdox.txt"/>
+		<junit outputFile="tests/output/junit.xml"/>
+	</logging>
 </phpunit>

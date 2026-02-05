@@ -18,7 +18,8 @@
   "require-dev": {
     "phpunit/phpunit": "^9.0",
     "phpstan/phpstan": "^1.10",
-    "wp-coding-standards/wpcs": "^3.0"
+    "wp-coding-standards/wpcs": "^3.3",
+    "dealerdirect/phpcodesniffer-composer-installer": "^1.2"
   },
   "autoload": {
     "classmap": [
@@ -32,6 +33,7 @@
     }
   },
   "scripts": {
+    "pre-autoload-dump": "Google\\Task\\Composer::cleanup",
     "test": "phpunit",
     "phpcs": "phpcs --standard=WordPress includes/",
     "phpcbf": "phpcbf --standard=WordPress includes/",
@@ -51,7 +53,7 @@
   },
   "extra": {
     "google/apiclient-services": [
-      "AnalyticsAdmin",
+      "GoogleAnalyticsAdmin",
       "AnalyticsData",
       "Drive",
       "SearchConsole",

@@ -45,8 +45,8 @@ if ( $has_credentials ) {
 		<!-- Credit Balance Display -->
 		<div class="credit-balance-display">
 			<h4><?php esc_html_e( 'Account Balance', 'marketing-analytics-chat' ); ?></h4>
-			<div class="balance-info <?php echo $credit_balance < 10 ? 'low-balance' : ''; ?>">
-				<span class="balance-amount">$<?php echo number_format( $credit_balance, 2 ); ?></span>
+			<div class="balance-info <?php echo esc_attr( $credit_balance < 10 ? 'low-balance' : '' ); ?>">
+				<span class="balance-amount">$<?php echo esc_html( number_format( $credit_balance, 2 ) ); ?></span>
 				<?php if ( $credit_balance < 10 ) : ?>
 					<span class="low-balance-warning">
 						<span class="dashicons dashicons-warning"></span>

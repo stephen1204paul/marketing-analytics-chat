@@ -333,6 +333,7 @@ class WhatsApp_Notifier {
 		return null;
 
 		// Example implementation:
+
 		/*
 		$chart_data = $this->prepare_chart_data( $data );
 		$chart_config = array(

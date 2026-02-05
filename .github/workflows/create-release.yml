@@ -1,0 +1,90 @@
+name: Create Release Branch
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Release version (e.g. 0.2.0)'
+        required: true
+      base_branch:
+        description: 'Base branch to create release from'
+        required: false
+        default: 'main'
+
+jobs:
+  create-release:
+    runs-on: ubuntu-latest
+    name: Create Release Branch & PR
+
+    permissions:
+      contents: write
+      pull-requests: write
+
+    steps:
+      - name: Validate version format
+        run: |
+          if ! echo "${{ github.event.inputs.version }}" | grep -qE '^[0-9]+\.[0-9]+\.[0-9]+$'; then
+            echo "::error::Invalid version format. Use semantic versioning (e.g. 0.2.0)"
+            exit 1
+          fi
+
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.base_branch }}
+
+      - name: Configure git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Create release branch
+        run: git checkout -b "release/${{ github.event.inputs.version }}"
+
+      - name: Bump version in plugin file
+        run: |
+          VERSION="${{ github.event.inputs.version }}"
+          PLUGIN_FILE="marketing-analytics-chat.php"
+
+          # Update plugin header version
+          sed -i "s/^ \* Version: .*/ * Version: ${VERSION}/" "$PLUGIN_FILE"
+
+          # Update PHP constant version
+          sed -i "s/define( 'MARKETING_ANALYTICS_MCP_VERSION', '.*' );/define( 'MARKETING_ANALYTICS_MCP_VERSION', '${VERSION}' );/" "$PLUGIN_FILE"
+
+          # Verify changes
+          echo "=== Version updated to ${VERSION} ==="
+          grep "Version:" "$PLUGIN_FILE"
+          grep "MARKETING_ANALYTICS_MCP_VERSION" "$PLUGIN_FILE"
+
+      - name: Commit version bump
+        run: |
+          git add marketing-analytics-chat.php
+          git commit -m "chore: bump version to ${{ github.event.inputs.version }}"
+
+      - name: Push release branch
+        run: git push origin "release/${{ github.event.inputs.version }}"
+
+      - name: Create pull request
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh pr create \
+            --base main \
+            --head "release/${{ github.event.inputs.version }}" \
+            --title "Release ${{ github.event.inputs.version }}" \
+            --body "$(cat <<'EOF'
+          ## Release ${{ github.event.inputs.version }}
+
+          This PR was automatically created by the Create Release workflow.
+
+          ### Checklist
+          - [ ] Version bumped in plugin header
+          - [ ] Version bumped in `MARKETING_ANALYTICS_MCP_VERSION` constant
+          - [ ] Tests passing
+          - [ ] Ready for release
+
+          ### What happens on merge
+          A git tag `v${{ github.event.inputs.version }}` will be created automatically, triggering the release build workflow.
+          EOF
+          )"

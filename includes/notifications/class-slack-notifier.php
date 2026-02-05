@@ -102,6 +102,7 @@ class Slack_Notifier {
 			return new \WP_Error(
 				'slack_error',
 				sprintf(
+					/* translators: %s: Error message */
 					__( 'Slack API error: %d', 'marketing-analytics-chat' ),
 					$status_code
 				)

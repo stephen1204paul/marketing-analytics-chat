@@ -1,0 +1,15 @@
+# Test output files
+output/
+*.log
+
+# Coverage reports
+coverage/
+coverage.xml
+clover.xml
+
+# PHPUnit cache
+.phpunit.result.cache
+
+# Test environment variables (DO NOT COMMIT!)
+.env
+.env.test

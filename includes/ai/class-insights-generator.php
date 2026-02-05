@@ -365,8 +365,8 @@ Prioritize findings by urgency and potential impact.',
 
 		// Add basic trend analysis
 		if ( isset( $data['metrics'] ) ) {
-			/* translators: %s: comma-separated list of metric names */
 			$insights[] = sprintf(
+				/* translators: %s: comma-separated list of metric names */
 				__( 'Metrics tracked: %s', 'marketing-analytics-chat' ),
 				implode( ', ', array_keys( $data['metrics'] ) )
 			);

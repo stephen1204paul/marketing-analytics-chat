@@ -417,52 +417,52 @@ class Anomaly_Detector {
 	 */
 	private function send_email_notification( $anomaly, $platform, $metric ) {
 		$to = get_option( 'admin_email' );
-		/* translators: 1: severity level, 2: anomaly type (spike/drop), 3: platform name */
 		$subject = sprintf(
+			/* translators: 1: severity level, 2: anomaly type (spike/drop), 3: platform name */
 			__( '[%1$s Alert] %2$s anomaly detected in %3$s', 'marketing-analytics-chat' ),
 			$anomaly['severity'],
 			ucfirst( $anomaly['type'] ),
 			$platform
 		);
 
-		/* translators: %s: platform name */
 		$message = sprintf(
+			/* translators: %s: platform name */
 			__( "An anomaly has been detected in your %s analytics:\n\n", 'marketing-analytics-chat' ),
 			$platform
 		);
 
-		/* translators: %s: metric name */
 		$message .= sprintf(
+			/* translators: %s: metric name */
 			__( "Metric: %s\n", 'marketing-analytics-chat' ),
 			$metric
 		);
 
-		/* translators: %s: current metric value */
 		$message .= sprintf(
+			/* translators: %s: current metric value */
 			__( "Current Value: %s\n", 'marketing-analytics-chat' ),
 			number_format( $anomaly['value'], 2 )
 		);
 
-		/* translators: %s: expected metric value */
 		$message .= sprintf(
+			/* translators: %s: expected metric value */
 			__( "Expected Value: %s\n", 'marketing-analytics-chat' ),
 			number_format( $anomaly['expected'], 2 )
 		);
 
-		/* translators: %s: percentage change with sign */
 		$message .= sprintf(
+			/* translators: %s: percentage change with sign */
 			__( "Change: %s%%\n", 'marketing-analytics-chat' ),
 			$anomaly['percentage_change'] > 0 ? '+' . $anomaly['percentage_change'] : $anomaly['percentage_change']
 		);
 
-		/* translators: %s: severity level */
 		$message .= sprintf(
+			/* translators: %s: severity level */
 			__( "Severity: %s\n\n", 'marketing-analytics-chat' ),
 			ucfirst( $anomaly['severity'] )
 		);
 
-		/* translators: %s: URL to view anomaly details */
 		$message .= sprintf(
+			/* translators: %s: URL to view anomaly details */
 			__( "View details: %s\n", 'marketing-analytics-chat' ),
 			admin_url( 'admin.php?page=marketing-analytics-chat-anomalies' )
 		);

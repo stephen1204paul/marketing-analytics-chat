@@ -33,9 +33,9 @@ class Activator {
 		}
 
 		// Check minimum PHP version
-		if ( version_compare( PHP_VERSION, '8.3', '<' ) ) {
+		if ( version_compare( PHP_VERSION, '8.1', '<' ) ) {
 			wp_die(
-				esc_html__( 'Marketing Analytics Chat requires PHP 8.3 or higher.', 'marketing-analytics-chat' ),
+				esc_html__( 'Marketing Analytics Chat requires PHP 8.1 or higher.', 'marketing-analytics-chat' ),
 				esc_html__( 'Plugin Activation Error', 'marketing-analytics-chat' ),
 				array( 'back_link' => true )
 			);
@@ -158,34 +158,48 @@ class Activator {
 		) {$charset_collate};";
 
 		// Execute table creation
-		require_once ABSPATH . 'wp-admin/includes/upgrade.php';
+		if ( ! function_exists( 'dbDelta' ) ) {
+			require_once ABSPATH . 'wp-admin/includes/upgrade.php';
+		}
 		dbDelta( $conversations_sql );
 		dbDelta( $messages_sql );
 
 		// Add foreign key constraint separately (dbDelta doesn't handle these)
 		// Check if foreign key already exists before adding
-		$fk_check = $wpdb->get_var(
-			$wpdb->prepare(
-				"SELECT COUNT(*) FROM information_schema.TABLE_CONSTRAINTS
-				WHERE CONSTRAINT_SCHEMA = %s
-				AND TABLE_NAME = %s
-				AND CONSTRAINT_NAME LIKE %s
-				AND CONSTRAINT_TYPE = 'FOREIGN KEY'",
-				DB_NAME,
-				$messages_table,
-				'%conversation_id%'
-			)
-		);
+			$fk_cache_group = 'marketing_analytics_mcp_schema';
+			$fk_cache_key   = 'messages_fk_exists';
+			$fk_check       = wp_cache_get( $fk_cache_key, $fk_cache_group );
 
-		if ( $fk_check == 0 ) {
-			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Table names are safe, defined by plugin. ALTER TABLE cannot use prepare().
-			$wpdb->query(
-				"ALTER TABLE {$messages_table}
+		if ( false === $fk_check ) {
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Schema inspection requires direct query with transient cache.
+			$fk_check = $wpdb->get_var(
+				$wpdb->prepare(
+					"SELECT COUNT(*) FROM information_schema.TABLE_CONSTRAINTS
+						WHERE CONSTRAINT_SCHEMA = %s
+						AND TABLE_NAME = %s
+						AND CONSTRAINT_NAME LIKE %s
+						AND CONSTRAINT_TYPE = 'FOREIGN KEY'",
+					DB_NAME,
+					$messages_table,
+					'%conversation_id%'
+				)
+			);
+			wp_cache_set( $fk_cache_key, $fk_check, $fk_cache_group, HOUR_IN_SECONDS );
+		}
+
+		if ( 0 === (int) $fk_check ) {
+			$messages_table_sql      = esc_sql( $messages_table );
+			$conversations_table_sql = esc_sql( $conversations_table );
+
+				// phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared -- Table names are pre-escaped, and schema updates cannot be prepared.
+				$alter_sql = "ALTER TABLE {$messages_table_sql}
 				ADD CONSTRAINT fk_conversation_id
 				FOREIGN KEY (conversation_id)
-				REFERENCES {$conversations_table}(id)
-				ON DELETE CASCADE"
-			);
+				REFERENCES {$conversations_table_sql}(id)
+				ON DELETE CASCADE";
+
+				// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.SchemaChange, WordPress.DB.PreparedSQL.NotPrepared -- Schema updates require raw query.
+				$wpdb->query( $alter_sql );
 		}
 
 		// Store database version
@@ -236,7 +250,9 @@ class Activator {
 		) {$charset_collate};";
 
 		// Execute table creation
-		require_once ABSPATH . 'wp-admin/includes/upgrade.php';
+		if ( ! function_exists( 'dbDelta' ) ) {
+			require_once ABSPATH . 'wp-admin/includes/upgrade.php';
+		}
 		dbDelta( $anomalies_sql );
 		dbDelta( $network_sites_sql );
 	}
