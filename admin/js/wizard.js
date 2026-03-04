@@ -159,7 +159,7 @@
 
 		// Add checkmark to step status
 		const $status = $(`.wizard-step[data-step="${stepNumber}"] .step-status`);
-		$status.html('<span class="dashicons dashicons-yes-alt" style="color: #46b450;"></span>');
+		$status.html('<span class="dashicons dashicons-yes-alt" style="color: #00a32a;"></span>');
 	}
 
 	function updateProgressBar() {
@@ -219,16 +219,16 @@
 		if ($field.attr('id') === 'google_client_id') {
 			isValid = validateClientIdFormat(value);
 			message = isValid ?
-				'<span class="dashicons dashicons-yes-alt" style="color: #46b450;"></span> Valid Client ID format' :
-				'<span class="dashicons dashicons-dismiss" style="color: #dc3232;"></span> Invalid format (must end with .apps.googleusercontent.com)';
+				'<span class="dashicons dashicons-yes-alt" style="color: #00a32a;"></span> Valid Client ID format' :
+				'<span class="dashicons dashicons-dismiss" style="color: #d63638;"></span> Invalid format (must end with .apps.googleusercontent.com)';
 		} else if ($field.attr('id') === 'google_client_secret') {
 			isValid = validateClientSecretFormat(value);
 			message = isValid ?
-				'<span class="dashicons dashicons-yes-alt" style="color: #46b450;"></span> Valid Client Secret format' :
-				'<span class="dashicons dashicons-dismiss" style="color: #dc3232;"></span> Invalid format (must start with GOCSPX-)';
+				'<span class="dashicons dashicons-yes-alt" style="color: #00a32a;"></span> Valid Client Secret format' :
+				'<span class="dashicons dashicons-dismiss" style="color: #d63638;"></span> Invalid format (must start with GOCSPX-)';
 		}
 
-		$feedback.html(message).css('color', isValid ? '#46b450' : '#dc3232');
+		$feedback.html(message).css('color', isValid ? '#00a32a' : '#d63638');
 	}
 
 	function validateClientIdFormat(clientId) {
@@ -286,7 +286,7 @@
 		navigator.clipboard.writeText(text).then(function() {
 			const originalHTML = $button.html();
 			$button.html('<span class="dashicons dashicons-yes"></span> Copied!');
-			$button.css('color', '#46b450');
+			$button.css('color', '#00a32a');
 
 			setTimeout(function() {
 				$button.html(originalHTML);

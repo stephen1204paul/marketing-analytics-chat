@@ -178,62 +178,6 @@ if ( $has_credentials ) {
 	<div id="dataforseo-test-results" style="display: none;"></div>
 </div>
 
-<style>
-.credit-balance-display {
-	background: #f6f7f7;
-	border: 1px solid #c3c4c7;
-	border-radius: 4px;
-	padding: 15px;
-	margin: 20px 0;
-}
-
-.balance-info {
-	font-size: 24px;
-	margin: 10px 0;
-}
-
-.balance-amount {
-	font-weight: bold;
-	color: #135e96;
-}
-
-.balance-info.low-balance .balance-amount {
-	color: #d63638;
-}
-
-.low-balance-warning {
-	color: #d63638;
-	font-size: 14px;
-	margin-left: 10px;
-}
-
-.usage-stats {
-	margin-top: 10px;
-	font-size: 14px;
-}
-
-.api-info {
-	background: #f0f0f1;
-	border-left: 4px solid #2271b1;
-	padding: 12px;
-	margin: 20px 0;
-}
-
-.api-info h5 {
-	margin-top: 0;
-	margin-bottom: 10px;
-}
-
-.api-info ul {
-	margin-left: 20px;
-	list-style-type: disc;
-}
-
-.api-info ul li {
-	margin: 5px 0;
-}
-</style>
-
 <script>
 jQuery(document).ready(function($) {
 	// Save credentials

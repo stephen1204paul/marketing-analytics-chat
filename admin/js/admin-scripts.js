@@ -398,6 +398,45 @@
 	}
 
 	/**
+	 * Validate Google OAuth credential format on blur
+	 */
+	function initCredentialValidation() {
+		$('#google_client_id').on('blur', function() {
+			var $input = $(this);
+			var $status = $('#google_client_id_status');
+			var value = $input.val().trim();
+
+			if (!value) {
+				$status.hide();
+				return;
+			}
+
+			if (value.match(/\.apps\.googleusercontent\.com$/)) {
+				$status.html('<span style="color: #00a32a;">&#10003;</span>').show();
+			} else {
+				$status.html('<span style="color: #d63638;">&#10007; Must end with .apps.googleusercontent.com</span>').show();
+			}
+		});
+
+		$('#google_client_secret').on('blur', function() {
+			var $input = $(this);
+			var $status = $('#google_client_secret_status');
+			var value = $input.val().trim();
+
+			if (!value) {
+				$status.hide();
+				return;
+			}
+
+			if (value.indexOf('GOCSPX-') === 0) {
+				$status.html('<span style="color: #00a32a;">&#10003;</span>').show();
+			} else {
+				$status.html('<span style="color: #d63638;">&#10007; Must start with GOCSPX-</span>').show();
+			}
+		});
+	}
+
+	/**
 	 * Initialize all functionality
 	 */
 	$(document).ready(function() {
@@ -406,6 +445,7 @@
 		initClearCaches();
 		initGA4PropertySelector();
 		initGSCSiteSelector();
+		initCredentialValidation();
 	});
 
 })(jQuery);

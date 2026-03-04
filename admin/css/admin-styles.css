@@ -4,17 +4,403 @@
  * @package Marketing_Analytics_MCP
  */
 
+/* ============================================
+   Design Tokens
+   ============================================ */
+:root {
+	/* Colors - WP 6.x standard */
+	--mac-primary: #2271b1;
+	--mac-primary-hover: #135e96;
+	--mac-success: #00a32a;
+	--mac-success-bg: #d5f2e0;
+	--mac-warning: #dba617;
+	--mac-warning-bg: #f0e9d2;
+	--mac-error: #d63638;
+	--mac-error-bg: #fcf0f1;
+
+	/* Text */
+	--mac-text-primary: #1d2327;
+	--mac-text-secondary: #646970;
+	--mac-text-muted: #a7aaad;
+
+	/* Borders & surfaces */
+	--mac-border: #c3c4c7;
+	--mac-surface: #fff;
+	--mac-surface-alt: #f6f7f7;
+	--mac-surface-hover: #f0f0f1;
+
+	/* Spacing */
+	--mac-space-xs: 4px;
+	--mac-space-sm: 8px;
+	--mac-space-md: 12px;
+	--mac-space-base: 16px;
+	--mac-space-lg: 20px;
+	--mac-space-xl: 24px;
+	--mac-space-section: 30px;
+
+	/* Shadows */
+	--mac-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+	--mac-shadow-hover: 0 2px 8px rgba(0, 0, 0, 0.1);
+
+	/* Transitions */
+	--mac-transition: 0.2s ease;
+}
+
+/* ============================================
+   Shared Components
+   ============================================ */
+
+/* Toggle Switch */
+.switch {
+	position: relative;
+	display: inline-block;
+	width: 60px;
+	height: 34px;
+}
+
+.switch input {
+	opacity: 0;
+	width: 0;
+	height: 0;
+}
+
+.slider {
+	position: absolute;
+	cursor: pointer;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background-color: #ccc;
+	transition: 0.4s;
+}
+
+.slider:before {
+	position: absolute;
+	content: "";
+	height: 26px;
+	width: 26px;
+	left: 4px;
+	bottom: 4px;
+	background-color: white;
+	transition: 0.4s;
+}
+
+input:checked + .slider {
+	background-color: var(--mac-primary);
+}
+
+input:checked + .slider:before {
+	transform: translateX(26px);
+}
+
+.slider.round {
+	border-radius: 34px;
+}
+
+.slider.round:before {
+	border-radius: 50%;
+}
+
+/* Stat Card */
+.stat-card {
+	background: var(--mac-surface);
+	border: 1px solid var(--mac-border);
+	border-radius: 4px;
+	padding: var(--mac-space-lg);
+	min-width: 150px;
+}
+
+.stat-card h3 {
+	margin-top: 0;
+	color: var(--mac-text-primary);
+	font-size: 14px;
+	font-weight: 600;
+}
+
+.stat-value {
+	font-size: 32px;
+	font-weight: 600;
+	color: var(--mac-primary);
+	margin: 10px 0;
+}
+
+.stat-label {
+	color: var(--mac-text-secondary);
+	font-size: 12px;
+	text-transform: uppercase;
+}
+
+/* Stat Grid (unified container for all stat cards) */
+.mac-stats-grid,
+.ai-usage-stats,
+.anomaly-stats,
+.network-stats {
+	display: flex;
+	gap: var(--mac-space-lg);
+	margin: var(--mac-space-lg) 0;
+	flex-wrap: wrap;
+}
+
+/* Severity Stat Card Colors */
+.stat-card.severity-critical .stat-value {
+	color: var(--mac-error);
+}
+
+.stat-card.severity-high .stat-value {
+	color: #e65100;
+}
+
+.stat-card.severity-medium .stat-value {
+	color: #996800;
+}
+
+.stat-card.severity-low .stat-value {
+	color: var(--mac-success);
+}
+
+/* Anomaly Type Badges */
+.anomaly-type {
+	padding: 2px 8px;
+	border-radius: 3px;
+	font-size: 12px;
+}
+
+.anomaly-spike {
+	background-color: #ffebe9;
+	color: var(--mac-error);
+}
+
+.anomaly-drop {
+	background-color: #e9f5ff;
+	color: var(--mac-primary);
+}
+
+/* Anomaly Severity Badges */
+.anomaly-severity {
+	padding: 2px 8px;
+	border-radius: 3px;
+	font-size: 12px;
+}
+
+.severity-critical {
+	background-color: var(--mac-error);
+	color: #fff;
+}
+
+.severity-high {
+	background-color: #e65100;
+	color: #fff;
+}
+
+.severity-medium {
+	background-color: #dba617;
+	color: var(--mac-text-primary);
+}
+
+.severity-low {
+	background-color: var(--mac-success);
+	color: #fff;
+}
+
+/* Modal */
+.mac-modal,
+.modal {
+	position: fixed;
+	z-index: 100000;
+	left: 0;
+	top: 0;
+	width: 100%;
+	height: 100%;
+	background-color: rgba(0, 0, 0, 0.4);
+}
+
+.mac-modal-content,
+.modal-content {
+	background-color: var(--mac-surface);
+	margin: 5% auto;
+	padding: var(--mac-space-lg);
+	border: 1px solid var(--mac-border);
+	border-radius: 4px;
+	width: 60%;
+	max-width: 600px;
+}
+
+.modal .close {
+	color: var(--mac-text-muted);
+	float: right;
+	font-size: 28px;
+	font-weight: bold;
+	cursor: pointer;
+}
+
+.modal .close:hover,
+.modal .close:focus {
+	color: var(--mac-text-primary);
+}
+
+/* DataForSEO / Credit Balance Display */
+.credit-balance-display {
+	background: var(--mac-surface-alt);
+	border: 1px solid var(--mac-border);
+	border-radius: 4px;
+	padding: 15px;
+	margin: var(--mac-space-lg) 0;
+}
+
+.balance-info {
+	font-size: 24px;
+	margin: 10px 0;
+}
+
+.balance-amount {
+	font-weight: bold;
+	color: var(--mac-primary-hover);
+}
+
+.balance-info.low-balance .balance-amount {
+	color: var(--mac-error);
+}
+
+.low-balance-warning {
+	color: var(--mac-error);
+	font-size: 14px;
+	margin-left: 10px;
+}
+
+.usage-stats {
+	margin-top: 10px;
+	font-size: 14px;
+}
+
+.api-info {
+	background: var(--mac-surface-hover);
+	border-left: 4px solid var(--mac-primary);
+	padding: 12px;
+	margin: var(--mac-space-lg) 0;
+}
+
+.api-info h5 {
+	margin-top: 0;
+	margin-bottom: 10px;
+}
+
+.api-info ul {
+	margin-left: 20px;
+	list-style-type: disc;
+}
+
+.api-info ul li {
+	margin: 5px 0;
+}
+
+/* Status Badge Variants for Heading Context */
+.connection-panel h3 .status-badge {
+	vertical-align: middle;
+	margin-left: 8px;
+}
+
+.status-badge.connected {
+	background: var(--mac-success-bg);
+	color: var(--mac-success);
+}
+
+.status-badge.disconnected {
+	background: var(--mac-warning-bg);
+	color: #996800;
+}
+
+.status-badge.error {
+	background: var(--mac-error-bg);
+	color: var(--mac-error);
+}
+
+/* Heading badge style - solid background */
+.status-badge.heading-connected {
+	background: var(--mac-success);
+	color: white;
+	padding: 4px 12px;
+	border-radius: 3px;
+	font-size: 13px;
+	font-weight: normal;
+}
+
+.status-badge.heading-connected .dashicons {
+	font-size: 14px;
+	margin-top: 2px;
+}
+
+.status-badge.heading-disconnected {
+	background: var(--mac-error);
+	color: white;
+	padding: 4px 12px;
+	border-radius: 3px;
+	font-size: 13px;
+	font-weight: normal;
+}
+
+.status-badge.heading-disconnected .dashicons {
+	font-size: 14px;
+	margin-top: 2px;
+}
+
+/* Description color helpers */
+.description.success {
+	color: var(--mac-success);
+}
+
+.description.error {
+	color: var(--mac-error);
+}
+
+/* Site status indicators */
+.site-status-active {
+	color: var(--mac-success);
+}
+
+.site-status-inactive {
+	color: var(--mac-error);
+}
+
+/* Widget heading */
+.mac-widget-heading {
+	margin: 0 0 10px 0;
+	font-size: 13px;
+	text-transform: uppercase;
+	color: var(--mac-text-secondary);
+}
+
+/* Widget section spacing */
+.marketing-analytics-widget-section + .marketing-analytics-widget-section {
+	margin-top: 16px;
+}
+
+/* Widget footer actions */
+.mac-widget-footer {
+	margin-top: 10px;
+	text-align: right;
+}
+
+/* Notification status helpers */
+.notification-status-sent {
+	color: var(--mac-success);
+}
+
+.notification-status-failed {
+	color: var(--mac-error);
+}
+
 /* Dashboard Layout */
 .marketing-analytics-chat-dashboard {
 	max-width: 1200px;
 }
 
 .marketing-analytics-welcome {
-	background: #fff;
-	border: 1px solid #c3c4c7;
-	border-left: 4px solid #2271b1;
-	padding: 20px;
-	margin: 20px 0;
+	background: var(--mac-surface);
+	border: 1px solid var(--mac-border);
+	border-left: 4px solid var(--mac-primary);
+	padding: var(--mac-space-lg);
+	margin: var(--mac-space-section) 0;
 }
 
 .marketing-analytics-welcome h2 {
@@ -123,16 +509,6 @@
 	font-size: 12px;
 	font-weight: 600;
 	text-transform: uppercase;
-}
-
-.status-badge.connected {
-	background: #d5f2e0;
-	color: #00a32a;
-}
-
-.status-badge.disconnected {
-	background: #f0e9d2;
-	color: #996800;
 }
 
 .status-description {
@@ -331,4 +707,80 @@
 
 .marketing-analytics-chat-prompts-container .chat{
 	max-width: 100%;
+}
+
+/* Dashboard Widget */
+.marketing-analytics-widget {
+	padding: 5px 0;
+}
+
+.marketing-analytics-widget-section {
+	padding: 0;
+}
+
+.marketing-analytics-widget-platforms {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px;
+}
+
+.marketing-analytics-widget-badge {
+	display: inline-block;
+	padding: 3px 10px;
+	border-radius: 12px;
+	font-size: 11px;
+	font-weight: 600;
+	letter-spacing: 0.5px;
+}
+
+.marketing-analytics-widget-badge.connected {
+	background: #d5f2e0;
+	color: #00a32a;
+}
+
+.marketing-analytics-widget-badge.disconnected {
+	background: #f0f0f1;
+	color: #646970;
+}
+
+.marketing-analytics-widget-severity {
+	display: inline-block;
+	padding: 2px 8px;
+	border-radius: 3px;
+	font-size: 11px;
+	font-weight: 600;
+	margin-right: 6px;
+}
+
+.marketing-analytics-widget-severity.critical {
+	background: var(--mac-error-bg);
+	color: var(--mac-error);
+}
+
+.marketing-analytics-widget-severity.high {
+	background: #fef3eb;
+	color: #e65100;
+}
+
+.marketing-analytics-widget-severity.medium {
+	background: #fef8e7;
+	color: #996800;
+}
+
+.marketing-analytics-widget-severity.low {
+	background: #f0f6fc;
+	color: #2271b1;
+}
+
+.marketing-analytics-refresh-widget .dashicons.spin {
+	animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+	0% {
+		transform: rotate(0deg);
+	}
+	100% {
+		transform: rotate(360deg);
+	}
 }

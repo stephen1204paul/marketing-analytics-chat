@@ -426,7 +426,7 @@ jQuery(document).ready(function($) {
 }
 
 .marketing-analytics-chat-prompts-container .button-link-delete:hover {
-	color: #dc3232;
+	color: #d63638;
 }
 
 .marketing-analytics-chat-prompts-container textarea.code {

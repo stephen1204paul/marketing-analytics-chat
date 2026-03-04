@@ -178,7 +178,7 @@
 }
 
 .step-content {
-	padding: 25px;
+	padding: 20px;
 }
 
 /* Step Action Buttons */
@@ -295,7 +295,7 @@ code.copyable {
 
 /* Step Confirmation */
 .step-confirmation {
-	margin-top: 25px;
+	margin-top: 20px;
 	padding-top: 20px;
 	border-top: 1px solid #c3c4c7;
 }
@@ -469,7 +469,7 @@ code.copyable {
 	}
 
 	.step-label {
-		font-size: 10px;
+		font-size: 11px;
 	}
 
 	.api-enable-grid {

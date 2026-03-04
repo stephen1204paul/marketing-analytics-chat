@@ -173,13 +173,13 @@ $clarity_connected = $credential_manager->has_credentials( 'clarity' );
 					<h3>
 						<?php esc_html_e( 'Microsoft Clarity Configuration', 'marketing-analytics-chat' ); ?>
 						<?php if ( $clarity_connected ) : ?>
-							<span class="status-badge" style="background: #46b450; color: white; padding: 4px 12px; border-radius: 3px; font-size: 13px; margin-left: 10px; font-weight: normal;">
-								<span class="dashicons dashicons-yes-alt" style="font-size: 14px; margin-top: 2px;"></span>
+							<span class="status-badge heading-connected">
+								<span class="dashicons dashicons-yes-alt"></span>
 								<?php esc_html_e( 'Connected', 'marketing-analytics-chat' ); ?>
 							</span>
 						<?php else : ?>
-							<span class="status-badge" style="background: #dc3232; color: white; padding: 4px 12px; border-radius: 3px; font-size: 13px; margin-left: 10px; font-weight: normal;">
-								<span class="dashicons dashicons-warning" style="font-size: 14px; margin-top: 2px;"></span>
+							<span class="status-badge heading-disconnected">
+								<span class="dashicons dashicons-warning"></span>
 								<?php esc_html_e( 'Not Connected', 'marketing-analytics-chat' ); ?>
 							</span>
 						<?php endif; ?>
@@ -211,7 +211,7 @@ $clarity_connected = $credential_manager->has_credentials( 'clarity' );
 											?>
 									/>
 									<?php if ( $clarity_has_token ) : ?>
-										<p class="description" style="color: #46b450;">
+										<p class="description success">
 											<span class="dashicons dashicons-yes-alt"></span>
 											<?php esc_html_e( 'API token is securely stored and encrypted. Leave blank to keep current token, or enter a new one to update.', 'marketing-analytics-chat' ); ?>
 										</p>
@@ -260,13 +260,13 @@ $clarity_connected = $credential_manager->has_credentials( 'clarity' );
 					<h3>
 						<?php esc_html_e( 'Google Analytics 4 Configuration', 'marketing-analytics-chat' ); ?>
 						<?php if ( $is_connected ) : ?>
-							<span class="status-badge" style="background: #46b450; color: white; padding: 4px 12px; border-radius: 3px; font-size: 13px; margin-left: 10px; font-weight: normal;">
-								<span class="dashicons dashicons-yes-alt" style="font-size: 14px; margin-top: 2px;"></span>
+							<span class="status-badge heading-connected">
+								<span class="dashicons dashicons-yes-alt"></span>
 								<?php esc_html_e( 'Connected', 'marketing-analytics-chat' ); ?>
 							</span>
 						<?php else : ?>
-							<span class="status-badge" style="background: #dc3232; color: white; padding: 4px 12px; border-radius: 3px; font-size: 13px; margin-left: 10px; font-weight: normal;">
-								<span class="dashicons dashicons-warning" style="font-size: 14px; margin-top: 2px;"></span>
+							<span class="status-badge heading-disconnected">
+								<span class="dashicons dashicons-warning"></span>
 								<?php esc_html_e( 'Not Connected', 'marketing-analytics-chat' ); ?>
 							</span>
 						<?php endif; ?>
@@ -306,7 +306,7 @@ $clarity_connected = $credential_manager->has_credentials( 'clarity' );
 								</a>
 							</p>
 						<?php else : ?>
-							<p class="description" style="color: #dc3232;">
+							<p class="description error">
 								<?php esc_html_e( 'Error generating authorization URL. Please check your OAuth credentials.', 'marketing-analytics-chat' ); ?>
 							</p>
 						<?php endif; ?>
@@ -341,7 +341,7 @@ $clarity_connected = $credential_manager->has_credentials( 'clarity' );
 									</select>
 
 									<?php if ( $current_property_id ) : ?>
-										<p class="description" style="color: #46b450;">
+										<p class="description success">
 											<span class="dashicons dashicons-yes-alt"></span>
 											<?php
 											printf(
@@ -397,13 +397,13 @@ $clarity_connected = $credential_manager->has_credentials( 'clarity' );
 					<h3>
 						<?php esc_html_e( 'Google Search Console Configuration', 'marketing-analytics-chat' ); ?>
 						<?php if ( $is_connected ) : ?>
-							<span class="status-badge" style="background: #46b450; color: white; padding: 4px 12px; border-radius: 3px; font-size: 13px; margin-left: 10px; font-weight: normal;">
-								<span class="dashicons dashicons-yes-alt" style="font-size: 14px; margin-top: 2px;"></span>
+							<span class="status-badge heading-connected">
+								<span class="dashicons dashicons-yes-alt"></span>
 								<?php esc_html_e( 'Connected', 'marketing-analytics-chat' ); ?>
 							</span>
 						<?php else : ?>
-							<span class="status-badge" style="background: #dc3232; color: white; padding: 4px 12px; border-radius: 3px; font-size: 13px; margin-left: 10px; font-weight: normal;">
-								<span class="dashicons dashicons-warning" style="font-size: 14px; margin-top: 2px;"></span>
+							<span class="status-badge heading-disconnected">
+								<span class="dashicons dashicons-warning"></span>
 								<?php esc_html_e( 'Not Connected', 'marketing-analytics-chat' ); ?>
 							</span>
 						<?php endif; ?>
@@ -443,7 +443,7 @@ $clarity_connected = $credential_manager->has_credentials( 'clarity' );
 								</a>
 							</p>
 						<?php else : ?>
-							<p class="description" style="color: #dc3232;">
+							<p class="description error">
 								<?php esc_html_e( 'Error generating authorization URL. Please check your OAuth credentials.', 'marketing-analytics-chat' ); ?>
 							</p>
 						<?php endif; ?>
@@ -478,7 +478,7 @@ $clarity_connected = $credential_manager->has_credentials( 'clarity' );
 									</select>
 
 									<?php if ( $current_site_url ) : ?>
-										<p class="description" style="color: #46b450;">
+										<p class="description success">
 											<span class="dashicons dashicons-yes-alt"></span>
 											<?php
 											printf(

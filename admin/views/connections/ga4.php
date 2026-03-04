@@ -40,13 +40,13 @@ $ga4_connected = isset( $platforms['ga4']['connected'] ) && $platforms['ga4']['c
 	<h3>
 		<?php esc_html_e( 'Google Analytics 4 Configuration', 'marketing-analytics-chat' ); ?>
 		<?php if ( $ga4_connected ) : ?>
-			<span class="status-badge" style="background: #46b450; color: white; padding: 4px 12px; border-radius: 3px; font-size: 13px; margin-left: 10px; font-weight: normal;">
-				<span class="dashicons dashicons-yes-alt" style="font-size: 14px; margin-top: 2px;"></span>
+			<span class="status-badge heading-connected">
+				<span class="dashicons dashicons-yes-alt" ></span>
 				<?php esc_html_e( 'Connected', 'marketing-analytics-chat' ); ?>
 			</span>
 		<?php else : ?>
-			<span class="status-badge" style="background: #dc3232; color: white; padding: 4px 12px; border-radius: 3px; font-size: 13px; margin-left: 10px; font-weight: normal;">
-				<span class="dashicons dashicons-warning" style="font-size: 14px; margin-top: 2px;"></span>
+			<span class="status-badge heading-disconnected">
+				<span class="dashicons dashicons-warning" ></span>
 				<?php esc_html_e( 'Not Connected', 'marketing-analytics-chat' ); ?>
 			</span>
 		<?php endif; ?>
@@ -58,7 +58,26 @@ $ga4_connected = isset( $platforms['ga4']['connected'] ) && $platforms['ga4']['c
 		<div class="notice notice-warning">
 			<p><strong><?php esc_html_e( 'Step 1: Configure Google OAuth Credentials', 'marketing-analytics-chat' ); ?></strong></p>
 			<p><?php esc_html_e( 'Before you can connect to Google Analytics 4, you need to set up OAuth credentials from the Google Cloud Console.', 'marketing-analytics-chat' ); ?></p>
+			<p style="color: #646970; font-style: italic;">
+				<span class="dashicons dashicons-clock" style="font-size: 16px; margin-top: 2px;"></span>
+				<?php esc_html_e( 'Estimated time: ~5 minutes', 'marketing-analytics-chat' ); ?>
+			</p>
 		</div>
+
+		<?php
+		$ga4_video_url = apply_filters( 'marketing_analytics_mcp_setup_video_url', '', 'ga4' );
+		if ( ! empty( $ga4_video_url ) ) :
+		?>
+		<details style="margin: 15px 0; background: #f6f7f7; border: 1px solid #c3c4c7; border-radius: 4px; padding: 0 15px;">
+			<summary style="padding: 12px 0; cursor: pointer; font-weight: 600;">
+				<span class="dashicons dashicons-video-alt3" style="font-size: 16px; margin-top: 2px; color: #2271b1;"></span>
+				<?php esc_html_e( 'Watch video walkthrough', 'marketing-analytics-chat' ); ?>
+			</summary>
+			<div style="padding: 0 0 15px 0;">
+				<iframe width="100%" height="315" src="<?php echo esc_url( $ga4_video_url ); ?>" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy" style="max-width: 560px;"></iframe>
+			</div>
+		</details>
+		<?php endif; ?>
 
 		<div class="notice notice-info">
 			<p><strong><?php esc_html_e( 'Required Google APIs', 'marketing-analytics-chat' ); ?></strong></p>
@@ -86,6 +105,11 @@ $ga4_connected = isset( $platforms['ga4']['connected'] ) && $platforms['ga4']['c
 			</p>
 		</div>
 
+		<p style="color: #646970; font-size: 13px;">
+			<span class="dashicons dashicons-info" style="font-size: 16px; margin-top: 2px;"></span>
+			<?php esc_html_e( 'Already have your Client ID and Client Secret? Paste them directly below.', 'marketing-analytics-chat' ); ?>
+		</p>
+
 		<form method="post" action="" id="ga4-oauth-config-form">
 			<?php wp_nonce_field( 'marketing_analytics_mcp_oauth_config', 'oauth_config_nonce' ); ?>
 			<input type="hidden" name="save_oauth_config" value="1" />
@@ -97,6 +121,7 @@ $ga4_connected = isset( $platforms['ga4']['connected'] ) && $platforms['ga4']['c
 					</th>
 					<td>
 						<input type="text" id="google_client_id" name="google_client_id" class="large-text" value="" />
+						<span id="google_client_id_status" style="display: none; margin-left: 5px;"></span>
 						<p class="description">
 							<?php
 							printf(
@@ -114,6 +139,7 @@ $ga4_connected = isset( $platforms['ga4']['connected'] ) && $platforms['ga4']['c
 					</th>
 					<td>
 						<input type="password" id="google_client_secret" name="google_client_secret" class="large-text" value="" />
+						<span id="google_client_secret_status" style="display: none; margin-left: 5px;"></span>
 					</td>
 				</tr>
 				<tr>
@@ -137,6 +163,15 @@ $ga4_connected = isset( $platforms['ga4']['connected'] ) && $platforms['ga4']['c
 		<div class="notice notice-info">
 			<p><strong><?php esc_html_e( 'Step 2: Connect to Google Analytics', 'marketing-analytics-chat' ); ?></strong></p>
 			<p><?php esc_html_e( 'Click the button below to authorize access to your Google Analytics 4 properties.', 'marketing-analytics-chat' ); ?></p>
+		</div>
+
+		<!-- Test Connection -->
+		<div style="margin: 15px 0;">
+			<button type="button" class="button button-secondary test-connection" data-platform="ga4">
+				<span class="dashicons dashicons-yes-alt" style="font-size: 16px; margin-top: 3px;"></span>
+				<?php esc_html_e( 'Test Connection', 'marketing-analytics-chat' ); ?>
+			</button>
+			<span id="ga4-test-result" style="margin-left: 10px; display: none;"></span>
 		</div>
 
 		<div class="notice notice-warning" style="border-left-color: #00a0d2;">
@@ -188,7 +223,7 @@ $ga4_connected = isset( $platforms['ga4']['connected'] ) && $platforms['ga4']['c
 						<option value=""><?php esc_html_e( 'Loading properties...', 'marketing-analytics-chat' ); ?></option>
 					</select>
 					<p class="description"><?php esc_html_e( 'Select the Google Analytics 4 property you want to connect to.', 'marketing-analytics-chat' ); ?></p>
-					<div id="ga4-property-error" style="color: #dc3232; margin-top: 5px; display: none;"></div>
+					<div id="ga4-property-error" class="description error" style="margin-top: 5px; display: none;"></div>
 				</td>
 			</tr>
 		</table>

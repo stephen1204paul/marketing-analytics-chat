@@ -40,13 +40,13 @@ $gsc_connected = isset( $platforms['gsc']['connected'] ) && $platforms['gsc']['c
 	<h3>
 		<?php esc_html_e( 'Google Search Console Configuration', 'marketing-analytics-chat' ); ?>
 		<?php if ( $gsc_connected ) : ?>
-			<span class="status-badge" style="background: #46b450; color: white; padding: 4px 12px; border-radius: 3px; font-size: 13px; margin-left: 10px; font-weight: normal;">
-				<span class="dashicons dashicons-yes-alt" style="font-size: 14px; margin-top: 2px;"></span>
+			<span class="status-badge heading-connected">
+				<span class="dashicons dashicons-yes-alt" ></span>
 				<?php esc_html_e( 'Connected', 'marketing-analytics-chat' ); ?>
 			</span>
 		<?php else : ?>
-			<span class="status-badge" style="background: #dc3232; color: white; padding: 4px 12px; border-radius: 3px; font-size: 13px; margin-left: 10px; font-weight: normal;">
-				<span class="dashicons dashicons-warning" style="font-size: 14px; margin-top: 2px;"></span>
+			<span class="status-badge heading-disconnected">
+				<span class="dashicons dashicons-warning" ></span>
 				<?php esc_html_e( 'Not Connected', 'marketing-analytics-chat' ); ?>
 			</span>
 		<?php endif; ?>
@@ -66,6 +66,10 @@ $gsc_connected = isset( $platforms['gsc']['connected'] ) && $platforms['gsc']['c
 				);
 				?>
 			</p>
+			<p style="color: #646970; font-style: italic;">
+				<span class="dashicons dashicons-clock" style="font-size: 16px; margin-top: 2px;"></span>
+				<?php esc_html_e( 'Estimated time: ~5 minutes', 'marketing-analytics-chat' ); ?>
+			</p>
 		</div>
 
 	<?php elseif ( ! $is_authenticated ) : ?>
@@ -73,6 +77,30 @@ $gsc_connected = isset( $platforms['gsc']['connected'] ) && $platforms['gsc']['c
 		<div class="notice notice-info">
 			<p><strong><?php esc_html_e( 'Step 2: Connect to Google Search Console', 'marketing-analytics-chat' ); ?></strong></p>
 			<p><?php esc_html_e( 'Click the button below to authorize access to your Search Console properties.', 'marketing-analytics-chat' ); ?></p>
+		</div>
+
+		<?php
+		$gsc_video_url = apply_filters( 'marketing_analytics_mcp_setup_video_url', '', 'gsc' );
+		if ( ! empty( $gsc_video_url ) ) :
+		?>
+		<details style="margin: 15px 0; background: #f6f7f7; border: 1px solid #c3c4c7; border-radius: 4px; padding: 0 15px;">
+			<summary style="padding: 12px 0; cursor: pointer; font-weight: 600;">
+				<span class="dashicons dashicons-video-alt3" style="font-size: 16px; margin-top: 2px; color: #2271b1;"></span>
+				<?php esc_html_e( 'Watch video walkthrough', 'marketing-analytics-chat' ); ?>
+			</summary>
+			<div style="padding: 0 0 15px 0;">
+				<iframe width="100%" height="315" src="<?php echo esc_url( $gsc_video_url ); ?>" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy" style="max-width: 560px;"></iframe>
+			</div>
+		</details>
+		<?php endif; ?>
+
+		<!-- Test Connection -->
+		<div style="margin: 15px 0;">
+			<button type="button" class="button button-secondary test-connection" data-platform="gsc">
+				<span class="dashicons dashicons-yes-alt" style="font-size: 16px; margin-top: 3px;"></span>
+				<?php esc_html_e( 'Test Connection', 'marketing-analytics-chat' ); ?>
+			</button>
+			<span id="gsc-test-result" style="margin-left: 10px; display: none;"></span>
 		</div>
 
 		<p>
@@ -107,7 +135,7 @@ $gsc_connected = isset( $platforms['gsc']['connected'] ) && $platforms['gsc']['c
 						<option value=""><?php esc_html_e( 'Loading properties...', 'marketing-analytics-chat' ); ?></option>
 					</select>
 					<p class="description"><?php esc_html_e( 'Select the Search Console property you want to connect to.', 'marketing-analytics-chat' ); ?></p>
-					<div id="gsc-property-error" style="color: #dc3232; margin-top: 5px; display: none;"></div>
+					<div id="gsc-property-error" class="description error" style="margin-top: 5px; display: none;"></div>
 				</td>
 			</tr>
 		</table>
