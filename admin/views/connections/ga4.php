@@ -67,7 +67,7 @@ $ga4_connected = isset( $platforms['ga4']['connected'] ) && $platforms['ga4']['c
 		<?php
 		$ga4_video_url = apply_filters( 'marketing_analytics_mcp_setup_video_url', '', 'ga4' );
 		if ( ! empty( $ga4_video_url ) ) :
-		?>
+			?>
 		<details style="margin: 15px 0; background: #f6f7f7; border: 1px solid #c3c4c7; border-radius: 4px; padding: 0 15px;">
 			<summary style="padding: 12px 0; cursor: pointer; font-weight: 600;">
 				<span class="dashicons dashicons-video-alt3" style="font-size: 16px; margin-top: 2px; color: #2271b1;"></span>

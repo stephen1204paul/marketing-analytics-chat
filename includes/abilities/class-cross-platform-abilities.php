@@ -536,8 +536,8 @@ class Cross_Platform_Abilities {
 	 * @return float Percentage change.
 	 */
 	public function calculate_percentage_change( $old_value, $new_value ) {
-		if ( 0 == $old_value ) {
-			return 0 == $new_value ? 0 : 100;
+		if ( 0 === $old_value ) {
+			return 0 === $new_value ? 0 : 100;
 		}
 
 		return round( ( ( $new_value - $old_value ) / $old_value ) * 100, 2 );

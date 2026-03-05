@@ -46,7 +46,7 @@ $widget_data        = get_transient( 'marketing_analytics_widget_data' );
 				$display_anomalies = array_slice( $recent_anomalies, 0, 3 );
 				foreach ( $display_anomalies as $anomaly ) :
 					$severity_class = isset( $anomaly['severity'] ) ? $anomaly['severity'] : 'low';
-				?>
+					?>
 					<li style="padding: 6px 0; border-bottom: 1px solid #f0f0f1; font-size: 13px;">
 						<span class="marketing-analytics-widget-severity <?php echo esc_attr( $severity_class ); ?>">
 							<?php echo esc_html( ucfirst( $severity_class ) ); ?>
