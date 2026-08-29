@@ -1,5 +1,7 @@
 # Marketing Analytics Chat
 
+> **This repository is archived.** Development moved to [specflux/marketing-analytics-chat](https://github.com/specflux/marketing-analytics-chat), which is the source for the plugin published at [wordpress.org/plugins/specflux-marketing-analytics-chat](https://wordpress.org/plugins/specflux-marketing-analytics-chat/). This copy is kept for its early history only.
+
 > Expose Google Analytics 4, Search Console, and Microsoft Clarity data to AI assistants via the Model Context Protocol.
 
 [![WordPress Version](https://img.shields.io/badge/WordPress-6.9%2B-blue)](https://wordpress.org/)
